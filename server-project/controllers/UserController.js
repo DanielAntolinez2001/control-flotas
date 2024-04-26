@@ -55,6 +55,23 @@ const getUSerById = async (req, res) => {
     }
 };
   
+// Método para obtener usuarios por su nombre
+const getUSerByName = async (req, res) => {
+    const { name } = req.params
+
+    try {
+        const users = await prisma.user.findMany({
+            where: { name: name },
+        })
+        if (!users) {
+            return res.status(404).json({ message: "Usuarios no encontrados" });
+        }
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 // Método para actualizar un usuario por su ID
 const updateUser = async (req, res) => {
     const { id } = req.params
@@ -107,6 +124,7 @@ const deleteUser = async (req, res) => {
 module.exports = {
     createUser,
     getUser,
+    getUSerByName,
     getUSerById,
     updateUser,
     deleteUser,
