@@ -14,12 +14,24 @@ datasource db {
 }
 
 model User {
-  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   lastname  String
-  email     String      @unique
+  email     String   @unique
   password  String
-  role      String      @default("driver")
-  avatar    String 
-  createdAt DateTime    @default(now())
+  role      String   @default("driver")
+  avatar    String
+  active    Boolean
+  address   Address? @relation(fields: [addressId], references: [id])
+  addressId String?  @db.ObjectId
+  createdAt DateTime @default(now())
+}
+
+model Address {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  street   String
+  city     String
+  state    String
+  zip_code String
+  User     User[]
 }
