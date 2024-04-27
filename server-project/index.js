@@ -1,16 +1,16 @@
 import express from 'express';
 
-console.log("Hello via Bun!");
+const userRouter = require("./routes/user");
 const app = express();
+
+const cors = require ('cors');
+
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({extended:false}));
+app.use(express.urlencoded({ extended: true }));
 
-const port = 3000;
-
-app.get('/', (req, res) => {
-  res.send('The sedulous hyena ate the antelope!');
-});
+app.use("/api/v1/users", userRouter);
 
 app.listen(3002, () => {
-    console.log("Server is running on http://localhost:3000");
+    console.log("Server is running on http://localhost:3002");
 });

@@ -22,16 +22,187 @@ model User {
   role      String   @default("driver")
   avatar    String
   active    Boolean
+  route     Route[]
   address   Address? @relation(fields: [addressId], references: [id])
-  addressId String?  @db.ObjectId
+  addressId String?  @unique @db.ObjectId
   createdAt DateTime @default(now())
 }
 
 model Address {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  street   String
-  city     String
-  state    String
-  zip_code String
-  User     User[]
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  street    String
+  city      String
+  state     String
+  zip_code  String
+  details   String
+  User      User?
+  RouteFrom Route[] @relation("FromAddress")
+  RouteTo   Route[] @relation("ToAddress")
+}
+
+model Truck {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  brand             String
+  model             Int
+  status            String
+  fluids_system     FluidsSystem? //Sistema de fluidos
+  body_chassis      BodyChassis? //Carrocería y chasis del camión
+  electrical_system ElectricalSystem? //Sistema eléctrico
+  brakes            Brakes? //Sistemma de frenos 
+  fuel              Fuel? //Combustible
+  exhaust_system    ExhaustSystem? //Sistema de escape
+  tire              Tire[] //Neumáticos
+  Maintenance       Maintenance[]
+  route             Route[]
+  createdAt         DateTime          @default(now())
+}
+
+//--------------------------------- Interior de los camiones ----------------------------------
+
+model Fuel {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  truck      Truck?  @relation(fields: [truckId], references: [id])
+  truckId    String? @unique @db.ObjectId
+  amount     Float
+  Cost       Float
+  efficiency Float
+}
+
+model Brakes {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  truck           Truck?          @relation(fields: [truckId], references: [id])
+  truckId         String?         @unique @db.ObjectId
+  pads_condition  BrakesCondition
+  discs_condition BrakesCondition
+  fluid_level     Level
+}
+
+model FluidsSystem {
+  id                    String     @id @default(auto()) @map("_id") @db.ObjectId
+  truck                 Truck?     @relation(fields: [truckId], references: [id])
+  truckId               String?    @unique @db.ObjectId
+  direction_fluid_level FluidLevel
+  brake_fluid_level     FluidLevel
+  coolant_fluid_level   FluidLevel
+  wiper_fluid_level     FluidLevel
+}
+
+model BodyChassis {
+  id                     String               @id @default(auto()) @map("_id") @db.ObjectId
+  truck                  Truck?               @relation(fields: [truckId], references: [id])
+  truckId                String?              @unique @db.ObjectId
+  chassis_condition      BodyChassisCondition
+  body_condition         BodyChassisCondition
+  seatbelt_functionality Functionality
+}
+
+model ExhaustSystem {
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  truck              Truck?    @relation(fields: [truckId], references: [id])
+  truckId            String?   @unique @db.ObjectId
+  pipes_condition    Condition
+  mufflers_condition Condition
+  leak_detection     Boolean
+}
+
+model ElectricalSystem {
+  id                   String        @id @default(auto()) @map("_id") @db.ObjectId
+  truck                Truck?        @relation(fields: [truckId], references: [id])
+  truckId              String?       @unique @db.ObjectId
+  Battery_Status       Battery
+  Lights_Functionality Functionality
+  Fuse_Status          FuseStatus
+}
+
+model Tire {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  brand   String
+  truck   Truck?  @relation(fields: [truckId], references: [id])
+  truckId String? @db.ObjectId
+  status  String  @default("Ok")
+  model   Int
+  mileage Int
+}
+
+//---------------------------------------------------------------------------------------
+
+enum FuseStatus {
+  Intact
+  Blown
+  NeedsReplacement
+  NotApplicable
+}
+
+enum FluidLevel {
+  Full
+  Low
+  Empty
+  Refill
+}
+
+enum Condition {
+  Intact
+  Corroded
+  Leaking
+  NeedsReplacement
+}
+
+enum BrakesCondition {
+  Good
+  Fair
+  Worn
+  Replace
+}
+
+enum Battery {
+  Good
+  Weak
+  Dead
+  NeedsReplacement
+}
+
+enum Functionality {
+  Functional
+  NonFunctional
+  PartiallyFunctional
+  NotApplicable
+}
+
+enum Level {
+  Full
+  Low
+  Empty
+  Check
+}
+
+enum BodyChassisCondition {
+  Good
+  Damaged
+  Rusty
+  NeedsRepair
+}
+
+model Maintenance {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  description String
+  truck       Truck?   @relation(fields: [truckId], references: [id])
+  truckId     String?  @db.ObjectId
+  type        String
+  Cost        Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Route {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  truck    Truck?   @relation(fields: [truckId], references: [id])
+  truckId  String?  @db.ObjectId
+  user     User?    @relation(fields: [userId], references: [id])
+  userId   String?  @db.ObjectId
+  distance Float
+  Time     Float
+  from     Address? @relation("FromAddress", fields: [fromId], references: [id])
+  fromId   String?  @db.ObjectId
+  to       Address? @relation("ToAddress", fields: [toId], references: [id])
+  toId     String?  @db.ObjectId
 }
