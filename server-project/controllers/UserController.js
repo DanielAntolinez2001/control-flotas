@@ -10,18 +10,6 @@ export const createUser = async (req, res) => {
         const avatar = req.file ? req.file.filename : null;
         console.log(avatar);  
 
-        const user = await prisma.user.create({
-            data: {
-                name,
-                lastname,           
-                email,   
-                password,           
-                role,
-                active,      
-                avatar 
-            },
-        });
-
         // Luego, creamos la dirección asociada al usuario
         const userAddress = await prisma.address.create({
             data: {
@@ -30,7 +18,19 @@ export const createUser = async (req, res) => {
                 state: address.state,
                 zip_code: address.zip_code,
                 details: address.details,
-                User: { connect: {userId: user.id} }, // Asociamos la dirección al usuario recién creado
+            },
+        });
+
+        const user = await prisma.user.create({
+            data: {
+                name,
+                lastname,           
+                email,   
+                password,           
+                role,
+                active,      
+                avatar,
+                address: { connect: {addressId: userAddress.id} }, // Asociamos la dirección al usuario recién creado 
             },
         });
 
