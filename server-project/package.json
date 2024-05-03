@@ -1,6 +1,6 @@
 {
   "name": "server-project",
-  "module": "index.ts",
+  "module": "index.js",
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest"
@@ -10,6 +10,12 @@
   },
   "dependencies": {
     "@prisma/client": "^5.13.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.2",
     "prisma": "^5.13.0"
+  },
+  "scripts": {
+    "dev": "nodemon index.js"
   }
 }

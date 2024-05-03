@@ -1,7 +1,8 @@
-const userController = require("../controllers/UserController");
-const express = require("express");
-const multer = require("multer");
-const router = express.Router();
+import { Router } from "express";
+import multer from "multer";
+import * as userController from "../controllers/UserController.js";
+
+const router = Router();
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -16,6 +17,9 @@ const upload = multer({ storage });
 
 //* 1. Create a new user.
 router.post('/', upload.single("avatar"), userController.createUser);
+
+// Ruta para loguear un usuario 
+router.post('/login', userController.login);
 
 //* 2. Fetches all users.
 router.get('/', userController.getUser)
@@ -32,4 +36,4 @@ router.delete('/:id', userController.deleteUser)
 //* 6. Deletes a user by its ID.
 router.patch('/:id', upload.single("avatar"), userController.updateUser)
   
-module.exports = router;
+export { router as default };
