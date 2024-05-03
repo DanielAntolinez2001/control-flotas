@@ -30,7 +30,7 @@ export const createUser = async (req, res) => {
                 role,
                 active,      
                 avatar,
-                address: { connect: {addressId: userAddress.id} }, // Asociamos la dirección al usuario recién creado 
+                addressId: userAddress.id, // Asociamos la dirección al usuario recién creado 
             },
         });
 
