@@ -1,3 +1,4 @@
+import * as addressController from "./AddressController.js";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import bcrypt from "bcrypt";
@@ -11,15 +12,7 @@ export const createUser = async (req, res) => {
         console.log(avatar);  
 
         // Luego, creamos la dirección asociada al usuario
-        const userAddress = await prisma.address.create({
-            data: {
-                street: address.street,
-                city: address.city,
-                state: address.state,
-                zip_code: address.zip_code,
-                details: address.details,
-            },
-        });
+        const userAddress = await addressController.createAddress(address);
 
         const user = await prisma.user.create({
             data: {
@@ -157,11 +150,12 @@ export const updateUser = async (req, res) => {
   
 // Método para eliminar un usuario por su ID
 export const deleteUser = async (req, res) => {
-    const { id } = req.params
+    const { id } = req.params;
+
     try {
-        const deleteUser1 = await prisma.user.delete({
-            where: { id: id},
-        })
+        const deleteUser1 = await prisma.user.delete({ where: { id: id},})
+        const deleteAdresss = await addressController.deleteAddress(deleteUser1.addressId);
+
         res.status(200).json({ message: "Usuario eliminado correctamente" });
     } catch (error) {
         res.status(500).json({ error: error.message });
