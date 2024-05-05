@@ -11,7 +11,7 @@ const cors = require("cors");
 =======
 import express from 'express';
 import cors from 'cors';
-import userRouter from "./routes/user.js"; 
+import userRouter from "./routes/UserRoute.js"; 
 
 const app = express();
 
