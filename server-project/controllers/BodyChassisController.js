@@ -41,7 +41,7 @@ export const getBodyChassisById = async (req, res) => {
       where: { id: id },
     });
     if (!bodyChassis) {
-      return res.status(404).json({ message: "Registro de combustible no encontrado" });
+      return res.status(404).json({ message: "Registro de cuerpo y chasis del camión no encontrado" });
     }
     res.status(200).json(bodyChassis);
   } catch (error) {

@@ -42,7 +42,7 @@ export const getFluidsSystemById = async (req, res) => {
       where: { id: id },
     });
     if (!fluidsSystem) {
-      return res.status(404).json({ message: "Registro de combustible no encontrado" });
+      return res.status(404).json({ message: "Registro de sistema de fluidos no encontrado" });
     }
     res.status(200).json(fluidsSystem);
   } catch (error) {

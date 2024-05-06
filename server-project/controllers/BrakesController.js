@@ -41,7 +41,7 @@ export const getBrakesById = async (req, res) => {
       where: { id: id },
     });
     if (!brakes) {
-      return res.status(404).json({ message: "Registro de combustible no encontrado" });
+      return res.status(404).json({ message: "Registro de frenos no encontrado" });
     }
     res.status(200).json(brakes);
   } catch (error) {
