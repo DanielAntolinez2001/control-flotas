@@ -26,7 +26,6 @@ model User {
   address   Address? @relation(fields: [addressId], references: [id])
   addressId String?  @unique @db.ObjectId
   createdAt DateTime @default(now())
-  Truck     Truck?
 }
 
 model Address {
@@ -47,8 +46,6 @@ model Truck {
   model             Int
   status            String
   avatar            String?
-  driver            User?             @relation(fields: [driverId], references: [id]) //Conductor del camión
-  driverId          String?           @unique @db.ObjectId
   fluids_system     FluidsSystem? //Sistema de fluidos
   body_chassis      BodyChassis? //Carrocería y chasis del camión
   electrical_system ElectricalSystem? //Sistema eléctrico
@@ -65,11 +62,11 @@ model Truck {
 
 model Fuel {
   id         String  @id @default(auto()) @map("_id") @db.ObjectId
-  truck      Truck?  @relation(fields: [truckId], references: [id])
-  truckId    String? @unique @db.ObjectId
+  truck      Truck   @relation(fields: [truckId], references: [id])
+  truckId    String  @unique @db.ObjectId
   amount     Float
-  Cost       Float
-  efficiency Float
+  cost       Float?
+  efficiency Float?   //Eficiencia del combustible en km/l.
 }
 
 model Brakes {

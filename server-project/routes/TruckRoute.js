@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 //* 1. Create a new truck.
-router.post("/", upload.single("image"), TruckController.createTruck);
+router.post("/", upload.single("avatar"), TruckController.createTruck);
 
 //* 2. Fetches all trucks.
 router.get("/", TruckController.getTruck);
@@ -30,6 +30,6 @@ router.get("/:brand", TruckController.getTruckByBrand);
 router.delete("/:id", TruckController.deleteTruck);
 
 //* 6. Updates a truck by its ID.
-router.patch("/:id", upload.single("image"), TruckController.updateTruck);
+router.patch("/:id", upload.single("avatar"), TruckController.updateTruck);
 
 module.exports = router;
