@@ -1,12 +1,18 @@
-const PrismaClient = require("@prisma/client").PrismaClient;
+import * as addressController from "./AddressController.js";
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 //Método para crear usuario
-const createUser = async (req, res) => {
+export const createUser = async (req, res) => {
   try{
-        const { name, lastname, email, password, role, active, addressId} = req.body;
+        const { name, lastname, email, password, role, active, address} = req.body;
         const avatar = req.file ? req.file.filename : null;
         console.log(avatar);  
+
+        // Luego, creamos la dirección asociada al usuario
+        const userAddress = await addressController.createAddress(address);
 
         const user = await prisma.user.create({
             data: {
@@ -15,21 +21,55 @@ const createUser = async (req, res) => {
                 email,   
                 password,           
                 role,
-                active, 
-                addressId,      
-                avatar 
+                active,      
+                avatar,
+                addressId: userAddress.id, // Asociamos la dirección al usuario recién creado 
             },
         });
 
-        res.status(201).json({ user });
+        res.status(201).json({ user, address: userAddress });
   }catch (error)
   {
     res.status(400).json({ message: error.message });
   }
 }; 
 
+export const login = async (req, res) => {
+    try {
+      const { role, email, password } = req.body;
+  
+      const user = await UserModel.find(req.params.email);
+  
+      if (!user || password != user[0].password) {
+        return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+      }
+
+      if (user[0].role != role){
+        return res.status(401).json({ error: 'Role incorrecto' });
+      }
+  
+      // Generar un token de acceso
+      const token = jwt.sign({ id: user[0].id }, process.env.JWT_SECRET, {
+        expiresIn: '1h',
+      });
+  
+      res.status(200).json({ token });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+};
+
+export const logout = async (req, res) => {
+    try {
+      req.headers.authorization = null;
+      res.status(200).json({ message: 'Logout exitoso' });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+};
+
 // Método para obtener todos los usuarios
-const getUser = async (req, res) => {
+export const getUser = async (req, res) => {
   try {
     const users = await prisma.user.findMany()
     res.status(200).json(users);
@@ -39,7 +79,7 @@ const getUser = async (req, res) => {
 };
   
 // Método para obtener un usuario por su ID
-const getUSerById = async (req, res) => {
+export const getUSerById = async (req, res) => {
     const { id } = req.params
 
     try {
@@ -56,7 +96,7 @@ const getUSerById = async (req, res) => {
 };
   
 // Método para obtener usuarios por su nombre
-const getUSerByName = async (req, res) => {
+export const getUSerByName = async (req, res) => {
     const { name } = req.params
 
     try {
@@ -73,7 +113,7 @@ const getUSerByName = async (req, res) => {
 };
 
 // Método para actualizar un usuario por su ID
-const updateUser = async (req, res) => {
+export const updateUser = async (req, res) => {
     const { id } = req.params
 
     const { name, lastname, email, password, role, active, addressId} = req.body;
@@ -109,23 +149,16 @@ const updateUser = async (req, res) => {
 };
   
 // Método para eliminar un usuario por su ID
-const deleteUser = async (req, res) => {
-    const { id } = req.params
+export const deleteUser = async (req, res) => {
+    const { id } = req.params;
+
     try {
-        const deleteUser1 = await prisma.user.delete({
-            where: { id: id},
-        })
+        const deleteUser1 = await prisma.user.delete({ where: { id: id},})
+        const deleteAdresss = await addressController.deleteAddress(deleteUser1.addressId);
+
         res.status(200).json({ message: "Usuario eliminado correctamente" });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
   
-module.exports = {
-    createUser,
-    getUser,
-    getUSerByName,
-    getUSerById,
-    updateUser,
-    deleteUser,
-};

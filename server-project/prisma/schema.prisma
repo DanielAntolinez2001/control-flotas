@@ -20,7 +20,7 @@ model User {
   email     String   @unique
   password  String
   role      String   @default("driver")
-  avatar    String
+  avatar    String?
   active    Boolean
   route     Route[]
   address   Address? @relation(fields: [addressId], references: [id])
@@ -181,6 +181,8 @@ enum BodyChassisCondition {
   Rusty
   NeedsRepair
 }
+
+//---------------------------------- Fin de enums ---------------------------------------
 
 model Maintenance {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
