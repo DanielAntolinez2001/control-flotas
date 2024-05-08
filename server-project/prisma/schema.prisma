@@ -20,7 +20,7 @@ model User {
   email     String   @unique
   password  String
   role      String   @default("driver")
-  avatar    String?
+  avatar    String
   active    Boolean
   route     Route[]
   address   Address? @relation(fields: [addressId], references: [id])
@@ -45,6 +45,7 @@ model Truck {
   brand             String
   model             Int
   status            String
+  avatar            String?
   fluids_system     FluidsSystem? //Sistema de fluidos
   body_chassis      BodyChassis? //Carrocería y chasis del camión
   electrical_system ElectricalSystem? //Sistema eléctrico
@@ -61,11 +62,11 @@ model Truck {
 
 model Fuel {
   id         String  @id @default(auto()) @map("_id") @db.ObjectId
-  truck      Truck?  @relation(fields: [truckId], references: [id])
-  truckId    String? @unique @db.ObjectId
+  truck      Truck   @relation(fields: [truckId], references: [id])
+  truckId    String  @unique @db.ObjectId
   amount     Float
-  Cost       Float
-  efficiency Float
+  cost       Float?
+  efficiency Float?   //Eficiencia del combustible en km/l.
 }
 
 model Brakes {
@@ -109,19 +110,19 @@ model ElectricalSystem {
   id                   String        @id @default(auto()) @map("_id") @db.ObjectId
   truck                Truck?        @relation(fields: [truckId], references: [id])
   truckId              String?       @unique @db.ObjectId
-  Battery_Status       Battery
-  Lights_Functionality Functionality
-  Fuse_Status          FuseStatus
+  battery_status       Battery
+  lights_functionality Functionality
+  fuse_status          FuseStatus
 }
 
 model Tire {
   id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  brand   String
   truck   Truck?  @relation(fields: [truckId], references: [id])
   truckId String? @db.ObjectId
+  brand   String
   status  String  @default("Ok")
   model   Int
-  mileage Int
+  mileage Int     @default(0)
 }
 
 //---------------------------------------------------------------------------------------
