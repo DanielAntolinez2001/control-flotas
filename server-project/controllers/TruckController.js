@@ -1,4 +1,4 @@
-const PrismaClient = require("@prisma/client").PrismaClient;
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 // Método para crear un camión

@@ -1,6 +1,6 @@
-const userController = require("../controllers/UserController");
-const express = require("express");
-const multer = require("multer");
+import * as userController from "../controllers/UserController.js";
+import express from "express";
+import multer from "multer";
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -32,4 +32,5 @@ router.delete("/:id", userController.deleteUser);
 //* 6. Deletes a user by its ID.
 router.patch("/:id", upload.single("avatar"), userController.updateUser);
 
-module.exports = router;
+export default router
+

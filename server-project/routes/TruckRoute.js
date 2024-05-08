@@ -1,6 +1,6 @@
-const TruckController = require("../controllers/TruckController");
-const express = require("express");
-const multer = require("multer");
+import * as  TruckController from "../controllers/TruckController.js";
+import express from "express";
+import multer from "multer";
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -32,4 +32,4 @@ router.delete("/:id", TruckController.deleteTruck);
 //* 6. Updates a truck by its ID.
 router.patch("/:id", upload.single("avatar"), TruckController.updateTruck);
 
-module.exports = router;
+export default router
