@@ -16,36 +16,13 @@ export const createTruck = async (req, res) => {
       },
     });
 
-    const fuelTruck = await prisma.fuel.create({ data: {amount: fuel.amount, truckId: truck.id, }, });
-    const brakesTruck = await prisma.brakes.create(
-    { 
-      data: { 
-        truckId: truck.id,
-        pads_condition: brakes.pads_condition, 
-        discs_condition: brakes.discs_condition, 
-        fluid_level: brakes.fluid_level
-      },
-    });
-
-    const FluidsSystem_Truck = await prisma.fluidsSystem.create(
-    { 
-      data: { 
-        truckId: truck.id,
-        direction_fluid_level: fluidsSystem.direction_fluid_level, 
-        brake_fluid_level: fluidsSystem.brake_fluid_level, 
-        coolant_fluid_level: fluidsSystem.coolant_fluid_level,
-        wiper_fluid_level: fluidsSystem.wiper_fluid_level,
-      },
-    });
-
-    const BodyChassis = await prisma.bodyChassis.create({
-      data: {
-        truckId: truck.id,
-        chassis_condition: bodyChassis.chassis_condition, 
-        body_condition: bodyChassis.body_condition, 
-        seatbelt_functionality: bodyChassis.seatbelt_functionality,
-      }
-    })
+    const fuelTruck = await prisma.fuel.create({ data: {truckId: truck.id, }, });
+    const brakesTruck = await prisma.brakes.create({ data: {truckId: truck.id, }, });
+    const FluidsSystem_Truck = await prisma.fluidsSystem.create({ data: {truckId: truck.id, }, });
+    const BodyChassis = await prisma.bodyChassis.create({ data: {truckId: truck.id, }, });
+    const ExhaustSystem = await prisma.exhaustSystem.create({ data: {truckId: truck.id, }, });
+    const ElectricalSystem = await prisma.electricalSystem.create({ data: {truckId: truck.id, }, });
+    const Tire = await prisma.tire.create({ data: {truckId: truck.id, }, });
 
     res.status(201).json({ truck });
   } catch (error) {
