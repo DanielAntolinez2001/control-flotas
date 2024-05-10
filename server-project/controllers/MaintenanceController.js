@@ -47,6 +47,20 @@ export const getMaintenanceById = async (req, res) => {
   }
 };
 
+// Método para obtener un registro de mantenimiento por su ID
+export const getMaintenanceForReport = async (req, res) => {
+  const { id } = req;
+
+  try {
+    const maintenance = await prisma.maintenance.findFirst({ where: { id: id }, });
+    if (!maintenance) { return  "mantenimiento no encontrado" ; }
+
+      return true;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
 // Método para obtener los registros de mantenimiento de un camión
 export const getMaintenanceByTruck = async (req, res) => {
   const { truckId } = req.params;

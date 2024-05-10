@@ -46,6 +46,7 @@ model Truck {
   model             Int
   status            String
   avatar            String?
+  license_plate     String            @unique
   fluids_system     FluidsSystem? //Sistema de fluidos
   body_chassis      BodyChassis? //Carrocería y chasis del camión
   electrical_system ElectricalSystem? //Sistema eléctrico
@@ -61,11 +62,11 @@ model Truck {
 //--------------------------------- Interior de los camiones ----------------------------------
 
 model Fuel {
-  id         String     @id @default(auto()) @map("_id") @db.ObjectId
-  truck      Truck      @relation(fields: [truckId], references: [id])
-  truckId    String     @unique @db.ObjectId
-  amount     FuelAmount @default(Empty)   
-  cost       Float?
+  id      String     @id @default(auto()) @map("_id") @db.ObjectId
+  truck   Truck      @relation(fields: [truckId], references: [id])
+  truckId String     @unique @db.ObjectId
+  amount  FuelAmount @default(Empty)
+  cost    Float?
 }
 
 model Brakes {
@@ -198,15 +199,24 @@ enum typeMaintenance {
 
 //---------------------------------- Fin de enums ---------------------------------------
 
+model Report {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  content       String
+  maintenance   Maintenance? @relation(fields: [maintenanceId], references: [id])
+  maintenanceId String?      @unique @db.ObjectId
+  cost          Float
+}
+
 model Maintenance {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
   description String
-  truck       Truck?   @relation(fields: [truckId], references: [id])
-  truckId     String?  @db.ObjectId
+  truck       Truck?          @relation(fields: [truckId], references: [id])
+  truckId     String?         @db.ObjectId
+  report      Report?
   type        typeMaintenance
   Cost        Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 }
 
 model Route {
