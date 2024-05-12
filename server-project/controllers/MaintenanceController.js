@@ -21,7 +21,7 @@ export const createMaintenance = async (req, res) => {
 };
 
 // Método para obtener todos registros de mantenimientos
-export const getMaintenance = async (req, res) => {
+export const getMaintenances = async (req, res) => {
   try {
     const maintenances = await prisma.maintenance.findMany();
     res.status(200).json(maintenances);

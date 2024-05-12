@@ -51,6 +51,7 @@ export const createReport = async (req, res) => {
     }
 };
 
+//Generación de informe del mantenimiento total de la flota
 export const createTotalReport = async (req, res) => {
     try {
       // Obtener las fechas de inicio y fin del rango
@@ -70,17 +71,22 @@ export const createTotalReport = async (req, res) => {
       
       // Contar la cantidad de mantenimientos realizados
       const totalMaintenanceCount = maintenances.length;
+
+      let reportContent = `Se realizaron ${totalMaintenanceCount} mantenimientos entre ${startDate} y ${endDate}`;
   
       // Crear el informe total en la base de datos
-      const totalReport = await prisma.report.create({ data: { content: totalReportContent }, });
+      const totalReport = await prisma.report.create({ data: { content: reportContent }, });
   
-      res.status(201).json({ totalReport });
+      res.status(201).json({ totalReport, mantenimientos: {count: totalMaintenanceCount, content: maintenances} });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
 };  
 
-// Método para obtener todos registros de mantenimientos
+//Agregar metodo para generar un informe que identifique el vehiculo que consume más combustible
+
+
+// Método para obtener todos los reportes creados
 export const getReports = async (req, res) => {
   try {
     const reports = await prisma.report.findMany();
@@ -90,7 +96,7 @@ export const getReports = async (req, res) => {
   }
 };
 
-// Método para obtener un registro de mantenimiento por su ID
+// Método para obtener un reporte por su ID
 export const getReportById = async (req, res) => {
   const { id } = req.params;
 
@@ -99,7 +105,7 @@ export const getReportById = async (req, res) => {
       where: { id: id },
     });
     if (!report) {
-      return res.status(404).json({ message: "mantenimiento no encontrado" });
+      return res.status(404).json({ message: "reporte no encontrado" });
     }
     res.status(200).json(report);
   } catch (error) {
@@ -107,16 +113,16 @@ export const getReportById = async (req, res) => {
   }
 };
 
-// Método para obtener los registros de mantenimiento de un camión
+// Método para obtener el reporte dado el mantenimiento
 export const getReportByMaintenance = async (req, res) => {
-  const { truckId } = req.params;
+  const { maintenanceId } = req.body;
 
   try {
     const report = await prisma.report.findMany({
-      where: { truckId: truckId },
+      where: { maintenanceId: maintenanceId },
     });
     if (!report) {
-      return res.status(404).json({ message: "registro de mantenimiento no encontrado" });
+      return res.status(404).json({ message: "reporte no encontrado" });
     }
     res.status(200).json(report);
   } catch (error) {
@@ -124,7 +130,7 @@ export const getReportByMaintenance = async (req, res) => {
   }
 };
 
-// Método para eliminar un registro de mantenimiento por su ID
+// Método para eliminar un reporte por su ID
 export const deleteReport = async (req, res) => {
   const { id } = req.params;
 
