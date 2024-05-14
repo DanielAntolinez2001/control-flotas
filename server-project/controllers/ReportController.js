@@ -83,16 +83,54 @@ export const createTotalReport = async (req, res) => {
     }
 };  
 
-//Agregar metodo para generar un informe que identifique el vehiculo que consume más combustible
+//Metodo para generar un informe que identifique el vehículo que consume más combustible
+export const createReportFuel = async (req, res) => {
 
-
-// Método para obtener todos los reportes creados
-export const getReports = async (req, res) => {
   try {
-    const reports = await prisma.report.findMany();
-    res.status(200).json(reports);
+    const trucks = await prisma.truck.findMany({
+      include: {
+        fuel: true,
+      },
+    });
+
+    // Encuentra el camión con el mayor consumo de combustible
+    let maxFuelConsumptionTruck = null;
+    let maxTotalFuelConsumption = 0;
+
+    trucks.forEach((truck) => {
+      let totalFuelConsumption = 0;
+
+      truck.fuel.forEach((fuelRecord) => {
+        totalFuelConsumption += fuelRecord.cost;
+      });
+
+      if (totalFuelConsumption > maxTotalFuelConsumption) {
+        maxTotalFuelConsumption = totalFuelConsumption;
+        maxFuelConsumptionTruck = truck;
+      }
+    });
+
+    // Genera el informe sobre el camión con el mayor consumo de combustible
+    let reportContent = '';
+    if (maxFuelConsumptionTruck) {
+      reportContent = `
+        <h1>Informe de Consumo de Combustible</h1>
+        <p>El camión con el mayor consumo de combustible es:</p>
+        <p>ID: ${maxFuelConsumptionTruck.id}</p>
+        <p>Marca: ${maxFuelConsumptionTruck.brand}</p>
+        <p>Modelo: ${maxFuelConsumptionTruck.model}</p>
+        <p>Estado: ${maxFuelConsumptionTruck.status}</p>
+        <p>Placa: ${maxFuelConsumptionTruck.license_plate}</p>
+        <p>Consumo Total de Combustible: ${maxTotalFuelConsumption} L</p>
+      `;
+    } else {
+      reportContent = 'No se encontraron datos de consumo de combustible';
+    }
+
+    // Envía el informe como respuesta
+    res.status(200).send(reportContent);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 

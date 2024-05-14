@@ -125,7 +125,6 @@ export const deleteTruck = async (req, res) => {
     }
 
     // Eliminar las relaciones dependientes
-    if (truck.fuel) await prisma.fuel.delete({ where: { id: truck.fuel.id } });
     if (truck.brakes) await prisma.brakes.delete({ where: { id: truck.brakes.id } });
     if (truck.fluidsSystem) await prisma.fluidsSystem.delete({ where: { id: truck.fluidsSystem.id } });
     if (truck.bodyChassis) await prisma.bodyChassis.delete({ where: { id: truck.bodyChassis.id } });
@@ -136,6 +135,13 @@ export const deleteTruck = async (req, res) => {
     if (truck.tire && truck.tire.length > 0) {
       for (const tire of truck.tire) {
         await prisma.tire.delete({ where: { id: tire.id } });
+      }
+    }
+
+    // Eliminar los registros de combustible asociados al camión
+    if (truck.fuel && truck.fuel.length > 0) {
+      for (const fuel of truck.fuel) {
+        await prisma.fuel.delete({ where: { id: fuel.id } });
       }
     }
 

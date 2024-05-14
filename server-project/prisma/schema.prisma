@@ -19,8 +19,8 @@ model User {
   lastname  String
   email     String   @unique
   password  String
-  role      String   @default("driver")
-  avatar    String
+  role      typeRole @default(driver)
+  avatar    String?
   active    Boolean  @default(true)
   route     Route[]
   tasks     Task[]
@@ -30,12 +30,12 @@ model User {
 }
 
 model Task {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  type      String
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  type        String
   description String
-  check      Boolean @default(false)
-  user     User?    @relation(fields: [userId], references: [id])
-  userId   String?  @db.ObjectId
+  check       Boolean @default(false)
+  user        User?   @relation(fields: [userId], references: [id])
+  userId      String? @db.ObjectId
 }
 
 model Address {
@@ -73,12 +73,12 @@ model Truck {
 //--------------------------------- Interior de los camiones ----------------------------------
 
 model Fuel {
-  id      String     @id @default(auto()) @map("_id") @db.ObjectId
-  truck   Truck      @relation(fields: [truckId], references: [id])
-  truckId String     @unique @db.ObjectId
-  amount  FuelAmount @default(Empty)
-  cost    Float?
-  efficienncy Float?
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  truck       Truck      @relation(fields: [truckId], references: [id])
+  truckId     String     @unique @db.ObjectId
+  amount      FuelAmount @default(Empty)
+  cost        Float?
+  efficienncy Float?     @default(0)
 }
 
 model Brakes {
@@ -207,6 +207,11 @@ enum typeMaintenance {
   weekly
   before_route
   monthly
+}
+
+enum typeRole {
+  admin
+  driver
 }
 
 //---------------------------------- Fin de enums ---------------------------------------
