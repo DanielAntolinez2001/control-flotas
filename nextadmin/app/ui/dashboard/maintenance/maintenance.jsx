@@ -13,7 +13,7 @@ const Maintenance = () => {
             <td>Status</td>
             <td>Date</td>
             <td>Model</td>
-            <td>Branch</td>
+            <td>Brand</td>
             <td>Amount</td>
           </tr>
         </thead>
