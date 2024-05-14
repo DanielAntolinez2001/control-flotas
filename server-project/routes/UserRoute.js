@@ -14,6 +14,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+//* 0. Create a harcoded user.
+router.post("/root", upload.single("avatar"), userController.createHardcodedUser);
+
 //* 1. Create a new user.
 router.post("/", upload.single("avatar"), userController.createUser);
 
@@ -31,6 +34,9 @@ router.delete("/:id", userController.deleteUser);
 
 //* 6. Deletes a user by its ID.
 router.patch("/:id", upload.single("avatar"), userController.updateUser);
+
+// 7. Ruta para loguear un usuario 
+router.post('/login', userController.login);
 
 export default router
 

@@ -19,13 +19,23 @@ model User {
   lastname  String
   email     String   @unique
   password  String
-  role      String   @default("driver")
-  avatar    String
-  active    Boolean
+  role      typeRole @default(driver)
+  avatar    String?
+  active    Boolean  @default(true)
   route     Route[]
+  tasks     Task[]
   address   Address? @relation(fields: [addressId], references: [id])
   addressId String?  @unique @db.ObjectId
   createdAt DateTime @default(now())
+}
+
+model Task {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  type        String
+  description String
+  check       Boolean @default(false)
+  user        User?   @relation(fields: [userId], references: [id])
+  userId      String? @db.ObjectId
 }
 
 model Address {
@@ -46,73 +56,75 @@ model Truck {
   model             Int
   status            String
   avatar            String?
+  license_plate     String            @unique
   fluids_system     FluidsSystem? //Sistema de fluidos
   body_chassis      BodyChassis? //Carrocería y chasis del camión
   electrical_system ElectricalSystem? //Sistema eléctrico
   brakes            Brakes? //Sistemma de frenos 
-  fuel              Fuel? //Combustible
+  fuel              Fuel[] //Historial de combustible
   exhaust_system    ExhaustSystem? //Sistema de escape
   tire              Tire[] //Neumáticos
   Maintenance       Maintenance[]
   route             Route[]
+  change_neumatics  DateTime
   createdAt         DateTime          @default(now())
 }
 
 //--------------------------------- Interior de los camiones ----------------------------------
 
 model Fuel {
-  id         String  @id @default(auto()) @map("_id") @db.ObjectId
-  truck      Truck   @relation(fields: [truckId], references: [id])
-  truckId    String  @unique @db.ObjectId
-  amount     Float
-  cost       Float?
-  efficiency Float?   //Eficiencia del combustible en km/l.
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  truck       Truck      @relation(fields: [truckId], references: [id])
+  truckId     String     @unique @db.ObjectId
+  amount      FuelAmount @default(Empty)
+  cost        Float?
+  efficienncy Float?     @default(0)
 }
 
 model Brakes {
   id              String          @id @default(auto()) @map("_id") @db.ObjectId
   truck           Truck?          @relation(fields: [truckId], references: [id])
   truckId         String?         @unique @db.ObjectId
-  pads_condition  BrakesCondition
-  discs_condition BrakesCondition
-  fluid_level     Level
+  pads_condition  BrakesCondition @default(Good)
+  discs_condition BrakesCondition @default(Good)
+  fluid_level     Level           @default(Full)
 }
 
 model FluidsSystem {
   id                    String     @id @default(auto()) @map("_id") @db.ObjectId
   truck                 Truck?     @relation(fields: [truckId], references: [id])
   truckId               String?    @unique @db.ObjectId
-  direction_fluid_level FluidLevel
-  brake_fluid_level     FluidLevel
-  coolant_fluid_level   FluidLevel
-  wiper_fluid_level     FluidLevel
+  direction_fluid_level FluidLevel @default(Full)
+  brake_fluid_level     FluidLevel @default(Full)
+  coolant_fluid_level   FluidLevel @default(Full)
+  wiper_fluid_level     FluidLevel @default(Full)
 }
 
 model BodyChassis {
   id                     String               @id @default(auto()) @map("_id") @db.ObjectId
   truck                  Truck?               @relation(fields: [truckId], references: [id])
   truckId                String?              @unique @db.ObjectId
-  chassis_condition      BodyChassisCondition
-  body_condition         BodyChassisCondition
-  seatbelt_functionality Functionality
+  chassis_condition      BodyChassisCondition @default(Good)
+  body_condition         BodyChassisCondition @default(Good)
+  seatbelt_functionality Functionality        @default(Functional)
 }
 
 model ExhaustSystem {
   id                 String    @id @default(auto()) @map("_id") @db.ObjectId
   truck              Truck?    @relation(fields: [truckId], references: [id])
   truckId            String?   @unique @db.ObjectId
-  pipes_condition    Condition
-  mufflers_condition Condition
-  leak_detection     Boolean
+  pipes_condition    Condition @default(Intact)
+  mufflers_condition Condition @default(Intact)
+  leak_detection     Boolean   @default(false)
 }
 
 model ElectricalSystem {
   id                   String        @id @default(auto()) @map("_id") @db.ObjectId
   truck                Truck?        @relation(fields: [truckId], references: [id])
   truckId              String?       @unique @db.ObjectId
-  battery_status       Battery
-  lights_functionality Functionality
-  fuse_status          FuseStatus
+  battery_status       Battery       @default(Good)
+  lights_functionality Functionality @default(Functional)
+  fuse_status          FuseStatus    @default(Intact)
 }
 
 model Tire {
@@ -183,17 +195,45 @@ enum BodyChassisCondition {
   NeedsRepair
 }
 
+enum FuelAmount {
+  Full
+  Half
+  Empty
+}
+
+//--------------------------------------------------------------------------------------
+
+enum typeMaintenance {
+  weekly
+  before_route
+  monthly
+}
+
+enum typeRole {
+  admin
+  driver
+}
+
 //---------------------------------- Fin de enums ---------------------------------------
 
+model Report {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  content       String
+  maintenance   Maintenance? @relation(fields: [maintenanceId], references: [id])
+  maintenanceId String?      @unique @db.ObjectId
+  cost          Float
+}
+
 model Maintenance {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
   description String
-  truck       Truck?   @relation(fields: [truckId], references: [id])
-  truckId     String?  @db.ObjectId
-  type        String
+  truck       Truck?          @relation(fields: [truckId], references: [id])
+  truckId     String?         @db.ObjectId
+  report      Report?
+  type        typeMaintenance
   Cost        Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 }
 
 model Route {

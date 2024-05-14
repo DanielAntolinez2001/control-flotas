@@ -49,26 +49,6 @@ export const getFuelById = async (req, res) => {
   }
 };
 
-// Método para actualizar un registro de combustible por su ID
-export const updateFuel = async (req, res) => {
-  const { id } = req.params;
-  const { amount, cost, efficiency } = req.body;
-
-  try {
-    const fuel = await prisma.fuel.update({
-      where: { id: id },
-      data: {
-        amount: amount, 
-        cost: cost,
-        efficiency: efficiency,
-      },
-    });
-    res.status(200).json({ fuel });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
 // Método para eliminar un registro de combustible por su ID
 export const deleteFuel = async (req, res) => {
   const { id } = req.params;
