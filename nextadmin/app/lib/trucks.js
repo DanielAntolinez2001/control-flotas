@@ -1,10 +1,14 @@
 import { PrismaClient } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/dist/server/api-utils";
 const prisma = new PrismaClient();
 
 // Método para crear un camión
-export const createTruck = async (req, res) => {
+export const createTruck = async (formData) => {
+  "use server"
+
   try {
-    const { brand, model, status, license_plate} = req.body;
+    const { brand, model, status, license_plate} = Object.fromEntries(formData);
     const avatar = req.file ? req.file.filename : null;
   
     const truck = await prisma.truck.create({
@@ -29,15 +33,19 @@ export const createTruck = async (req, res) => {
     const Tire3 = await prisma.tire.create({ data: {truckId: truck.id, brand: req.body.Tire[2].brand, model: req.body.Tire[2].model}, });
     const Tire4 = await prisma.tire.create({ data: {truckId: truck.id, brand: req.body.Tire[3].brand, model: req.body.Tire[3].model}, });
 
-    res.status(201).json({ truck, fluids_system: FluidsSystem_Truck, body_chassis: BodyChassis, electrical_system: ElectricalSystem, 
-      brakes: brakesTruck, fuel: fuelTruck, exhaust_system: ExhaustSystem, tire: [Tire1, Tire2, Tire3, Tire4]});
+    alert('Truck created successfully');
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    //throw new Error("Failed to create truck!")
+    alert(`Error: ${error.message}`);
   }
+
+  revalidatePath("/dashboard/trucks")
+  redirect("/dashboard/trucks")
 };
 
 // Método para obtener todos los camiones
 export const getTruck = async (req, res) => {
+  "use server"
   try {
     const trucks = await prisma.truck.findMany();
     res.status(200).json(trucks);
