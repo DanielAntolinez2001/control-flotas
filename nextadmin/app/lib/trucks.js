@@ -5,12 +5,13 @@ const prisma = new PrismaClient();
 
 // Método para crear un camión
 export const createTruck = async (formData) => {
-  "use server"
+  "use server";
 
   try {
-    const { brand, model, status, license_plate} = Object.fromEntries(formData);
+    const { brand, model, status, license_plate } =
+      Object.fromEntries(formData);
     const avatar = req.file ? req.file.filename : null;
-  
+
     const truck = await prisma.truck.create({
       data: {
         brand,
@@ -21,31 +22,65 @@ export const createTruck = async (formData) => {
       },
     });
 
-    const fuelTruck = await prisma.fuel.create({ data: {truckId: truck.id, }, });
-    const brakesTruck = await prisma.brakes.create({ data: {truckId: truck.id, }, });
-    const FluidsSystem_Truck = await prisma.fluidsSystem.create({ data: {truckId: truck.id, }, });
-    const BodyChassis = await prisma.bodyChassis.create({ data: {truckId: truck.id, }, });
-    const ExhaustSystem = await prisma.exhaustSystem.create({ data: {truckId: truck.id, }, });
-    const ElectricalSystem = await prisma.electricalSystem.create({ data: {truckId: truck.id, }, });
+    const fuelTruck = await prisma.fuel.create({ data: { truckId: truck.id } });
+    const brakesTruck = await prisma.brakes.create({
+      data: { truckId: truck.id },
+    });
+    const FluidsSystem_Truck = await prisma.fluidsSystem.create({
+      data: { truckId: truck.id },
+    });
+    const BodyChassis = await prisma.bodyChassis.create({
+      data: { truckId: truck.id },
+    });
+    const ExhaustSystem = await prisma.exhaustSystem.create({
+      data: { truckId: truck.id },
+    });
+    const ElectricalSystem = await prisma.electricalSystem.create({
+      data: { truckId: truck.id },
+    });
 
-    const Tire1 = await prisma.tire.create({ data: {truckId: truck.id, brand: req.body.Tire[0].brand, model: req.body.Tire[0].model }, });
-    const Tire2 = await prisma.tire.create({ data: {truckId: truck.id, brand: req.body.Tire[1].brand, model: req.body.Tire[1].model}, });
-    const Tire3 = await prisma.tire.create({ data: {truckId: truck.id, brand: req.body.Tire[2].brand, model: req.body.Tire[2].model}, });
-    const Tire4 = await prisma.tire.create({ data: {truckId: truck.id, brand: req.body.Tire[3].brand, model: req.body.Tire[3].model}, });
+    const Tire1 = await prisma.tire.create({
+      data: {
+        truckId: truck.id,
+        brand: req.body.Tire[0].brand,
+        model: req.body.Tire[0].model,
+      },
+    });
+    const Tire2 = await prisma.tire.create({
+      data: {
+        truckId: truck.id,
+        brand: req.body.Tire[1].brand,
+        model: req.body.Tire[1].model,
+      },
+    });
+    const Tire3 = await prisma.tire.create({
+      data: {
+        truckId: truck.id,
+        brand: req.body.Tire[2].brand,
+        model: req.body.Tire[2].model,
+      },
+    });
+    const Tire4 = await prisma.tire.create({
+      data: {
+        truckId: truck.id,
+        brand: req.body.Tire[3].brand,
+        model: req.body.Tire[3].model,
+      },
+    });
 
-    alert('Truck created successfully');
+    alert("Truck created successfully");
   } catch (error) {
     //throw new Error("Failed to create truck!")
     alert(`Error: ${error.message}`);
   }
 
-  revalidatePath("/dashboard/trucks")
-  redirect("/dashboard/trucks")
+  revalidatePath("/dashboard/trucks");
+  redirect("/dashboard/trucks");
 };
 
 // Método para obtener todos los camiones
-export const getTruck = async (req, res) => {
-  "use server"
+export const getTrucks = async (req, res) => {
+  "use server";
   try {
     const trucks = await prisma.truck.findMany();
     res.status(200).json(trucks);
@@ -91,7 +126,7 @@ export const getTruckByBrand = async (req, res) => {
 // Método para actualizar un camión por su ID
 export const updateTruck = async (req, res) => {
   const { id } = req.params;
-  const { brand, model, status, license_plate} = req.body;
+  const { brand, model, status, license_plate } = req.body;
   const avatar = req.file ? req.file.filename : null;
 
   try {
@@ -120,7 +155,7 @@ export const deleteTruck = async (req, res) => {
       include: {
         fuel: true,
         brakes: true,
-        fluids_system : true,
+        fluids_system: true,
         body_chassis: true,
         electrical_system: true,
         exhaust_system: true,
@@ -133,11 +168,22 @@ export const deleteTruck = async (req, res) => {
     }
 
     // Eliminar las relaciones dependientes
-    if (truck.brakes) await prisma.brakes.delete({ where: { id: truck.brakes.id } });
-    if (truck.fluidsSystem) await prisma.fluidsSystem.delete({ where: { id: truck.fluidsSystem.id } });
-    if (truck.bodyChassis) await prisma.bodyChassis.delete({ where: { id: truck.bodyChassis.id } });
-    if (truck.exhaustSystem) await prisma.exhaustSystem.delete({ where: { id: truck.exhaustSystem.id } });
-    if (truck.electricalSystem) await prisma.electricalSystem.delete({ where: { id: truck.electricalSystem.id } });
+    if (truck.brakes)
+      await prisma.brakes.delete({ where: { id: truck.brakes.id } });
+    if (truck.fluidsSystem)
+      await prisma.fluidsSystem.delete({
+        where: { id: truck.fluidsSystem.id },
+      });
+    if (truck.bodyChassis)
+      await prisma.bodyChassis.delete({ where: { id: truck.bodyChassis.id } });
+    if (truck.exhaustSystem)
+      await prisma.exhaustSystem.delete({
+        where: { id: truck.exhaustSystem.id },
+      });
+    if (truck.electricalSystem)
+      await prisma.electricalSystem.delete({
+        where: { id: truck.electricalSystem.id },
+      });
 
     // Eliminar los neumáticos asociados al camión
     if (truck.tire && truck.tire.length > 0) {
@@ -161,5 +207,3 @@ export const deleteTruck = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
-

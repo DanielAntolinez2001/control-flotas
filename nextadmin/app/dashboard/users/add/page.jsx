@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "@/app/ui/dashboard/trucks/addTruck/addTruck.module.css";
+import styles from "@/app/ui/dashboard/users/addUser/addUser.module.css";
 
 const AddTruckPage = () => {
   return (
