@@ -8,6 +8,7 @@ import {
   MdHelpCenter,
   MdSettings,
   MdLogout,
+  MdMap,
 } from "react-icons/md";
 import MenuLink from "./menuLink/menuLink";
 import Image from "next/image";
@@ -30,6 +31,11 @@ const menuItems = [
         title: "Trucks",
         path: "/dashboard/trucks",
         icon: <MdFireTruck />,
+      },
+      {
+        title: "Map",
+        path: "/dashboard/map",
+        icon: <MdMap />,
       },
     ],
   },

@@ -10,136 +10,128 @@ const AddTruckPage = () => {
           placeholder="License Plate"
           name="licensePlate"
           required
-          className={styles.input}
         />
-        <input
-          type="text"
-          placeholder="Brand"
-          name="brand"
-          required
-          className={styles.input}
-        />
-        <input
-          type="text"
-          placeholder="Model"
-          name="model"
-          required
-          className={styles.input}
-        />
+        <input type="text" placeholder="Brand" name="brand" required />
+        <input type="text" placeholder="Model" name="model" required />
         <div className={styles.section}>
           <h3 className={styles.title}>Tire Condition</h3>
-          <select name="cat" id="cat" className={styles.combobox}>
-            <option value="">Choose a tire condition</option>
-            <option value="">New</option>
-            <option value="">Worn out</option>
-            <option value="">Out</option>
+          <input type="text" placeholder="Brand" />
+          <input type="text" placeholder="Model" />
+          <select name="Tire Condition" id="tireCondition">
+            <option value="option">Choose a tire condition</option>
+            <option value="new">New</option>
+            <option value="worn_out">Worn out</option>
+            <option value="out">Out</option>
           </select>
         </div>
         <div className={styles.section}>
           <h3 className={styles.title}>Fuel Condition</h3>
-          <select name="cat" id="cat" className={styles.combobox}>
-            <option value="">Choose a fuel condition</option>
-            <option value="">Full</option>
-            <option value="">Half</option>
-            <option value="">Empty</option>
+          <select name="Fuel Condition" id="fuelCondition">
+            <option value="option">Choose a fuel condition</option>
+            <option value="full">Full</option>
+            <option value="half">Half</option>
+            <option value="empty">Empty</option>
           </select>
         </div>
         <div className={styles.section}>
           <h3 className={styles.title}>Brakes Condition</h3>
-          <select name="cat" id="cat" className={styles.combobox}>
-            <option value="">Choose a pads condition</option>
-            <option value="">Good</option>
-            <option value="">Fair</option>
-            <option value="">Worn</option>
-            <option value="">Replace</option>
+          <select name="Pads Condition" id="padsCondition">
+            <option value="option">Choose a pads condition</option>
+            <option value="good">Good</option>
+            <option value="fair">Fair</option>
+            <option value="worn">Worn</option>
+            <option value="replace">Replace</option>
           </select>
-          <select name="cat" id="cat" className={styles.combobox}>
-            <option value="">Choose a disk condition</option>
-            <option value="">Good</option>
-            <option value="">Fair</option>
-            <option value="">Worn</option>
-            <option value="">Replace</option>
+          <select name="Disk Condition" id="diskCondition">
+            <option value="option">Choose a disk condition</option>
+            <option value="good">Good</option>
+            <option value="fair">Fair</option>
+            <option value="worn">Worn</option>
+            <option value="replace">Replace</option>
           </select>
-          <select name="cat" id="cat" className={styles.combobox}>
-            <option value="">Choose a fluid level condition</option>
-            <option value="">Full</option>
-            <option value="">Low</option>
-            <option value="">Refill</option>
+          <select name="Fluid Condition" id="fluidCondition">
+            <option value="option">Choose a fluid level condition</option>
+            <option value="full">Full</option>
+            <option value="low">Low</option>
+            <option value="refill">Refill</option>
           </select>
         </div>
         <div className={styles.section}>
           <h3 className={styles.title}>Exhaust System Condition</h3>
-          <select name="cat" id="cat" className={styles.combobox}>
-            <option value="">Choose a pipes condition</option>
-            <option value="">Intact</option>
-            <option value="">Corroded</option>
-            <option value="">Leaking</option>
-            <option value="">Need Replacement</option>
+          <select name="Pipes Condition" id="pipesCondition">
+            <option value="option">Choose a pipes condition</option>
+            <option value="intact">Intact</option>
+            <option value="corroded">Corroded</option>
+            <option value="leaking">Leaking</option>
+            <option value="need_replacement">Need Replacement</option>
           </select>
-          <select name="" id="">
-            <option value="">Choose mufflers condition</option>
-            <option value="">Intact</option>
-            <option value="">Corroded</option>
-            <option value="">Leaking</option>
-            <option value="">Need Replacement</option>
+          <select name="Mufflers Condition" id="mufflersCondition">
+            <option value="option">Choose mufflers condition</option>
+            <option value="intact">Intact</option>
+            <option value="corroded">Corroded</option>
+            <option value="leaking">Leaking</option>
+            <option value="need_replacement">Need Replacement</option>
           </select>
         </div>
         <div className={styles.section}>
           <h3 className={styles.title}>Fluid Level Condition</h3>
-          <select name="cat" id="cat">
-            <option value="">Full</option>
-            <option value="">Low</option>
-            <option value="">Refill</option>
+          <select name="Fluid Level Condition" id="fluidLevelCondition">
+            <option value="full">Full</option>
+            <option value="low">Low</option>
+            <option value="refill">Refill</option>
           </select>
         </div>
         <div className={styles.section}>
           <h3 className={styles.title}>Body Chasis Condition</h3>
-          <select name="" id="">
-            <option value="">Choose a chasis condition</option>
-            <option value="">Good</option>
-            <option value="">Damaged</option>
-            <option value="">Rusty</option>
-            <option value="">Need repair</option>
+          <select name="Chasis Condition" id="chasisCondition">
+            <option value="option">Choose a chasis condition</option>
+            <option value="good">Good</option>
+            <option value="damaged">Damaged</option>
+            <option value="rusty">Rusty</option>
+            <option value="need_repair">Need repair</option>
           </select>
-          <select name="" id="">
-            <option value="">Choose a body condition</option>
-            <option value="">Good</option>
-            <option value="">Damaged</option>
-            <option value="">Rusty</option>
-            <option value="">Need repair</option>
+          <select name="Body Condition" id="bodyCondition">
+            <option value="option">Choose a body condition</option>
+            <option value="good">Good</option>
+            <option value="damaged">Damaged</option>
+            <option value="rusty">Rusty</option>
+            <option value="need_repair">Need repair</option>
           </select>
-          <select name="" id="">
-            <option value="">Choose a seatbelt condition</option>
-            <option value="">Functional</option>
-            <option value="">Not Functional</option>
-            <option value="">Partially Functional</option>
-            <option value="">Not Applicable</option>
+          <select name="Seatbelt Condition" id="seatbeltCondition">
+            <option value="option">Choose a seatbelt condition</option>
+            <option value="functional">Functional</option>
+            <option value="not_functional">Not Functional</option>
+            <option value="partially_functional">Partially Functional</option>
+            <option value="not_applicable">Not Applicable</option>
           </select>
         </div>
         <div className={styles.section}>
           <h3 className={styles.title}>Electric System Condition</h3>
-          <select name="" id="">
-            <option value="">Choose a battery status</option>
-            <option value="">Good</option>
-            <option value="">Weak</option>
-            <option value="">Dead</option>
-            <option value="">Need Replacement</option>
+          <select name="Battery Status" id="batteryStatus">
+            <option value="option">Choose a battery status</option>
+            <option value="good">Good</option>
+            <option value="weak">Weak</option>
+            <option value="dead">Dead</option>
+            <option value="need_replacement">Need Replacement</option>
           </select>
-          <select name="" id="">
-            <option value="">Choose a lights functionality</option>
-            <option value="">Functional</option>
-            <option value="">Not Functional</option>
-            <option value="">Partially Functional</option>
-            <option value="">Not Applicable</option>
+          <select name="Lights Condition" id="lightsCondition">
+            <option value="option">Choose a lights functionality</option>
+            <option value="functional">Functional</option>
+            <option value="not_functional">Not Functional</option>
+            <option value="partially_functional">Partially Functional</option>
+            <option value="not_applicable">Not Applicable</option>
           </select>
-          <select name="" id="">
-            <option value="">Choose a fuse status</option>
-            <option value="">Intact</option>
-            <option value="">Blown</option>
-            <option value="">Need Replacement</option>
-            <option value="">Not Applicable</option>
+          <select name="Fuse Status" id="fuseStatus">
+            <option value="option">Choose a fuse status</option>
+            <option value="intact">Intact</option>
+            <option value="blown">Blown</option>
+            <option value="need_replacement">Need Replacement</option>
+            <option value="not_applicable">Not Applicable</option>
           </select>
         </div>
+        <button type="submit" className={styles.button}>
+          Submit
+        </button>
       </form>
     </div>
   );

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Search from "@/app/ui/dashboard/search/search";
 import Link from "next/link";
 import Pagination from "@/app/ui/dashboard/pagination/pagination";
+import { getTrucks } from "@/app/lib/trucks";
 
 const Trucks = () => {
   return (
@@ -17,7 +18,7 @@ const Trucks = () => {
       <table className={styles.table}>
         <thead>
           <tr>
-            <td>License Plate</td>
+            <td>AAA 123</td>
             <td>Brand</td>
             <td>Model</td>
             <td>Status</td>
