@@ -3,55 +3,44 @@
   padding: 20px;
   border-radius: 10px;
   margin-top: 20px;
-  font-size: bold;
-  color: var(--text);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 10px;
+  justify-content: space-between;
 }
 
-.input {
+.form input,
+.form select {
+  padding: 30px;
+  background-color: transparent;
+  color: var(--text);
+  border: 2px solid #2e374a;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.form input,
+.form select {
+  width: 45%;
+}
+
+.button {
+  width: 100%;
+  padding: 30px;
+  background-color: teal;
+  color: var(--text);
   border: none;
-  background-color: var(--bg);
-  color: var(--textSoft);
-  font-size: 16px;
-  padding: 10px 5px;
-  margin-top: 10px;
-  margin-right: 10px;
   border-radius: 5px;
 }
 
 .section {
-  display: flex;
-  display: table-column;
-  gap: 10px;
-}
-
-.combobox {
-  border: none;
-  background-color: var(--bg);
-  color: var(--textSoft);
-  font-size: 16px;
-  padding: 10px 5px;
-  margin-top: 10px;
-  margin-right: 10px;
-  border-radius: 5px;
+  margin-top: 20px;
+  justify-content: space-around;
 }
 
 .title {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.button {
-  padding: 10px;
-  background-color: #5d57c9;
-  color: var(--text);
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
 }
