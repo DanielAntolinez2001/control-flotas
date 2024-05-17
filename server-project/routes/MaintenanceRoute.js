@@ -9,15 +9,15 @@ router.post("/", MaintenanceController.createMaintenance);
 router.get("/", MaintenanceController.getMaintenances);
 
 //* 3. Fetches a specific truck by its ID.
-router.get("/:id", MaintenanceController.getMaintenanceByTruck);
+router.get("/:id", MaintenanceController.getMaintenanceById);
 
 //* 4. Fetches trucks by its brand.
-router.get("/:brand", MaintenanceController.getTruckByBrand);
+router.get("/:brand", MaintenanceController.getMaintenanceByTruck);
 
 //* 5. Deletes a truck by its ID.
-router.delete("/:id", MaintenanceController.deleteTruck);
+router.delete("/:id", MaintenanceController.deleteMaintenance);
 
 //* 6. Updates a truck by its ID.
-router.patch("/:id", MaintenanceController.updateTruck);
+router.patch("/:id", MaintenanceController.updateMaintenance);
 
 export default router
