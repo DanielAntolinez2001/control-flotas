@@ -66,7 +66,7 @@ model Truck {
   tire              Tire? //Neumáticos
   Maintenance       Maintenance[]
   route             Route[]
-  change_neumatics  DateTime
+  change_neumatics  DateTime          @default(now())
   createdAt         DateTime          @default(now())
 }
 

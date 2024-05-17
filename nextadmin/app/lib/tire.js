@@ -71,27 +71,43 @@ export const updateTire = async (req, res) => {
   }
 };
 
-export const getTruckData = async () => {
-    try {
-      // Aquí realizas la lógica para obtener la información del camión desde tu base de datos
-      const truckData = await prisma.truck.findUnique({
-        where: { id: truckId }, // Suponiendo que tienes el ID del camión disponible
-      });
-      return truckData;
-    } catch (error) {
-      console.error("Error fetching truck data:", error);
-      throw new Error("Failed to fetch truck data");
-    }
-  };
+export const getTruckData = async (truckId) => {
+  try {
+    const truckData = await prisma.truck.findUnique({
+      where: { id: truckId }, // Suponiendo que tienes el ID del camión disponible
+    });
+    return truckData;
+  } catch (error) {
+    console.error("Error fetching truck data:", error);
+    throw new Error("Failed to fetch truck data");
+  }
+};
 
 // Función para determinar si es hora de cambiar los neumáticos
-export const isTimeToChangeTires = async(lastChangedDate, tireLifetime) => {
-    const today = new Date();
-    const lastChanged = new Date(lastChangedDate);
-    const timeDifference = today.getTime() - lastChanged.getTime();
-    const daysPassed = Math.floor(timeDifference / (1000 * 3600 * 24));
-  
-    return daysPassed >= tireLifetime;
+export const isTimeToChangeTires = async (id) => {
+  try {
+    const tire = await prisma.tire.findFirst({
+      where: { id: id },
+    });
+
+    if (!tire) {
+      alert('Tire not found');
+    }
+
+    const truck = await getTruckData(tire.truckId);
+
+    // Genera un valor aleatorio entre 10,000 y 50,000
+    const recommendedChangeDistance = Math.floor(Math.random() * (50000 - 10000 + 1)) + 10000; 
+
+    return {
+      shouldChangeTires: tire.mileage >= recommendedChangeDistance,
+      descripction: `Truck ${truck.id} has already traveled ${tire.mileage} mileage`
+    };
+
+  } catch (error) {
+    console.error("Error fetching truck data:", error);
+    throw new Error("Failed to fetch truck data");
+  }
 };
 
 // Método para eliminar un registro de neumáticos por su ID
