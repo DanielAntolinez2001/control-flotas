@@ -23,12 +23,12 @@ const menuItems = [
       },
       {
         title: "Users",
-        path: "dashboard/users",
+        path: "/dashboard/users",
         icon: <MdOutlineSupervisedUserCircle />,
       },
       {
         title: "Trucks",
-        path: "dashboard/trucks",
+        path: "/dashboard/trucks",
         icon: <MdFireTruck />,
       },
     ],
@@ -38,7 +38,7 @@ const menuItems = [
     list: [
       {
         title: "Reports",
-        path: "dashboard/reports",
+        path: "/dashboard/reports",
         icon: <MdReport />,
       },
     ],
