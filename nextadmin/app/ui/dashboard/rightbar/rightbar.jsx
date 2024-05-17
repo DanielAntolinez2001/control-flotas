@@ -11,11 +11,11 @@ const RightBar = () => {
           <Image src="/astronaut.png" alt="" fill className={styles.bg} />
         </div>
         <div className={styles.text}>
-          <span className={styles.notification}>Available Now</span>
+          <span className={styles.notification}>Maintenance Alert</span>
           <h3 className={styles.title}>
-            How to use the nre version of the admin dashboard
+            It's time to change your tires!
           </h3>
-          <span className={styles.subtitle}>Takes 4 minutes to learn</span>
+          <span className={styles.subtitle}>Urgent Notification</span>
           <p className={styles.description}>
             Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolor
             recusandae distinctio nulla, rem reprehenderit necessitatibus
@@ -24,29 +24,7 @@ const RightBar = () => {
           </p>
           <button className={styles.buttom}>
             <MdPlayCircleFilled />
-            Watch Dogs
-          </button>
-        </div>
-      </div>
-      <div className={styles.item}>
-        <div className={styles.bgContainer}>
-          <Image src="/astronaut.png" alt="" fill className={styles.bg} />
-        </div>
-        <div className={styles.text}>
-          <span className={styles.notification}>Available Now</span>
-          <h3 className={styles.title}>
-            How to use the nre version of the admin dashboard
-          </h3>
-          <span className={styles.subtitle}>Takes 4 minutes to learn</span>
-          <p className={styles.description}>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolor
-            recusandae distinctio nulla, rem reprehenderit necessitatibus
-            blanditiis vel? Aliquid odit, in hic, eius vel autem laborum,
-            nostrum adipisci esse nam cupiditate!
-          </p>
-          <button className={styles.buttom}>
-            <MdPlayCircleFilled />
-            Watch
+            Watch Truck
           </button>
         </div>
       </div>

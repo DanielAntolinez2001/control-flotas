@@ -132,7 +132,7 @@ model Tire {
   truck   Truck?  @relation(fields: [truckId], references: [id])
   truckId String? @db.ObjectId
   brand   String
-  status  String  @default("Ok")
+  status  StatusTire  @default(New)
   model   Int
   mileage Int     @default(0)
 }
@@ -199,6 +199,12 @@ enum FuelAmount {
   Full
   Half
   Empty
+}
+
+enum StatusTire {
+  New
+  WornOut
+  Change
 }
 
 //--------------------------------------------------------------------------------------
