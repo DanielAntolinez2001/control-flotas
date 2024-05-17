@@ -63,7 +63,7 @@ model Truck {
   brakes            Brakes? //Sistemma de frenos 
   fuel              Fuel[] //Historial de combustible
   exhaust_system    ExhaustSystem? //Sistema de escape
-  tire              Tire[] //Neumáticos
+  tire              Tire? //Neumáticos
   Maintenance       Maintenance[]
   route             Route[]
   change_neumatics  DateTime
@@ -130,7 +130,7 @@ model ElectricalSystem {
 model Tire {
   id      String  @id @default(auto()) @map("_id") @db.ObjectId
   truck   Truck?  @relation(fields: [truckId], references: [id])
-  truckId String? @db.ObjectId
+  truckId String? @unique @db.ObjectId
   brand   String
   status  StatusTire  @default(New)
   model   Int
