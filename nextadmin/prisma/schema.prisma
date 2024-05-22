@@ -128,13 +128,13 @@ model ElectricalSystem {
 }
 
 model Tire {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  truck   Truck?  @relation(fields: [truckId], references: [id])
-  truckId String? @unique @db.ObjectId
+  id      String     @id @default(auto()) @map("_id") @db.ObjectId
+  truck   Truck?     @relation(fields: [truckId], references: [id])
+  truckId String?    @unique @db.ObjectId
   brand   String
-  status  StatusTire  @default(New)
+  status  StatusTire @default(New)
   model   Int
-  mileage Int     @default(0)
+  mileage Int        @default(0)
 }
 
 //---------------------------------------------------------------------------------------
