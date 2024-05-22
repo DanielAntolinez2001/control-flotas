@@ -1,6 +1,15 @@
 "use client";
 import React, { useState, useRef } from "react";
-import { LoadScript, GoogleMap, DirectionsService, DirectionsRenderer, Marker, Autocomplete } from "@react-google-maps/api";
+import styles from "./map.module.css";
+
+import {
+  LoadScript,
+  GoogleMap,
+  DirectionsService,
+  DirectionsRenderer,
+  Marker,
+  Autocomplete,
+} from "@react-google-maps/api";
 
 const libraries = ["places"];
 const mapContainerStyle = {
@@ -47,9 +56,12 @@ const Mapa = () => {
   };
 
   return (
-    <div>
-      <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY} libraries={libraries}>
-        <div style={{ marginBottom: '10px' }}>
+    <div className={styles.container}>
+      <LoadScript
+        googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+        libraries={libraries}
+      >
+        <div style={{ marginBottom: "10px" }}>
           <Autocomplete
             onLoad={(autocomplete) => {
               originRef.current = autocomplete;
@@ -59,18 +71,7 @@ const Mapa = () => {
             <input
               type="text"
               placeholder="Enter origin address"
-              style={{
-                boxSizing: 'border-box',
-                border: '1px solid transparent',
-                width: '240px',
-                height: '32px',
-                padding: '0 12px',
-                borderRadius: '3px',
-                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
-                fontSize: '14px',
-                outline: 'none',
-                textOverflow: 'ellipses',
-              }}
+              className={styles.input}
             />
           </Autocomplete>
           <Autocomplete
@@ -82,21 +83,10 @@ const Mapa = () => {
             <input
               type="text"
               placeholder="Enter destination address"
-              style={{
-                boxSizing: 'border-box',
-                border: '1px solid transparent',
-                width: '240px',
-                height: '32px',
-                padding: '0 12px',
-                borderRadius: '3px',
-                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
-                fontSize: '14px',
-                outline: 'none',
-                textOverflow: 'ellipses',
-              }}
+              className={styles.input}
             />
           </Autocomplete>
-          <button onClick={() => {}}>
+          <button onClick={() => {}} className={styles.button}>
             Search
           </button>
         </div>
@@ -105,13 +95,14 @@ const Mapa = () => {
           zoom={12}
           center={manizalesCoordinates} // Centro en Manizales
           onLoad={handleMapLoad}
+          className={styles.map}
         >
           {origin && destination && (
             <DirectionsService
               options={{
                 destination: destination,
                 origin: origin,
-                travelMode: 'DRIVING'
+                travelMode: "DRIVING",
               }}
               callback={handleDirectionsChanged}
             />

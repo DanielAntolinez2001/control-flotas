@@ -19,6 +19,7 @@ const AddUserPage = () => {
           <option value="admin">Admintrator</option>
           <option value="driver">Driver</option>
         </select>
+        
         <button type="submit" className={styles.button}>
           Submit
         </button>

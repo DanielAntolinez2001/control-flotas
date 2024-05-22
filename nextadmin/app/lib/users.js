@@ -1,38 +1,9 @@
 "use server"
 
-import * as addressController from "./AddressController.js";
+import * as addressController from "./address.js";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import jwt from "jsonwebtoken";
-
-export const createHardcodedUser = async (req, res) => {
-  try {
-    // Verifica si ya existe un usuario con el nombre de usuario "admin"
-    const existingUser = await prisma.user.findFirst({
-      where: { name: process.env.USER_NAME },
-    });
-
-    // Si no existe, crea un nuevo usuario
-    if (!existingUser) 
-    {
-      await prisma.user.create({
-        data: {
-          name: process.env.USER_NAME,
-          role: "admin",
-          lastname: process.env.USER_LASTNAME,
-          email: process.env.USER_EMAIL,
-          password: process.env.USER_PASSWORD,
-        },
-      });
-
-      console.log('Usuario creado con éxito.');
-    } else {
-      console.log(`El usuario ${process.env.USER_NAME} ya existe en la base de datos.`);
-    }
-  } catch (error) {
-    console.error('Error al crear el usuario:', error);
-  }
-};
 
 //Método para crear usuario
 export const createUser = async (req, res) => {
@@ -103,12 +74,16 @@ export const logout = async (req, res) => {
 };
 
 // Método para obtener todos los usuarios
-export const getUser = async (req, res) => {
+export const getUsers = async () => {
   try {
-    const users = await prisma.user.findMany()
-    res.status(200).json(users);
+    const users = await prisma.user.findMany({
+      include: {address: true},
+    });
+
+    return users;
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 };
   
@@ -130,19 +105,21 @@ export const getUSerById = async (req, res) => {
 };
   
 // Método para obtener usuarios por su nombre
-export const getUSerByName = async (req, res) => {
-    const { name } = req.params
+export const getUSerByName = async (req) => {
+    const name = req;
 
     try {
         const users = await prisma.user.findMany({
             where: { name: name },
         })
         if (!users) {
-            return res.status(404).json({ message: "Usuarios no encontrados" });
+          console.log("No se encontraron usuarios con ese nombre")
+          return null;
         }
-        res.status(200).json(users);
+        return users;
     } catch (error) {
-        res.status(500).json({ error: error.message });
+      console.error(`Error: ${error.message}`);
+      throw error;
     }
 };
 

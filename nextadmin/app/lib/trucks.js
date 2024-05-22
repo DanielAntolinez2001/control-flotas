@@ -62,7 +62,8 @@ export const getTrucks = async () => {
     const trucks = await prisma.truck.findMany();
     return trucks;
   } catch (error) {
-    alert(`Error: ${error.message}`);
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 };
 
@@ -85,19 +86,23 @@ export const getTruckById = async (id) => {
 };
 
 // Método para obtener camiones por su marca
-export const getTruckByBrand = async (req, res) => {
-  const { brand } = req.params;
+export const getTruckByBrand = async (req) => {
+  console.log(req)
+  const brand = req;
 
   try {
     const truck = await prisma.truck.findMany({
       where: { brand: brand },
     });
     if (!truck) {
-      return res.status(404).json({ message: "Camión no encontrado" });
+      console.error(`Camión no encontrado`);
+      return null;
     }
-    res.status(200).json(truck);
+
+    return truck;
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 };
 

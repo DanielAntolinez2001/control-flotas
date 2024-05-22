@@ -1,7 +1,11 @@
 import React from "react";
 import styles from "@/app/ui/dashboard/trucks/addTruck/addTruck.module.css";
+import { createTruck } from "@/app/lib/trucks";
 
-const AddTruckPage = () => {
+const AddTruckPage = async () => {
+  const trucks = await createTruck();
+  console.log (trucks);
+  
   return (
     <div className={styles.container}>
       <form action="" className={styles.form}>
