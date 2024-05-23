@@ -6,17 +6,17 @@ import Image from "next/image";
 import Pagination from "@/app/ui/dashboard/pagination/pagination";
 import { getUSerByName, getUsers } from "@/app/lib/users";
 
-const Users = async ({searchParams}) => {
+const Users = async ({ searchParams }) => {
   const q = searchParams?.q || null;
   var users = null;
 
-  if (q){
+  if (q) {
     users = await getUSerByName(q);
-  }else{
+  } else {
     users = await getUsers();
   }
 
-  console.log (users);
+  console.log(users);
 
   return (
     <div className={styles.container}>
@@ -40,8 +40,8 @@ const Users = async ({searchParams}) => {
           </tr>
         </thead>
         <tbody>
-          {users.map(user=>(
-            <tr key = {user.id}>
+          {users.map((user) => (
+            <tr key={user.id}>
               <td>
                 <div className={styles.user}>
                   <Image
@@ -58,11 +58,14 @@ const Users = async ({searchParams}) => {
               <td>{user.email}</td>
               <td>{user.role}</td>
               <td>{user.active}</td>
-              <td>{`${user.address.street}, ${user.address.city}, ${user.address.state} ${user.address.zip}` || null}</td>
-              <td>{user.createdAt.toString().slice(4,16)}</td>
+              <td>
+                {`${user.address.street}, ${user.address.city}, ${user.address.state} ${user.address.zip}` ||
+                  null}
+              </td>
+              <td>{user.createdAt.toString().slice(4, 16)}</td>
               <td>
                 <div className={styles.buttoms}>
-                  <Link href="/">
+                  <Link href={`/dashboard/users/${user.id}`}>
                     <button className={`${styles.buttom} ${styles.view}`}>
                       View
                     </button>

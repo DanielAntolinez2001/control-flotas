@@ -87,7 +87,7 @@ export const getTruckById = async (id) => {
 
 // Método para obtener camiones por su marca
 export const getTruckByBrand = async (req) => {
-  console.log(req)
+  console.log(req);
   const brand = req;
 
   try {

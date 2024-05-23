@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { isTimeToChangeTires } from ".../lib/tire";
-import RightBar from "../dashboard/rightbar/rightbar";
+import RightBar from "../rightbar/rightbar";
 
 const TireMaintenanceAlert = ({ tireId }) => {
   const [showAlert, setShowAlert] = useState(false);
@@ -20,11 +20,7 @@ const TireMaintenanceAlert = ({ tireId }) => {
     checkTireMaintenance();
   }, [tireId]);
 
-  return (
-    <div>
-      {showAlert && <RightBar />}
-    </div>
-  );
+  return <div>{showAlert && <RightBar />}</div>;
 };
 
 export default TireMaintenanceAlert;

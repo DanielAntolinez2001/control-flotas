@@ -14,12 +14,17 @@ const AddUserPage = () => {
           id="password"
           placeholder="Password"
         />
-        <select name="Role" id="role">
-          <option value="option">Choose a role</option>
-          <option value="admin">Admintrator</option>
-          <option value="driver">Driver</option>
+        <select name="isAdmin" id="isAdmin">
+          <option value={false}>Is Admin?</option>
+          <option value={true}>Yes</option>
+          <option value={false}>No</option>
         </select>
-        
+        <select name="isActive" id="isActive">
+          <option value={true}>Is Active?</option>
+          <option value={true}>Yes</option>
+          <option value={false}>No</option>
+        </select>
+        <textarea name="address" id="address" placeholder="Address"></textarea>
         <button type="submit" className={styles.button}>
           Submit
         </button>

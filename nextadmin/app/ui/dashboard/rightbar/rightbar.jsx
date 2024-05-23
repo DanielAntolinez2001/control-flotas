@@ -12,9 +12,7 @@ const RightBar = () => {
         </div>
         <div className={styles.text}>
           <span className={styles.notification}>Maintenance Alert</span>
-          <h3 className={styles.title}>
-            It's time to change your tires!
-          </h3>
+          <h3 className={styles.title}>It's time to change your tires!</h3>
           <span className={styles.subtitle}>Urgent Notification</span>
           <p className={styles.description}>
             Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolor
