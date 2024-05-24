@@ -1,10 +1,11 @@
 import React from "react";
+import { createUser } from "@/app/lib/users";
 import styles from "@/app/ui/dashboard/users/addUser/addUser.module.css";
 
 const AddUserPage = () => {
   return (
     <div className={styles.container}>
-      <form action="" className={styles.form}>
+      <form action={createUser} className={styles.form}>
         <input type="text" placeholder="Name" />
         <input type="text" placeholder="Lastname" />
         <input type="email" placeholder="Email" />
