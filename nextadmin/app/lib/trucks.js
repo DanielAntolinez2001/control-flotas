@@ -107,12 +107,12 @@ export const getTruckByBrand = async (req) => {
 };
 
 // Método para actualizar un camión por su ID
-export const updateTruck = async (req, res) => {
-  const { id } = req.params;
-  const { brand, model, status, license_plate } = req.body;
+export const updateTruck = async (formData) => {
+  const { id, brand, model, status, license_plate } = Object.fromEntries(formData);
   const avatar = req.file ? req.file.filename : null;
 
   try {
+    
     const truck = await prisma.truck.update({
       where: { id: id },
       data: {
@@ -123,9 +123,16 @@ export const updateTruck = async (req, res) => {
         avatar,
       },
     });
-    res.status(200).json({ truck });
+
+    Object.keys(truck).forEach(
+      (key) => 
+        (updateFields[key] === "" || undefined) && delete updateFields[key]
+    );
+
+    return truck;
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 };
 
