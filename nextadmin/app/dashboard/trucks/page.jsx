@@ -4,19 +4,19 @@ import Image from "next/image";
 import Search from "@/app/ui/dashboard/search/search";
 import Link from "next/link";
 import Pagination from "@/app/ui/dashboard/pagination/pagination";
-import { getTrucks, getTruckByBrand} from "@/app/lib/trucks";
+import { getTrucks, getTruckByBrand } from "@/app/lib/trucks";
 
-const Trucks = async ({searchParams}) => {
+const Trucks = async ({ searchParams }) => {
   const q = searchParams?.q || null;
   var trucks = null;
 
-  if (q){
+  if (q) {
     trucks = await getTruckByBrand(q);
-  }else{
+  } else {
     trucks = await getTrucks();
   }
 
-  console.log (trucks);
+  console.log(trucks);
 
   return (
     <div className={styles.container}>
@@ -29,7 +29,7 @@ const Trucks = async ({searchParams}) => {
       <table className={styles.table}>
         <thead>
           <tr>
-            <td>AAA 123</td>
+            <td>License Plate</td>
             <td>Brand</td>
             <td>Model</td>
             <td>Status</td>
@@ -39,13 +39,13 @@ const Trucks = async ({searchParams}) => {
           </tr>
         </thead>
         <tbody>
-          {trucks.map(truck=>(
+          {trucks.map((truck) => (
             <tr key={truck.id}>
               <td>
                 <div className={styles.truck}>
                   <Image
                     src={truck.avatar || "/noavatar.png"}
-                    alt=""
+                    alt="avatar"
                     width={40}
                     height={40}
                     className={styles.userImage}
@@ -60,7 +60,7 @@ const Trucks = async ({searchParams}) => {
               <td>{new Date(truck.createdAt).toLocaleDateString()}</td>
               <td>
                 <div className={styles.buttoms}>
-                  <Link href="/">
+                  <Link href={`/dashboard/trucks/${truck.id}`}>
                     <button className={`${styles.buttom} ${styles.view}`}>
                       View
                     </button>

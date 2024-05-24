@@ -3,20 +3,23 @@ import styles from "@/app/ui/dashboard/trucks/addTruck/addTruck.module.css";
 import { createTruck } from "@/app/lib/trucks";
 
 const AddTruckPage = async () => {
-  const trucks = await createTruck();
-  console.log (trucks);
-  
+  //const trucks = await createTruck();
+  //console.log(trucks);
+
   return (
     <div className={styles.container}>
       <form action="" className={styles.form}>
-        <input
-          type="text"
-          placeholder="License Plate"
-          name="licensePlate"
-          required
-        />
-        <input type="text" placeholder="Brand" name="brand" required />
-        <input type="text" placeholder="Model" name="model" required />
+        <div className={styles.section}>
+          <h3 className={styles.title}>Truck</h3>
+          <input
+            type="text"
+            placeholder="License Plate"
+            name="licensePlate"
+            required
+          />
+          <input type="text" placeholder="Brand" name="brand" required />
+          <input type="text" placeholder="Model" name="model" required />
+        </div>
         <div className={styles.section}>
           <h3 className={styles.title}>Tire Condition</h3>
           <input type="text" placeholder="Brand" />
