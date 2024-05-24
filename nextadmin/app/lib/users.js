@@ -6,10 +6,10 @@ const prisma = new PrismaClient();
 import jwt from "jsonwebtoken";
 
 //Método para crear usuario
-export const createUser = async (req, res) => {
+export const createUser = async (formData) => {
   try{
-    const { name, lastname, email, password, role, active, address} = req.body;
-    const avatar = req.file ? req.file.filename : null;
+    const { name, lastname, email, password, role, active} = Object.fromEntries(formData);
+    const avatar = Object.fromEntries(formData).file ? req.file.filename : null;
     console.log(avatar);  
 
     // Luego, creamos la dirección asociada al usuario
@@ -23,15 +23,15 @@ export const createUser = async (req, res) => {
             password,           
             role,
             active,      
-            avatar,
-            addressId: userAddress.id, // Asociamos la dirección al usuario recién creado 
+            avatar, // Asociamos la dirección al usuario recién creado 
         },
     });
 
-    res.status(201).json({ user, address: userAddress });
+    return user;
   }catch (error)
   {
-    res.status(400).json({ message: error.message });
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 }; 
 
@@ -132,8 +132,7 @@ export const updateUser = async (req, res) => {
 
     const updateData = {
         name,
-        lastname,           
-        email,   
+        lastname,              
         password,           
         role,
         active, 
