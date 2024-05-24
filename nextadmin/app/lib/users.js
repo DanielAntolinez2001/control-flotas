@@ -32,15 +32,15 @@ export const createUser = async (formData) => {
         },
     });
 
+    revalidatePath("/dashboard/users");
+    redirect("/dashboard/users");
+
     return user;
   }catch (error)
   {
     console.error(`Error: ${error.message}`);
     throw error;
   }
-
-  revalidatePath("/dashboard/users");
-  redirect("/dashboard/users");
 }; 
 
 export const login = async (req, res) => {
@@ -155,13 +155,14 @@ export const deleteUser = async (formData) => {
 
     try {
         const deleteUser1 = await prisma.user.delete({ where: { id: id},})
-        deleteUser1.address? await addressController.deleteAddress(deleteUser1.addressId): null; 
+        if (deleteUser1.address)
+          await addressController.deleteAddress(deleteUser1.addressId)
+
+        revalidatePath("/dashboard/users");
+        redirect("/dashboard/users");
     } catch (error) {
         console.error(`Error: ${error.message}`);
         throw error;
     }
-
-    revalidatePath("/dashboard/users");
-    redirect("/dashboard/users");
 };
   

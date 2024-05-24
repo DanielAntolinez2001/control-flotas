@@ -21,8 +21,8 @@ const AddTruckPage = async () => {
         </div>
         <div className={styles.section}>
           <h3 className={styles.title}>Tire Condition</h3>
-          <input type="text" id="Tire[brand]" placeholder="Brand" />
-          <input type="text" id="Tire[model]" placeholder="Model" />
+          <input type="text" id="Tire[brand]" name="Tire[brand]" placeholder="Brand" />
+          <input type="text" id="Tire[model]" name="Tire[model]" placeholder="Model" />
         </div>
         <button type="submit" className={styles.button}>
           Submit

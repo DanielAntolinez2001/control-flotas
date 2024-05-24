@@ -8,7 +8,11 @@ const prisma = new PrismaClient();
 // Método para crear un camión
 export const createTruck = async (formData) => {
   try {
-    const { brand, model, status, license_plate, tire:tireData } = Object.fromEntries(formData);
+    const formEntries = Object.fromEntries(formData);
+    const { brand, model, status, license_plate} = Object.fromEntries(formData);
+    const tireBrand = formEntries["Tire[brand]"]
+    const tireModel = formEntries["Tire[model]"]
+
     const avatar = formData.get('file') ? formData.get('file').name : null;
     console.log(avatar)
 
@@ -16,7 +20,7 @@ export const createTruck = async (formData) => {
     const modelInt = parseInt(model, 10);
 
     if (isNaN(modelInt)) {
-      return res.status(400).json({ error: "Model must be a valid number" });
+      console.error("Model must be a valid number" );
     }
 
     const truck = await prisma.truck.create({
@@ -47,36 +51,36 @@ export const createTruck = async (formData) => {
     });
 
     // Create tire related to the truck
-    console.log('Form Data:', formEntries);
-    console.log('Tire Data:', { tireBrand, tireModel });
 
-    if (tireData) {
-      const tireBrand = tireData['brand'];
-      const tireModel = tireData['model'];
+    console.log('Tire Data:', {tireBrand, tireModel});
 
-      if (tireBrand && tireModel) {
-        await prisma.tire.create({
-          data: {
-            truckId: truck.id,
-            brand: tireBrand,
-            model: tireModel,
-          },
-        });
-      }else{
-        console.error(`Error: Faltan datos de neumaticos`);
-        throw error;
+    if (tireBrand && tireModel) {
+
+      const modelTInt = parseInt(tireModel, 10);
+      if (isNaN(modelInt)) {
+        console.error("Tire's model must be a valid number" );
       }
-    
+
+      await prisma.tire.create({
+        data: {
+          truckId: truck.id,
+          brand: tireBrand,
+          model: modelTInt,
+        },
+      });
+    }else{
+      console.error(`Error: Faltan datos de neumaticos`);
+      throw error;
     }
+
+    revalidatePath("/dashboard/trucks");
+    redirect("/dashboard/trucks");
 
     return truck;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
   }
-
-  revalidatePath("/dashboard/trucks");
-  redirect("/dashboard/trucks");
 };
 
 // Método para obtener todos los camiones
@@ -132,7 +136,8 @@ export const getTruckByBrand = async (req) => {
 // Método para actualizar un camión por su ID
 export const updateTruck = async (formData) => {
   const { id, brand, model, status, license_plate } = Object.fromEntries(formData);
-  const avatar = req.file ? req.file.filename : null;
+  const avatar = formData.get('file') ? formData.get('file').name : null;
+  console.log(avatar)
 
   try {
     
@@ -172,6 +177,7 @@ export const deleteTruck = async (formData) => {
         body_chassis: true,
         electrical_system: true,
         exhaust_system: true,
+        tire: true,
       },
     });
 
