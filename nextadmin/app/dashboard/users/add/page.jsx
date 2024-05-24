@@ -6,21 +6,21 @@ const AddUserPage = () => {
   return (
     <div className={styles.container}>
       <form action={createUser} className={styles.form}>
-        <input type="text" placeholder="Name" />
-        <input type="text" placeholder="Lastname" />
-        <input type="email" placeholder="Email" />
+        <input type="name" name="name" id="name" placeholder="Name" />
+        <input type="lastname" name="lastname" id="lastname" placeholder="Lastname" />
+        <input type="email" name="email" id="email" placeholder="Email" />
         <input
           type="password"
           name="password"
           id="password"
           placeholder="Password"
         />
-        <select name="isAdmin" id="isAdmin">
-          <option value={false}>Is Admin?</option>
-          <option value={true}>Yes</option>
-          <option value={false}>No</option>
+        <select name="isAdmin" id="role">
+          <option value="">Role</option>
+          <option value="admin">Administrator</option>
+          <option value="driver">Driver</option>
         </select>
-        <select name="isActive" id="isActive">
+        <select name="isActive" id="active">
           <option value={true}>Is Active?</option>
           <option value={true}>Yes</option>
           <option value={false}>No</option>

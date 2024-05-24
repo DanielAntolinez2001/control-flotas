@@ -1,9 +1,12 @@
 "use server"
 
+import { redirect } from "next/dist/server/api-utils";
 import * as addressController from "./address.js";
 import { PrismaClient } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 const prisma = new PrismaClient();
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 //Método para crear usuario
 export const createUser = async (formData) => {
@@ -13,14 +16,16 @@ export const createUser = async (formData) => {
     console.log(avatar);  
 
     // Luego, creamos la dirección asociada al usuario
-    const userAddress = await addressController.createAddress(address);
+    //const userAddress = await addressController.createAddress(address);
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
 
     const user = await prisma.user.create({
         data: {
             name,
             lastname,           
             email,   
-            password,           
+            password: hashedPassword,           
             role,
             active,      
             avatar, // Asociamos la dirección al usuario recién creado 
@@ -33,6 +38,9 @@ export const createUser = async (formData) => {
     console.error(`Error: ${error.message}`);
     throw error;
   }
+
+  revalidatePath("/dashboard/users");
+  redirect("/dashboard/users");
 }; 
 
 export const login = async (req, res) => {
@@ -85,23 +93,6 @@ export const getUsers = async () => {
     console.error(`Error: ${error.message}`);
     throw error;
   }
-};
-  
-// Método para obtener un usuario por su ID
-export const getUSerById = async (req, res) => {
-    const { id } = req.params
-
-    try {
-        const user = await prisma.user.findFirst({
-            where: { id: id },
-        })
-        if (!user) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
-        }
-        res.status(200).json(user);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
 };
   
 // Método para obtener usuarios por su nombre
@@ -159,16 +150,18 @@ export const updateUser = async (req, res) => {
 };
   
 // Método para eliminar un usuario por su ID
-export const deleteUser = async (req, res) => {
-    const { id } = req.params;
+export const deleteUser = async (formData) => {
+    const { id } = Object.fromEntries(formData);
 
     try {
         const deleteUser1 = await prisma.user.delete({ where: { id: id},})
-        const deleteAdresss = await addressController.deleteAddress(deleteUser1.addressId);
-
-        res.status(200).json({ message: "Usuario eliminado correctamente" });
+        deleteUser1.address? await addressController.deleteAddress(deleteUser1.addressId): null; 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error(`Error: ${error.message}`);
+        throw error;
     }
+
+    revalidatePath("/dashboard/users");
+    redirect("/dashboard/users");
 };
   

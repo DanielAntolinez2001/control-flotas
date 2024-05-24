@@ -8,14 +8,21 @@ const prisma = new PrismaClient();
 // Método para crear un camión
 export const createTruck = async (formData) => {
   try {
-    const { brand, model, status, license_plate } =
-      Object.fromEntries(formData);
-    const avatar = req.file ? req.file.filename : null;
+    const { brand, model, status, license_plate, tire:tireData } = Object.fromEntries(formData);
+    const avatar = formData.get('file') ? formData.get('file').name : null;
+    console.log(avatar)
+
+    // Convertir `model` a un entero
+    const modelInt = parseInt(model, 10);
+
+    if (isNaN(modelInt)) {
+      return res.status(400).json({ error: "Model must be a valid number" });
+    }
 
     const truck = await prisma.truck.create({
       data: {
         brand,
-        model,
+        model: modelInt,
         status,
         license_plate,
         avatar,
@@ -38,18 +45,34 @@ export const createTruck = async (formData) => {
     const ElectricalSystem = await prisma.electricalSystem.create({
       data: { truckId: truck.id },
     });
-    const Tire = await prisma.tire.create({
-      data: {
-        truckId: truck.id,
-        brand: req.body.Tire.brand,
-        model: req.body.Tire.model,
-      },
-    });
 
-    alert("Truck created successfully");
+    // Create tire related to the truck
+    console.log('Form Data:', formEntries);
+    console.log('Tire Data:', { tireBrand, tireModel });
+
+    if (tireData) {
+      const tireBrand = tireData['brand'];
+      const tireModel = tireData['model'];
+
+      if (tireBrand && tireModel) {
+        await prisma.tire.create({
+          data: {
+            truckId: truck.id,
+            brand: tireBrand,
+            model: tireModel,
+          },
+        });
+      }else{
+        console.error(`Error: Faltan datos de neumaticos`);
+        throw error;
+      }
+    
+    }
+
+    return truck;
   } catch (error) {
-    //throw new Error("Failed to create truck!")
-    alert(`Error: ${error.message}`);
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 
   revalidatePath("/dashboard/trucks");
@@ -149,33 +172,26 @@ export const deleteTruck = async (formData) => {
         body_chassis: true,
         electrical_system: true,
         exhaust_system: true,
-        tire: true,
       },
     });
 
     if (!truck) {
-      alert("Error: Truck not found");
+      console.error("Error: Truck not found");
     }
 
     // Eliminar las relaciones dependientes
     if (truck.brakes)
       await prisma.brakes.delete({ where: { id: truck.brakes.id } });
     if (truck.fluidsSystem)
-      await prisma.fluidsSystem.delete({
-        where: { id: truck.fluidsSystem.id },
-      });
+      await prisma.fluidsSystem.delete({where: { id: truck.fluids_system.id },});
     if (truck.bodyChassis)
-      await prisma.bodyChassis.delete({ where: { id: truck.bodyChassis.id } });
+      await prisma.bodyChassis.delete({ where: { id: truck.body_chassis.id } });
     if (truck.exhaustSystem)
-      await prisma.exhaustSystem.delete({
-        where: { id: truck.exhaustSystem.id },
-      });
+      await prisma.exhaustSystem.delete({ where: { id: truck.exhaust_system.id },});
     if (truck.electricalSystem)
-      await prisma.electricalSystem.delete({
-        where: { id: truck.electricalSystem.id },
-      });
+      await prisma.electricalSystem.delete({ where: { id: truck.electrical_system.id },});
     if (truck.tire)
-      await prisma.tire.delete({ where: { id: truck.electricalSystem.id } });
+      await prisma.tire.delete({ where: { id: truck.tire.id } });
 
     // Eliminar los registros de combustible asociados al camión
     if (truck.fuel && truck.fuel.length > 0) {
@@ -185,11 +201,13 @@ export const deleteTruck = async (formData) => {
     }
 
     // Finalmente, eliminar el camión
-    await prisma.truck.delete({ where: { id: id } });
+    console.log(id);
+    await prisma.truck.delete({ where: { id: id },});
 
-    alert("Truck deleted successfully");
+    console.log("Eliminado");
   } catch (error) {
-    alert(`Error: ${error.message}`);
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 
   revalidatePath("/dashboard/trucks");

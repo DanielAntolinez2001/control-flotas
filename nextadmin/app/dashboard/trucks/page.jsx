@@ -4,7 +4,7 @@ import Image from "next/image";
 import Search from "@/app/ui/dashboard/search/search";
 import Link from "next/link";
 import Pagination from "@/app/ui/dashboard/pagination/pagination";
-import { getTrucks, getTruckByBrand } from "@/app/lib/trucks";
+import { getTrucks, getTruckByBrand, deleteTruck } from "@/app/lib/trucks";
 
 const Trucks = async ({ searchParams }) => {
   const q = searchParams?.q || null;
@@ -65,9 +65,12 @@ const Trucks = async ({ searchParams }) => {
                       View
                     </button>
                   </Link>
-                  <button className={`${styles.buttom} ${styles.delete}`}>
-                    Delete
-                  </button>
+                  <form action={deleteTruck}>
+                    <input type="hidden" name="id" value={truck.id} />
+                    <button className={`${styles.buttom} ${styles.delete}`}>
+                      Delete
+                    </button>
+                  </form>
                 </div>
               </td>
             </tr>

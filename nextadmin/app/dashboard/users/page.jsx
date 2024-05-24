@@ -57,10 +57,10 @@ const Users = async ({ searchParams }) => {
               <td>{user.lastname}</td>
               <td>{user.email}</td>
               <td>{user.role}</td>
-              <td>{user.active}</td>
+              <td>{<td>{user.active ? 'Active' : 'Inactive'}</td>}</td>
               <td>
-                {`${user.address.street}, ${user.address.city}, ${user.address.state} ${user.address.zip}` ||
-                  null}
+              {user.address? `${user.address.street}, ${user.address.city}, ${user.address.state} ${user.address.zip}`
+                : null}
               </td>
               <td>{user.createdAt.toString().slice(4, 16)}</td>
               <td>
