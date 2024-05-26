@@ -39,15 +39,16 @@ model Task {
 }
 
 model Address {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  street    String
-  city      String
-  state     String
-  zip_code  String
-  details   String
-  User      User?
-  RouteFrom Route[] @relation("FromAddress")
-  RouteTo   Route[] @relation("ToAddress")
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  street       String
+  city         String
+  state        String
+  zip_code     String
+  details      String
+  neighborhood String
+  User         User?
+  RouteFrom    Route[] @relation("FromAddress")
+  RouteTo      Route[] @relation("ToAddress")
 }
 
 model Truck {

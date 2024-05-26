@@ -1,11 +1,33 @@
-import React from "react";
-import styles from "@/app/ui/dashboard/trucks/addTruck/addTruck.module.css";
-import { createTruck } from "@/app/lib/trucks";
+// components/AddTruckForm.js
+"use client";
 
-const AddTruckPage = async () => {
+import React, { useState } from "react";
+import styles from "@/app/ui/dashboard/trucks/addTruck/addTruck.module.css";
+import { createTruck, redirectMain } from "@/app/lib/trucks";
+
+const AddTruckForm = () => {
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const isConfirmed = window.confirm("Are you sure you want to create this truck?");
+    if (isConfirmed) {
+      const formData = new FormData(event.target);
+      if (selectedFile) {
+        formData.append("avatar", selectedFile);
+      }
+      await createTruck(formData);
+    }else
+      await redirectMain()
+  };
+
   return (
     <div className={styles.container}>
-      <form action={createTruck} className={styles.form}>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.section}>
           <h3 className={styles.title}>Truck</h3>
           <input
@@ -21,8 +43,12 @@ const AddTruckPage = async () => {
         </div>
         <div className={styles.section}>
           <h3 className={styles.title}>Tire Condition</h3>
-          <input type="text" id="Tire[brand]" placeholder="Brand" />
-          <input type="text" id="Tire[model]" placeholder="Model" />
+          <input type="text" id="Tire[brand]" name="Tire[brand]" placeholder="Brand" />
+          <input type="text" id="Tire[model]" name="Tire[model]" placeholder="Model" />
+        </div>
+        <div className={styles.section}>
+          <h3 className={styles.title}>Upload Image</h3>
+          <input type="file" name="avatar" accept="image/*" onChange={handleFileChange} />
         </div>
         <button type="submit" className={styles.button}>
           Submit
@@ -32,4 +58,4 @@ const AddTruckPage = async () => {
   );
 };
 
-export default AddTruckPage;
+export default AddTruckForm;
