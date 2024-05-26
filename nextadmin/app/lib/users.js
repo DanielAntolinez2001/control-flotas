@@ -1,9 +1,9 @@
 "use server"
 
-import { redirect } from "next/dist/server/api-utils";
 import * as addressController from "./address.js";
 import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 const prisma = new PrismaClient();
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
@@ -35,9 +35,7 @@ export const createUser = async (formData) => {
     revalidatePath("/dashboard/users");
     redirect("/dashboard/users");
 
-    return user;
-  }catch (error)
-  {
+  }catch (error){
     console.error(`Error: ${error.message}`);
     throw error;
   }
@@ -94,6 +92,24 @@ export const getUsers = async () => {
     throw error;
   }
 };
+
+// Método para obtener un usuario por su ID
+export const getUSerById = async (id) => {
+  const { id } = id
+
+  try {
+      const user = await prisma.user.findFirst({
+          where: { id: id },
+      })
+      if (!user) {
+        console.error("User not found");
+      }
+      return user;
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+};
   
 // Método para obtener usuarios por su nombre
 export const getUSerByName = async (req) => {
@@ -115,11 +131,10 @@ export const getUSerByName = async (req) => {
 };
 
 // Método para actualizar un usuario por su ID
-export const updateUser = async (req, res) => {
-    const { id } = req.params
-
-    const { name, lastname, email, password, role, active, addressId} = req.body;
-    const avatar = req.file ? req.file.filename : null;
+export const updateUser = async (formData) => {
+    const { id, name, lastname, email, password, role, active, addressId} = Object.fromEntries(formData);
+    const avatar = formData.get('file') ? formData.get('file').name : null;
+    console.log(avatar)
 
     const updateData = {
         name,
@@ -139,13 +154,11 @@ export const updateUser = async (req, res) => {
             data: updateData,
         })
 
-        if (!updateUser1 ) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
-        }else{
-            res.status(200).json(updateUser1);
-        }
+        revalidatePath("/dashboard/trucks");
+        redirect('/dashboard/trucks');
     } catch (error) {
-        res.status(500).json({ error: error.message });
+      console.error(`Error: ${error.message}`);
+      throw error;
     }
 };
   
