@@ -23,7 +23,7 @@ export const createUser = async (formData) => {
     // Asegurarse de que avatar es un archivo
     const avatar = formData.get('avatar');
     if (avatar && avatar instanceof File) {
-      const avatarFileName = `${Date.now()}-${avatar.name}`;
+      const avatarFileName = `${email}-${avatar.name}`;
       avatarPath = path.posix.join('/uploads', avatarFileName);
       const uploadPath = path.join(process.cwd(), 'public', avatarPath);
 
@@ -41,16 +41,16 @@ export const createUser = async (formData) => {
     const hashedPassword = await bcrypt.hash(password, salt)
 
     const user = await prisma.user.create({
-        data: {
-            name,
-            lastname,           
-            email,   
-            password: hashedPassword,           
-            role,
-            active: activeB,   
-            addressId: userAddress.id,  
-            avatar: avatarPath 
-        },
+      data: {
+          name,
+          lastname,           
+          email,   
+          password: hashedPassword,           
+          role,
+          active: activeB,   
+          addressId: userAddress.id,  
+          avatar: avatarPath 
+      },
     });
 
     revalidatePath("/dashboard/users");

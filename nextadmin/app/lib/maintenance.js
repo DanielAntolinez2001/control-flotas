@@ -1,20 +1,53 @@
+"use server"
+
 import { PrismaClient } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { updateBodyChassis } from "./BodyChassisController";
+import { updateTire } from "./tire";
+import { updateFuel } from "./FuelController";
+import { updateBrakes } from "./BrakesController";
+import { updateExhaustSystem } from "./ExhaustSystemController";
+import { updateFluidsSystem } from "./FluidsSystemController";
+import { updateElectricalSystem } from "./ElectricalSystemController";
+import { getTruckById, getTruckByLicense } from "./trucks";
 const prisma = new PrismaClient();
 
 // Método para crear un registro de mantenimiento
 export const createMaintenance = async (formData) => {
   try {
-    const { description, type, cost} = Object.fromEntries(formData);
-  
+    const { description, type, cost, licensePlate, brand, model, mileage, status, costF, efficienncy, amount, fluid_level, pads_condition, discs_condition, leak_detection, pipes_condition, mufflers_condition, direction_fluid_level, brake_fluid_level, coolant_fluid_level, wiper_fluid_level, chassis_condition, body_condition, seatbelt_functionality, battery_status, lights_functionality, fuse_status} = Object.fromEntries(formData);
+    console.log(formData)
+
+    const truck = await getTruckByLicense(licensePlate);
+
+    await updateTire({ brand, model, mileage, status}, truck[0].id);
+    await updateFuel({ costF, efficienncy, amount }, truck[0].id);
+    await updateBrakes({ pads_condition, discs_condition, fluid_level }, truck[0].id);
+    await updateExhaustSystem({ leak_detection, pipes_condition, mufflers_condition }, truck[0].id);
+    await updateFluidsSystem({ direction_fluid_level, brake_fluid_level, coolant_fluid_level, wiper_fluid_level }, truck[0].id);
+    await updateBodyChassis({ chassis_condition, body_condition, seatbelt_functionality }, truck[0].id);
+    await updateElectricalSystem({ battery_status, lights_functionality, fuse_status }, truck[0].id);
+    
+    // Convertir `cost` a un entero
+    const costInt = parseInt(cost, 10);
+
+    if (isNaN(costInt)) {
+      console.error("Maintenance's cost must be a valid number" );
+    }
+
     const maintenance = await prisma.maintenance.create({
       data: {
         description,
         type,
-        cost,
+        Cost: costInt,
+        truckId: truck[0].id,
       },
     });
 
-    return maintenance;
+    revalidatePath("/dashboard/maintenance");
+    redirect('/dashboard/maintenance');
+    
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
@@ -24,7 +57,10 @@ export const createMaintenance = async (formData) => {
 // Método para obtener todos registros de mantenimientos
 export const getMaintenances = async (req, res) => {
   try {
-    const maintenances = await prisma.maintenance.findMany();
+    const maintenances = await prisma.maintenance.findMany({
+      include: {truck: true},
+    });
+    console.log(maintenances);
     return maintenances;
   } catch (error) {
     console.error(`Error: ${error.message}`);

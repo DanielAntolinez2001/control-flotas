@@ -1,27 +1,7 @@
+"use server"
+
 const PrismaClient = require("@prisma/client").PrismaClient;
 const prisma = new PrismaClient();
-
-// Método para crear un registro de neumáticos
-export const createTire = async (req, res) => {
-  try {
-    const { brand, status, model, mileage, id} = req.body;
-  
-    const TireTruck = await prisma.tire.create(
-    { 
-        data: { 
-            truckId: id,   
-            brand: brand,
-            status: status,
-            model: model,
-            mileage: mileage,
-        },
-    });
-
-    res.status(201).json({ TireTruck });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
 
 // Método para obtener todos los registros de neumáticos
 export const getTire = async (req, res) => {
@@ -51,23 +31,42 @@ export const getTireById = async (req, res) => {
 };
 
 // Método para actualizar un registro de neumáticos por su ID
-export const updateTire = async (req, res) => {
-  const { id } = req.params;
-  const { brand, status, model, mileage} = req.body;
+export const updateTire = async (req, id) => {
+  const { brand, model, mileage, status}= req;
+
+  // Convertir `model` a un entero
+  const modelInt = parseInt(model, 10);
+
+  if (isNaN(modelInt)) {
+    console.error("Model must be a valid number" );
+  }
+
+  // Convertir `model` a un entero
+  const mileageInt = parseInt(mileage, 10);
+
+  if (isNaN(mileageInt)) {
+    console.error("Mileage must be a valid number" );
+  }
+
+  const updateData = {};
+  if (brand != "option" ) updateData.brand = brand;
+  if (model) updateData.model = modelInt;
+  if (mileage) updateData.mileage = mileageInt;
+  if (status != "option" ) updateData.status = status;
 
   try {
-    const tire = await prisma.tire.update({
-      where: { id: id },
-      data: { 
-        brand: brand,
-        status: status,
-        model: model,
-        mileage: mileage,
-      },
+    const tire = await prisma.tire.findMany({ where: { truckId: id, } });
+
+    await prisma.tire.update({
+      where: { id: tire[0].id },
+      data: updateData,
     });
-    res.status(200).json({ tire });
+    if (!tire ) {
+      console.log("Tire no found");
+    }
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 };
 
@@ -110,16 +109,3 @@ export const isTimeToChangeTires = async (id) => {
   }
 };
 
-// Método para eliminar un registro de neumáticos por su ID
-export const deleteTire = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const tire = await prisma.tire.delete({
-      where: { id: id },
-    });
-    res.status(200).json({ tire });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
