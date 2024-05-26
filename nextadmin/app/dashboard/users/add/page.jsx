@@ -5,6 +5,7 @@ import { createUser, redirectMain } from "@/app/lib/users";
 import styles from "@/app/ui/dashboard/users/addUser/addUser.module.css";
 
 const AddUserPage = () => {
+  const [selectedFile, setSelectedFile] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     lastname: "",
@@ -17,7 +18,12 @@ const AddUserPage = () => {
     state: "",
     zip_code: "",
     details: "",
+    neighborhood: "",
   });
+
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -34,7 +40,10 @@ const AddUserPage = () => {
       for (const key in formData) {
         form.append(key, formData[key]);
       }
-      await createUser(formData);
+      if (selectedFile) {
+        form.append("avatar", selectedFile);
+      }
+      await createUser(form);
     }else
       redirectMain();
   };
@@ -58,11 +67,16 @@ const AddUserPage = () => {
         </select>
         <div className={styles.address}>
           <h3>Address</h3>
-          <input type="text" name="street" placeholder="address" value={formData.street} onChange={handleChange} />
+          <input type="text" name="street" placeholder="Address" value={formData.street} onChange={handleChange} />
+          <input type="text" name="neighborhood" placeholder="Neighborhood" value={formData.neighborhood} onChange={handleChange} />
           <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleChange} />
           <input type="text" name="state" placeholder="State" value={formData.state} onChange={handleChange} />
           <input type="text" name="zip_code" placeholder="Zip Code" value={formData.zip_code} onChange={handleChange} />
           <input type="text" name="details" placeholder="Details" value={formData.details} onChange={handleChange} />
+        </div>
+        <div className={styles.section}>
+          <h3 className={styles.title}>Upload Image</h3>
+          <input type="file" name="avatar" accept="image/*" onChange={handleFileChange} />
         </div>
         <button type="submit" className={styles.button}>
           Submit

@@ -13,6 +13,7 @@ const UpdateUserForm = ({ user }) => {
     password: '',
     street: user.address?.street || '',
     city: user.address?.city || '',
+    neighborhood: user.address?.neighborhood || '',
     state: user.address?.state || '',
     zip_code: user.address?.zip_code || '',
     details: user.address?.details || '',
@@ -65,6 +66,8 @@ const UpdateUserForm = ({ user }) => {
           <input type="text" name="zip_code" onChange={handleChange} placeholder={user.address? `${user.address.zip_code}` : "..."} />
           <label>Details</label>
           <input type="text" name="details" onChange={handleChange} placeholder={user.address? `${user.address.details}` : "..."}/>
+          <label>Neighborhood</label>
+          <input type="text" name="neighborhood" onChange={handleChange} placeholder={user.address? `${user.address.neighborhood}` : "..."}/>
         </div>
         <div className={styles.section}>
           <h3 className={styles.title}>Upload Image</h3>

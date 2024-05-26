@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 export const createAddress = async (req) => {
     console.log(req)
   try{
-        const { street, city, state, zip_code, details} = req;
+        const { street, city, state, zip_code, details, neighborhood} = req;
         console.log(req)
 
         const address = await prisma.address.create({
@@ -17,6 +17,7 @@ export const createAddress = async (req) => {
                 state,
                 zip_code,
                 details,
+                neighborhood,
             },
         });
 
@@ -55,18 +56,16 @@ export const getAdressById = async (id) => {
 };
 
 // Método para actualizar un usuario por su ID
-export const updateAddress = async (req, res) => {
-    const { id } = req.params
+export const updateAddress = async (req, id) => {
+    const { street, city, state, zip_code, details, neighborhood} = req;
 
-    const { street, city, state, zip_code, details} = req.body;
-
-    const updateData = {
-        street,
-        city,
-        state,
-        zip_code,
-        details,
-    };
+    const updateData = {};
+    if (street) updateData.street = street;
+    if (city) updateData.city = city;
+    if (state) updateData.state = state;
+    if (zip_code) updateData.zip_code = zip_code;
+    if (details) updateData.details = details;
+    if (neighborhood) updateData.neighborhood = neighborhood;
 
     try {
         const updateAddress1 = await prisma.address.update({
@@ -75,12 +74,11 @@ export const updateAddress = async (req, res) => {
         })
 
         if (!updateAddress1 ) {
-            return res.status(404).json({ message: "Dirección no encontrada" });
-        }else{
-            res.status(200).json(updateAddress1);
+            console.log("Address no found");
         }
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error(`Error: ${error.message}`);
+        throw error;
     }
 };
   

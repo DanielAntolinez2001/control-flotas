@@ -15,12 +15,27 @@ export const createUser = async (formData) => {
   console.log(formData);
 
   try{
-    const { name, lastname, email, password, role, active, street, zip_code, state, details, city} = formData;
+    const formEntries = Object.fromEntries(formData.entries());
+    const { name, lastname, email, password, role, active, street, zip_code, state, details, city, neighborhood} = formEntries;
+
+    let avatarPath;
+
+    // Asegurarse de que avatar es un archivo
+    const avatar = formData.get('avatar');
+    if (avatar && avatar instanceof File) {
+      const avatarFileName = `${Date.now()}-${avatar.name}`;
+      avatarPath = path.posix.join('/uploads', avatarFileName);
+      const uploadPath = path.join(process.cwd(), 'public', avatarPath);
+
+      // Convertir el archivo a un Buffer y guardar el archivo en la carpeta del proyecto
+      const buffer = Buffer.from(await avatar.arrayBuffer());
+      fs.writeFileSync(uploadPath, buffer);
+    }
 
     if (active == "true") {var activeB = true}
     else{ var activeB = false}
 
-    const userAddress = await addressController.createAddress({street, zip_code, state, details, city});
+    const userAddress = await addressController.createAddress({street, zip_code, state, details, city, neighborhood});
 
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
@@ -33,7 +48,8 @@ export const createUser = async (formData) => {
             password: hashedPassword,           
             role,
             active: activeB,   
-            addressId: userAddress.id   
+            addressId: userAddress.id,  
+            avatar: avatarPath 
         },
     });
 
@@ -121,9 +137,15 @@ export const getUSerById = async (id) => {
 export const getUSerByName = async (req) => {
     const name = req;
 
+    const capitalizeFirstLetter = (string) => {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
+  const capitalizedPrefix = capitalizeFirstLetter(name);
+
     try {
         const users = await prisma.user.findMany({
-            where: { name: name },
+            where: { name: {startsWith: capitalizedPrefix,}, },
         })
         if (!users) {
           console.log("No se encontraron usuarios con ese nombre")
@@ -139,11 +161,9 @@ export const getUSerByName = async (req) => {
 export const redirectMain = async () => { redirect('/dashboard/users'); }
 
 export const updateUser = async (id, formData) => {
-  console.log(formData, "hola", id);
-
   // Convertir formData a un objeto
   const formEntries = Object.fromEntries(formData.entries());
-  const { name, lastname, password, street, city, state, zip_code, details } = formEntries;
+  const { name, lastname, password, street, city, state, zip_code, details, neighborhood } = formEntries;
 
   let avatarPath;
 
@@ -163,13 +183,13 @@ export const updateUser = async (id, formData) => {
     name,
     lastname,
     password,
-    street,
-    city,
-    state,
-    zip_code,
-    details,
     avatar: avatarPath
   };
+
+  const user = await getUSerById(id);
+  const idA = user.addressId;
+
+  const adress = addressController.updateAddress({ street, city, state, zip_code, details, neighborhood }, idA)
 
   // Filtrar para eliminar propiedades vacías
   const filteredUpdateData = Object.fromEntries(
@@ -181,7 +201,9 @@ export const updateUser = async (id, formData) => {
       where: { id: id },
       data: filteredUpdateData,
     });
-    return updatedUser;
+
+    revalidatePath("/dashboard/users");
+    redirect('/dashboard/users');
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
@@ -189,13 +211,10 @@ export const updateUser = async (id, formData) => {
 };
   
 // Método para eliminar un usuario por su ID
-export const deleteUser = async (formData) => {
-    const { id } = Object.fromEntries(formData);
-
+export const deleteUser = async (id) => {
     try {
         const deleteUser1 = await prisma.user.delete({ where: { id: id},})
-        if (deleteUser1.address)
-          await addressController.deleteAddress(deleteUser1.addressId)
+        await addressController.deleteAddress(deleteUser1.addressId)
 
         revalidatePath("/dashboard/users");
     } catch (error) {

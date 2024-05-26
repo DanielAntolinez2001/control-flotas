@@ -1,4 +1,3 @@
-// components/TruckRow.js
 "use client"; // This directive indicates that this file is a client-side component
 
 import React from "react";
