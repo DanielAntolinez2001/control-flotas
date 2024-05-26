@@ -1,11 +1,14 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createUser, redirectMain } from "@/app/lib/users";
 import styles from "@/app/ui/dashboard/users/addUser/addUser.module.css";
 
 const AddUserPage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [departments, setDepartments] = useState([]);
+  const [municipalities, setMunicipalities] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     lastname: "",
@@ -21,6 +24,32 @@ const AddUserPage = () => {
     neighborhood: "",
   });
 
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      const response = await fetch("https://www.datos.gov.co/resource/xdk5-pm3f.json");
+      const data = await response.json();
+      const uniqueDepartments = [...new Set(data.map(item => item.departamento))].sort();
+      setDepartments(uniqueDepartments);
+    };
+
+    fetchDepartments();
+  }, []);
+
+  useEffect(() => {
+    const fetchMunicipalities = async () => {
+      if (selectedDepartment) {
+        const response = await fetch(`https://www.datos.gov.co/resource/xdk5-pm3f.json?departamento=${selectedDepartment}`);
+        const data = await response.json();
+        const departmentMunicipalities = data.map(item => item.municipio).sort();
+        setMunicipalities(departmentMunicipalities);
+      } else {
+        setMunicipalities([]);
+      }
+    };
+
+    fetchMunicipalities();
+  }, [selectedDepartment]);
+
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
@@ -29,6 +58,15 @@ const AddUserPage = () => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleDepartmentChange = (e) => {
+    setSelectedDepartment(e.target.value);
+    setFormData({
+      ...formData,
+      state: e.target.value,
+      city: "",
     });
   };
 
@@ -44,8 +82,9 @@ const AddUserPage = () => {
         form.append("avatar", selectedFile);
       }
       await createUser(form);
-    }else
+    } else {
       redirectMain();
+    }
   };
 
   return (
@@ -69,8 +108,22 @@ const AddUserPage = () => {
           <h3>Address</h3>
           <input type="text" name="street" placeholder="Address" value={formData.street} onChange={handleChange} />
           <input type="text" name="neighborhood" placeholder="Neighborhood" value={formData.neighborhood} onChange={handleChange} />
-          <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleChange} />
-          <input type="text" name="state" placeholder="State" value={formData.state} onChange={handleChange} />
+          <select name="state" id="state" value={formData.state} onChange={handleDepartmentChange}>
+            <option value="">Select State</option>
+            {departments.map((department) => (
+              <option key={department} value={department}>
+                {department}
+              </option>
+            ))}
+          </select>
+          <select name="city" id="city" value={formData.city} onChange={handleChange} disabled={!selectedDepartment}>
+            <option value="">Select City</option>
+            {municipalities.map((municipality) => (
+              <option key={municipality} value={municipality}>
+                {municipality}
+              </option>
+            ))}
+          </select>
           <input type="text" name="zip_code" placeholder="Zip Code" value={formData.zip_code} onChange={handleChange} />
           <input type="text" name="details" placeholder="Details" value={formData.details} onChange={handleChange} />
         </div>

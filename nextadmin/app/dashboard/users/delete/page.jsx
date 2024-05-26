@@ -34,7 +34,7 @@ const UserRow = ({ user, onDelete }) => {
         <td>{user.role}</td>
         <td>{<td>{user.active ? 'Active' : 'Inactive'}</td>}</td>
         <td>
-        {user.address? `${user.address.street}, ${user.address.city}, ${user.address.state} ${user.address.zip_code}`
+        {user.address? `${user.address.street}, ${user.address.state} - ${user.address.city} ${user.address.zip_code}`
         : null}
         </td>
         <td>{user.createdAt.toString().slice(4, 16)}</td>

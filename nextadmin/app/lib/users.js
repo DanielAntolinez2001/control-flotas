@@ -54,7 +54,7 @@ export const createUser = async (formData) => {
     });
 
     revalidatePath("/dashboard/users");
-    redirect("/dashboard/users");
+    redirect('/dashboard/users');
 
   }catch (error){
     console.error(`Error: ${error.message}`);
@@ -186,24 +186,40 @@ export const updateUser = async (id, formData) => {
     avatar: avatarPath
   };
 
-  const user = await getUSerById(id);
-  const idA = user.addressId;
-
-  const adress = addressController.updateAddress({ street, city, state, zip_code, details, neighborhood }, idA)
-
   // Filtrar para eliminar propiedades vacías
   const filteredUpdateData = Object.fromEntries(
     Object.entries(updateData).filter(([key, value]) => value !== '' && value !== undefined)
   );
 
   try {
+    const user = await getUSerById(id);
+
+    if (!user) {
+      throw new Error(`User with id ${id} not found`);
+    }
+    
+    const idA = user.addressId;
+
+    // Actualizar la dirección primero
+    const addressUpdate = await addressController.updateAddress({
+      street,
+      city,
+      state,
+      zip_code,
+      details,
+      neighborhood
+    }, idA);
+
+    // Luego, actualizar el usuario
     const updatedUser = await prisma.user.update({
       where: { id: id },
       data: filteredUpdateData,
     });
 
+    // Revalidar la caché y redirigir
     revalidatePath("/dashboard/users");
     redirect('/dashboard/users');
+
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
