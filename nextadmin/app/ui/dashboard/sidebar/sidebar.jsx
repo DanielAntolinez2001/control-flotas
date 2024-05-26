@@ -10,6 +10,7 @@ import {
   MdLogout,
   MdMap,
   MdTask,
+  MdDomainVerification,
 } from "react-icons/md";
 import MenuLink from "./menuLink/menuLink";
 import Image from "next/image";
@@ -32,6 +33,11 @@ const menuItems = [
         title: "Trucks",
         path: "/dashboard/trucks",
         icon: <MdFireTruck />,
+      },
+      {
+      	title: "Maintenance",
+      	path: "/dashboard/maintenance",
+      	icon: <MdDomainVerification />
       },
       {
         title: "Tasks",
