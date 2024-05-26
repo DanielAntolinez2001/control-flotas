@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
 import styles from "@/app/ui/dashboard/trucks/singleTruck/singleTruck.module.css";
-import Image from "next/image";
-import { getTruckById } from "@/app/lib/trucks";
 import UpdateTruckForm from "@/app/dashboard/trucks/[id]/page2";
+import { getTruckById } from "@/app/lib/trucks";
+import Image from "next/image";
+import React from "react";
 
 const SingleTruckPage = async ({ params }) => {
   const { id } = params;

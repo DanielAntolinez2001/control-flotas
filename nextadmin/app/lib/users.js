@@ -7,16 +7,21 @@ import { redirect } from "next/navigation";
 const prisma = new PrismaClient();
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import path from 'path';
+import fs from 'fs';
 
 //Método para crear usuario
 export const createUser = async (formData) => {
-  try{
-    const { name, lastname, email, password, role, active} = Object.fromEntries(formData);
-    const avatar = Object.fromEntries(formData).file ? req.file.filename : null;
-    console.log(avatar);  
+  console.log(formData);
 
-    // Luego, creamos la dirección asociada al usuario
-    //const userAddress = await addressController.createAddress(address);
+  try{
+    const { name, lastname, email, password, role, active, street, zip_code, state, details, city} = formData;
+
+    if (active == "true") {var activeB = true}
+    else{ var activeB = false}
+
+    const userAddress = await addressController.createAddress({street, zip_code, state, details, city});
+
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
 
@@ -27,8 +32,8 @@ export const createUser = async (formData) => {
             email,   
             password: hashedPassword,           
             role,
-            active,      
-            avatar, // Asociamos la dirección al usuario recién creado 
+            active: activeB,   
+            addressId: userAddress.id   
         },
     });
 
@@ -95,11 +100,12 @@ export const getUsers = async () => {
 
 // Método para obtener un usuario por su ID
 export const getUSerById = async (id) => {
-  const { id } = id
+  console.log(id);
 
   try {
       const user = await prisma.user.findFirst({
           where: { id: id },
+          include: {address: true},
       })
       if (!user) {
         console.error("User not found");
@@ -130,36 +136,56 @@ export const getUSerByName = async (req) => {
     }
 };
 
-// Método para actualizar un usuario por su ID
-export const updateUser = async (formData) => {
-    const { id, name, lastname, email, password, role, active, addressId} = Object.fromEntries(formData);
-    const avatar = formData.get('file') ? formData.get('file').name : null;
-    console.log(avatar)
+export const redirectMain = async () => { redirect('/dashboard/users'); }
 
-    const updateData = {
-        name,
-        lastname,              
-        password,           
-        role,
-        active, 
-        addressId,      
-        avatar 
-    };
+export const updateUser = async (id, formData) => {
+  console.log(formData, "hola", id);
 
-    if (avatar) updateData.avatar = avatar;
+  // Convertir formData a un objeto
+  const formEntries = Object.fromEntries(formData.entries());
+  const { name, lastname, password, street, city, state, zip_code, details } = formEntries;
 
-    try {
-        const updateUser1 = await prisma.user.update({
-            where: {id: id},
-            data: updateData,
-        })
+  let avatarPath;
 
-        revalidatePath("/dashboard/trucks");
-        redirect('/dashboard/trucks');
-    } catch (error) {
-      console.error(`Error: ${error.message}`);
-      throw error;
-    }
+  // Asegurarse de que avatar es un archivo
+  const avatar = formData.get('avatar');
+  if (avatar && avatar instanceof File) {
+    const avatarFileName = `${Date.now()}-${avatar.name}`;
+    avatarPath = path.posix.join('/uploads', avatarFileName);
+    const uploadPath = path.join(process.cwd(), 'public', avatarPath);
+
+    // Convertir el archivo a un Buffer y guardar el archivo en la carpeta del proyecto
+    const buffer = Buffer.from(await avatar.arrayBuffer());
+    fs.writeFileSync(uploadPath, buffer);
+  }
+
+  const updateData = {
+    name,
+    lastname,
+    password,
+    street,
+    city,
+    state,
+    zip_code,
+    details,
+    avatar: avatarPath
+  };
+
+  // Filtrar para eliminar propiedades vacías
+  const filteredUpdateData = Object.fromEntries(
+    Object.entries(updateData).filter(([key, value]) => value !== '' && value !== undefined)
+  );
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: id },
+      data: filteredUpdateData,
+    });
+    return updatedUser;
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
 };
   
 // Método para eliminar un usuario por su ID
@@ -172,7 +198,6 @@ export const deleteUser = async (formData) => {
           await addressController.deleteAddress(deleteUser1.addressId)
 
         revalidatePath("/dashboard/users");
-        redirect("/dashboard/users");
     } catch (error) {
         console.error(`Error: ${error.message}`);
         throw error;
