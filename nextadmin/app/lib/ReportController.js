@@ -1,14 +1,16 @@
+"use server"
+
 import * as maintenanceController from "./MaintenanceController.js";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-export const createReport = async (req, res) => {
+export const createReport = async (id) => {
     try {
-      const { maintenanceId } = req.body;
+      const { maintenanceId } = id;
   
       // Obtener la información de mantenimiento con todos los detalles asociados
       const maintenance = await maintenanceController.getMaintenanceForReport(maintenanceId);
-      const costo = maintenance.cost;
+      const costo = maintenance.Cost;
   
       // Formatear la información en un texto legible
       let reportContent = `Reporte de Mantenimiento\n\n`;

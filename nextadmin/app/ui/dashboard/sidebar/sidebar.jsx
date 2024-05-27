@@ -35,8 +35,8 @@ const menuItems = [
         icon: <MdFireTruck />,
       },
       {
-      	title: "Maintenance",
-      	path: "/dashboard/maintenance",
+      	title: "Maintenances",
+      	path: "/dashboard/maintenances",
       	icon: <MdDomainVerification />
       },
       {

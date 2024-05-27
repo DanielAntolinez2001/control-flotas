@@ -15,8 +15,9 @@ const prisma = new PrismaClient();
 
 // Método para crear un registro de mantenimiento
 export const createMaintenance = async (formData) => {
+  console.log(formData);
   try {
-    const { description, type, cost, licensePlate, brand, model, mileage, status, costF, efficienncy, amount, fluid_level, pads_condition, discs_condition, leak_detection, pipes_condition, mufflers_condition, direction_fluid_level, brake_fluid_level, coolant_fluid_level, wiper_fluid_level, chassis_condition, body_condition, seatbelt_functionality, battery_status, lights_functionality, fuse_status} = Object.fromEntries(formData);
+    const { description, type, cost, licensePlate, brand, model, mileage, status, costF, efficienncy, amount, fluid_level, pads_condition, discs_condition, leak_detection, pipes_condition, mufflers_condition, direction_fluid_level, brake_fluid_level, coolant_fluid_level, wiper_fluid_level, chassis_condition, body_condition, seatbelt_functionality, battery_status, lights_functionality, fuse_status} = formData;
     console.log(formData)
 
     const truck = await getTruckByLicense(licensePlate);
@@ -45,8 +46,8 @@ export const createMaintenance = async (formData) => {
       },
     });
 
-    revalidatePath("/dashboard/maintenance");
-    redirect('/dashboard/maintenance');
+    revalidatePath("/dashboard/maintenances");
+    redirect('/dashboard/maintenances');
     
   } catch (error) {
     console.error(`Error: ${error.message}`);
@@ -69,16 +70,14 @@ export const getMaintenances = async (req, res) => {
 };
 
 // Método para obtener un registro de mantenimiento por su ID
-export const getMaintenanceForReport = async (req, res) => {
-  const { id } = req;
-
+export const getMaintenanceForReport = async (id) => {
   try {
     const maintenance = await prisma.maintenance.findFirst({ where: { id: id }, });
-    if (!maintenance) { return  "mantenimiento no encontrado" ; }
-
-      return true;
+    if (!maintenance) { console.error("mantenimiento no encontrado"); }
+    return maintenance;
     } catch (error) {
-        throw new Error(error.message);
+      console.error(`Error: ${error.message}`);
+      throw error;
     }
 };
 

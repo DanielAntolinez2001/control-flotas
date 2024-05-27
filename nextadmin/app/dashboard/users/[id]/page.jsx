@@ -2,25 +2,21 @@
 
 import React from "react";
 import styles from "@/app/ui/dashboard/users/singleUser/singleUser.module.css";
-import Image from "next/image";
-import { getUSerById } from "@/app/lib/users";
-import UpdateUserForm from "@/app/dashboard/users/[id]/page2";
+import UpdateMaintenceForm from "@/app/dashboard/maintenances/[id]/page2";
+import { getMaintenanceForReport } from "@/app/lib/maintenance";
 
-const SingleUserPage = async ({ params }) => {
+const SingleMaintennacePage = async ({ params }) => {
   const { id } = params;
-  const user = await  getUSerById(id);
+  const maintenance = await getMaintenanceForReport(id);
 
   return (
     <div className={styles.container}>
       <div className={styles.infoContainer}>
-        <div className={styles.imgContainer}>
-          <Image src={user.avatar || "/noavatar.png"} alt="" fill />
-        </div>
-        {user.name}
+        {maintenance.description}
       </div>
-      <UpdateUserForm user={user} />
+      <UpdateMaintenceForm maintenance={maintenance} />
     </div>
   );
 };
 
-export default SingleUserPage;
+export default SingleMaintennacePage;

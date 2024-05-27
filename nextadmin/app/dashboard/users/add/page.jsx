@@ -1,14 +1,12 @@
-"use client"
-
 import React, { useState, useEffect } from "react";
 import { createUser, redirectMain } from "@/app/lib/users";
 import styles from "@/app/ui/dashboard/users/addUser/addUser.module.css";
 
 const AddUserPage = () => {
-  const [selectedFile, setSelectedFile] = useState(null);
   const [departments, setDepartments] = useState([]);
   const [municipalities, setMunicipalities] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     lastname: "",
@@ -26,10 +24,16 @@ const AddUserPage = () => {
 
   useEffect(() => {
     const fetchDepartments = async () => {
-      const response = await fetch("https://www.datos.gov.co/resource/xdk5-pm3f.json");
-      const data = await response.json();
-      const uniqueDepartments = [...new Set(data.map(item => item.departamento))].sort();
-      setDepartments(uniqueDepartments);
+      let departmentsData = localStorage.getItem('departments');
+      if (departmentsData) {
+        setDepartments(JSON.parse(departmentsData));
+      } else {
+        const response = await fetch("https://www.datos.gov.co/resource/xdk5-pm3f.json");
+        const data = await response.json();
+        const uniqueDepartments = [...new Set(data.map(item => item.departamento))].sort();
+        setDepartments(uniqueDepartments);
+        localStorage.setItem('departments', JSON.stringify(uniqueDepartments));
+      }
     };
 
     fetchDepartments();
@@ -38,10 +42,16 @@ const AddUserPage = () => {
   useEffect(() => {
     const fetchMunicipalities = async () => {
       if (selectedDepartment) {
-        const response = await fetch(`https://www.datos.gov.co/resource/xdk5-pm3f.json?departamento=${selectedDepartment}`);
-        const data = await response.json();
-        const departmentMunicipalities = data.map(item => item.municipio).sort();
-        setMunicipalities(departmentMunicipalities);
+        let municipalitiesData = localStorage.getItem(`municipalities_${selectedDepartment}`);
+        if (municipalitiesData) {
+          setMunicipalities(JSON.parse(municipalitiesData));
+        } else {
+          const response = await fetch(`https://www.datos.gov.co/resource/xdk5-pm3f.json?departamento=${selectedDepartment}`);
+          const data = await response.json();
+          const departmentMunicipalities = data.map(item => item.municipio).sort();
+          setMunicipalities(departmentMunicipalities);
+          localStorage.setItem(`municipalities_${selectedDepartment}`, JSON.stringify(departmentMunicipalities));
+        }
       } else {
         setMunicipalities([]);
       }

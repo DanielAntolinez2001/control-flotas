@@ -18,9 +18,9 @@ const MaintenanceRow = ({ maintenance, onDelete }) => {
     <tr key={maintenance.id}>
       <td>{maintenance.type}</td>
       <td>{maintenance.truck.license_plate}</td>
-      <td>{maintenance.report.id}</td>
+      <td>{maintenance.report? `${maintenance.report.id}` : null}</td>
       <td>{maintenance.description}</td>
-      <td>{maintenance.cost}</td>
+      <td>{maintenance.Cost}</td>
       <td>{maintenance.createdAt.toString().slice(4, 16)}</td>
       <td>
         <div className={styles.buttoms}>
