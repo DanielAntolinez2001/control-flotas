@@ -9,7 +9,9 @@ import {
   MdSettings,
   MdLogout,
   MdMap,
+  MdOilBarrel,
   MdTask,
+  MdTireRepair,
   MdDomainVerification,
 } from "react-icons/md";
 import MenuLink from "./menuLink/menuLink";
@@ -35,11 +37,6 @@ const menuItems = [
         icon: <MdFireTruck />,
       },
       {
-      	title: "Maintenances",
-      	path: "/dashboard/maintenances",
-      	icon: <MdDomainVerification />
-      },
-      {
         title: "Tasks",
         path: "/dashboard/tasks",
         icon: <MdTask />,
@@ -52,14 +49,24 @@ const menuItems = [
     ],
   },
   {
-    title: "Analytics",
+    title: "Maintenance",
     list: [
       {
-        title: "Reports",
-        path: "/dashboard/reports",
-        icon: <MdReport />,
+        title: "Maintenances",
+        path: "/dashboard/maintenances",
+        icon: <MdDomainVerification />,
       },
-    ],
+      {
+        title: "Tires",
+        path: "/dashboard/tires",
+        icon: <MdTireRepair />,
+      },
+      {
+        title: "Fuels",
+        path: "/dashboard/fuels",
+        icon: <MdOilBarrel />
+      }
+    ]
   },
   {
     title: "User",

@@ -20,7 +20,7 @@ const TruckRow = ({ truck, onDelete }) => {
       <td>
         <div className={styles.truck}>
           <Image
-            src={truck.avatar || "/noavatar.png"}
+            src={truck.avatar || "/avatarCamion.jpg"}
             alt="avatar"
             width={40}
             height={40}

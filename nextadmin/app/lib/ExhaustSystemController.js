@@ -38,7 +38,7 @@ export const updateExhaustSystem = async (req, id) => {
   
   try{
     const updateData = {};
-      if (leak_detection == "true") {var leak_detectionB = true}
+      if (leak_detection == 'Yes') {var leak_detectionB = true}
       else {var leak_detectionB = false}
       updateData.leak_detection = leak_detectionB;
       

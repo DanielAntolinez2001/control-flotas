@@ -52,24 +52,24 @@ model Address {
 }
 
 model Truck {
-  id                String            @id @default(auto()) @map("_id") @db.ObjectId
-  brand             String
-  model             Int
-  status            String
-  avatar            String?
-  license_plate     String            @unique
-  fluids_system     FluidsSystem? //Sistema de fluidos
-  body_chassis      BodyChassis? //Carrocería y chasis del camión
-  electrical_system ElectricalSystem? //Sistema eléctrico
-  brakes            Brakes? //Sistemma de frenos 
-  fuel              Fuel[] //Historial de combustible
-  exhaust_system    ExhaustSystem? //Sistema de escape
-  tire              Tire? //Neumáticos
-  Maintenance       Maintenance[]
-  route             Route[]
-  rotation_neumatics DateTime         @default(now())
-  change_neumatics  DateTime          @default(now())
-  createdAt         DateTime          @default(now())
+  id                 String            @id @default(auto()) @map("_id") @db.ObjectId
+  brand              String
+  model              Int
+  status             String
+  avatar             String?
+  license_plate      String            @unique
+  fluids_system      FluidsSystem? //Sistema de fluidos
+  body_chassis       BodyChassis? //Carrocería y chasis del camión
+  electrical_system  ElectricalSystem? //Sistema eléctrico
+  brakes             Brakes? //Sistemma de frenos 
+  fuel               Fuel[] //Historial de combustible
+  exhaust_system     ExhaustSystem? //Sistema de escape
+  tire               Tire? //Neumáticos
+  Maintenance        Maintenance[]
+  route              Route[]
+  rotation_neumatics DateTime          @default(now())
+  change_neumatics   DateTime          @default(now())
+  createdAt          DateTime          @default(now())
 }
 
 //--------------------------------- Interior de los camiones ----------------------------------
@@ -130,14 +130,14 @@ model ElectricalSystem {
 }
 
 model Tire {
-  id      String     @id @default(auto()) @map("_id") @db.ObjectId
-  truck   Truck?     @relation(fields: [truckId], references: [id])
-  truckId String?    @unique @db.ObjectId
-  brand   String
-  status  StatusTire @default(New)
-  model   Int
-  mileage Int        @default(0)
-  rotation_pattern RotationPattern  @default(Initial)
+  id               String          @id @default(auto()) @map("_id") @db.ObjectId
+  truck            Truck?          @relation(fields: [truckId], references: [id])
+  truckId          String?         @unique @db.ObjectId
+  brand            String
+  status           StatusTire      @default(New)
+  model            Int
+  mileage          Int             @default(0)
+  rotation_pattern RotationPattern @default(Initial)
 }
 
 //---------------------------------------------------------------------------------------

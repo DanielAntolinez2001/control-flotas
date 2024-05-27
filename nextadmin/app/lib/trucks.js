@@ -21,7 +21,7 @@ export const createTruck = async (formData) => {
 
     // Asegurarse de que avatar es un archivo
     const avatar = formData.get('avatar');
-    if (avatar && avatar instanceof File) {
+    if (avatar && avatar instanceof File && avatar.name != "undefined") {
       const avatarFileName = `${license_plate}-${avatar.name}`;
       avatarPath = path.posix.join('/uploads', avatarFileName);
       const uploadPath = path.join(process.cwd(), 'public', avatarPath);
@@ -40,11 +40,11 @@ export const createTruck = async (formData) => {
 
     const truck = await prisma.truck.create({
       data: {
-        brand,
-        model: modelInt,
-        status,
-        license_plate,
-        avatar: avatarPath 
+          brand,
+          model: modelInt,
+          status,
+          license_plate,
+          avatar: avatarPath 
       },
     });
 

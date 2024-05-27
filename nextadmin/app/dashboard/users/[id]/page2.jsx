@@ -98,14 +98,14 @@ const UpdateUserForm = ({ user }) => {
     <div className={styles.formContainer}>
       <form onSubmit={handleSubmit} className={styles.form}>
         <label>Name</label>
-        <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder={user.name} />
+        <input type="text" name="name" onChange={handleChange} placeholder={user.name} />
         <label>Lastname</label>
-        <input type="text" name="lastname" value={formData.lastname} onChange={handleChange} placeholder={user.lastname} />
+        <input type="text" name="lastname" onChange={handleChange} placeholder={user.lastname} />
         <label>Password</label>
-        <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Password" />
+        <input type="password" name="password" onChange={handleChange} placeholder="Password" />
         <div className={styles.address}>
           <label>Street</label>
-          <input type="text" name="street" value={formData.street} onChange={handleChange} placeholder={user.address ? user.address.street : "..."} />
+          <input type="text" name="street"onChange={handleChange} placeholder={user.address ? user.address.street : "..."} />
           <label>State</label>
           <select name="state" value={formData.state} onChange={handleDepartmentChange}>
             <option value="">Select State</option>
@@ -125,11 +125,11 @@ const UpdateUserForm = ({ user }) => {
             ))}
           </select>
           <label>Neighborhood</label>
-          <input type="text" name="neighborhood" value={formData.neighborhood} onChange={handleChange} placeholder={user.address ? user.address.neighborhood : "..."} />
+          <input type="text" name="neighborhood" onChange={handleChange} placeholder={user.address ? user.address.neighborhood : "..."} />
           <label>Zip Code</label>
-          <input type="text" name="zip_code" value={formData.zip_code} onChange={handleChange} placeholder={user.address ? user.address.zip_code : "..."} />
+          <input type="text" name="zip_code" onChange={handleChange} placeholder={user.address ? user.address.zip_code : "..."} />
           <label>Details</label>
-          <input type="text" name="details" value={formData.details} onChange={handleChange} placeholder={user.address ? user.address.details : "..."} />
+          <input type="text" name="details" onChange={handleChange} placeholder={user.address ? user.address.details : "..."} />
         </div>
         <div className={styles.section}>
           <h3 className={styles.title}>Upload Image</h3>

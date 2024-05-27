@@ -24,26 +24,50 @@ const Tires = ({ searchParams }) => {
     fetchTires();
   }, [q]);
 
-  const handleDelete = (id) => {
-    setTrucks(tires.filter(tire => tire.id !== id));
-  };
-
   return (
     <div className={styles.container}>
+      <div className={styles.top}>
+        <Search placeholder="Search maintenance..." />
+      </div>
       <table className={styles.table}>
         <thead>
           <tr>
             <td>id</td>
             <td>Truck</td>
             <td>Brand</td>
+            <td>Rotation</td>
             <td>Status</td>
             <td>Model</td>
             <td>Mileage</td>
+            <td>Change At</td>
           </tr>
         </thead>
         <tbody>
           {tires.map((tire) => (
-            <MaintenanceRow key={maintenance.id} maintenance={maintenance} onDelete={handleDelete} />
+            <tr key={tire.id}>
+                <td>{tire.id}</td>
+                <td>{tire.truck? `${tire.truck.license_plate}`: null}</td>
+                <td>{tire.brand}</td>
+                <td>{tire.rotation_pattern}</td>
+                <td>{tire.status}</td>
+                <td>{tire.model}</td>
+                <td>{tire.mileage}</td>
+                <td>{tire.truck? `${tire.truck.change_neumatics.toString().slice(4, 16)}`: null}</td>
+                <td>
+                <div className={styles.buttoms}>
+                    <Link href={`/dashboard/tires/change/${tire.id}`}>
+                    <button className={`${styles.buttom} ${styles.view}`}>
+                       Change
+                    </button>
+                    </Link>
+                    <Link href={`/dashboard/tires/rotation/${tire.id}`}>
+                    <button className={`${styles.buttom} ${styles.view}`}>
+                       Rotation
+                    </button>
+                    </Link>
+                </div>
+                </td>
+            </tr>
           ))}
         </tbody>
       </table>
@@ -52,4 +76,4 @@ const Tires = ({ searchParams }) => {
   );
 };
 
-export default Maintenances;
+export default Tires;

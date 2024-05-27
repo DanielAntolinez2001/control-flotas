@@ -22,12 +22,12 @@ const UpdateTruckForm = ({ truck }) => {
       <form onSubmit={handleUpdate} className={styles.form}>
         <input type="hidden" name="id" value={truck.id} />
         <label>Status</label>
-        <input
-          type="text"
-          name="status"
-          onChange={(e) => setStatus(e.target.value)}
-          placeholder={truck.status}
-        />
+        <select name="status" id="type" placeholder={truck.status} onChange={(e) => setStatus(e.target.value)}>
+          <option value="">Choose the truck's status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="available">Available</option>
+        </select>
         <button className={styles.button} type="submit">Update</button>
       </form>
     </div>
