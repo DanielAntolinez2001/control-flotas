@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState, useEffect } from "react";
 import { createUser, redirectMain } from "@/app/lib/users";
 import styles from "@/app/ui/dashboard/users/addUser/addUser.module.css";

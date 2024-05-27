@@ -155,7 +155,7 @@ export const getTruckByBrand = async (req) => {
 
   try {
     const truck = await prisma.truck.findMany({
-      where: { brand: brand },
+      where: { brand: {startsWith: brand,} },
     });
     if (!truck) {
       console.error("Truck not found");

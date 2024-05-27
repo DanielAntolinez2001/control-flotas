@@ -85,13 +85,18 @@ export const getMaintenanceForReport = async (id) => {
 export const getMaintenanceByTruck = async (license_plate) => {
   try {
     const truck = await prisma.truck.findMany({ where: { license_plate: {startsWith: license_plate,}, },});
-    console.log(truck);
-    const maintenance = await prisma.maintenance.findMany({where: { truckId: {startsWith: truck.id,}, }, include: {truck: true, report: true}, });
-    if (!maintenance) {
-      console.error("registro de mantenimiento no encontrado" );
-    }
+    console.log(truck[0], "hola");
+    if (truck[0] != undefined){
+      const idT = truck[0].id.toString(); // Convertir a cadena
+      const maintenance = await prisma.maintenance.findMany({ where: { truckId: idT }, include: {report: true, truck: true} });
+      
+      if (!maintenance) {
+        console.error("registro de mantenimiento no encontrado" );
+      }
 
-    return maintenance;
+      return maintenance;
+    }else
+      return [];
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
