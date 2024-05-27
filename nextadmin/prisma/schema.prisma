@@ -67,6 +67,7 @@ model Truck {
   tire              Tire? //Neumáticos
   Maintenance       Maintenance[]
   route             Route[]
+  rotation_neumatics DateTime         @default(now())
   change_neumatics  DateTime          @default(now())
   createdAt         DateTime          @default(now())
 }
@@ -136,9 +137,19 @@ model Tire {
   status  StatusTire @default(New)
   model   Int
   mileage Int        @default(0)
+  rotation_pattern RotationPattern  @default(Initial)
 }
 
 //---------------------------------------------------------------------------------------
+
+enum RotationPattern {
+  Initial
+  ForwardCross
+  BackwardCross
+  XRotation
+  ParallelRotation
+  FiveWheel
+}
 
 enum FuseStatus {
   Intact

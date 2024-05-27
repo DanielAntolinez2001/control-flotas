@@ -97,6 +97,21 @@ export const createTruck = async (formData) => {
   }
 };
 
+export const getLicensePlates = async() => {
+  try{
+    const trucks = await prisma.truck.findMany({
+      select: {
+        license_plate: true,
+      },
+    });
+    console.log(trucks.map(truck => truck.license_plate))
+    return trucks.map(truck => truck.license_plate);
+  }catch (error){
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+}
+
 // Método para obtener todos los camiones
 export const getTrucks = async () => {
   try {

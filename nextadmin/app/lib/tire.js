@@ -4,12 +4,30 @@ const PrismaClient = require("@prisma/client").PrismaClient;
 const prisma = new PrismaClient();
 
 // Método para obtener todos los registros de neumáticos
-export const getTire = async (req, res) => {
+export const getTires = async () => {
   try {
-    const tire = await prisma.tire.findMany();
-    res.status(200).json(tire);
+    const tires = await prisma.tire.findMany();
+    return tires;
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+};
+
+// Método para obtener un registro de neumáticos por su ID
+export const getTireByTruck = async (license_plate) => {
+  try {
+    const truck = await prisma.truck.findMany({ where: { truckId: license_plate }, });
+    const truckId = truck[0].id; 
+    const tire = await prisma.tire.findMany({ where: { truckId: truckId }, });
+    if (!tire) {
+      console.error("Tire no found" );
+    }
+
+    return tire;
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 };
 
@@ -72,40 +90,53 @@ export const updateTire = async (req, id) => {
 
 export const getTruckData = async (truckId) => {
   try {
-    const truckData = await prisma.truck.findUnique({
-      where: { id: truckId }, // Suponiendo que tienes el ID del camión disponible
-    });
+    const truckData = await prisma.truck.findUnique({  where: { id: truckId }, });
     return truckData;
   } catch (error) {
-    console.error("Error fetching truck data:", error);
-    throw new Error("Failed to fetch truck data");
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 };
+
+//Metodo para actualizar las rotaciones de los neumaticos
+export const changeRotation = async (req) => {
+  try {
+    const truckData = await prisma.tire.update({  where: { id: truckId }, });
+    return truckData;
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+}
 
 // Función para determinar si es hora de cambiar los neumáticos
-export const isTimeToChangeTires = async (id) => {
+export const isTimeToChangeTires = async () => {
   try {
-    const tire = await prisma.tire.findFirst({
-      where: { id: id },
-    });
+    const tires = await prisma.tire.findMany();
+    const tireStatus = [];
 
-    if (!tire) {
-      alert('Tire not found');
+    for (const tire of tires) {
+      const truck = await getTruckData(tire.truckId);
+      const recommendedChangeDistance = Math.floor(Math.random() * (50000 - 30000 + 1)) + 10000; // Genera un valor aleatorio entre 30,000 y 50,000
+      const shouldChangeTires = tire.mileage+100 >= recommendedChangeDistance;
+
+      if (shouldChangeTires){
+        tireStatus.push({
+          truckLicense: truck.license_plate,
+          tireId: tire.id,
+          mileage: tire.mileage,
+          shouldChangeTires,
+          description: `Truck ${truck.id} has already traveled ${tire.mileage} mileage`
+        });
+      }
     }
 
-    const truck = await getTruckData(tire.truckId);
-
-    // Genera un valor aleatorio entre 10,000 y 50,000
-    const recommendedChangeDistance = Math.floor(Math.random() * (50000 - 10000 + 1)) + 10000; 
-
-    return {
-      shouldChangeTires: tire.mileage >= recommendedChangeDistance,
-      descripction: `Truck ${truck.id} has already traveled ${tire.mileage} mileage`
-    };
+    return tireStatus;
 
   } catch (error) {
-    console.error("Error fetching truck data:", error);
-    throw new Error("Failed to fetch truck data");
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 };
+
 
