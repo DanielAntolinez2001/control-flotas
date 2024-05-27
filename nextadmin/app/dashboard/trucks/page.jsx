@@ -6,7 +6,7 @@ import Search from "@/app/ui/dashboard/search/search";
 import Link from "next/link";
 import Pagination from "@/app/ui/dashboard/pagination/pagination";
 import { getTrucks, getTruckByBrand } from "@/app/lib/trucks";
-import TruckRow from "@/app/dashboard/trucks/delete/page"; // Import the new component
+import TruckRow from "@/app/dashboard/trucks/delete/page"; 
 
 const Trucks = ({ searchParams }) => {
   const [trucks, setTrucks] = useState([]);
