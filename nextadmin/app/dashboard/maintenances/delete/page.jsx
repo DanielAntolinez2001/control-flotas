@@ -17,7 +17,7 @@ const MaintenanceRow = ({ maintenance, onDelete }) => {
   return (
     <tr key={maintenance.id}>
       <td>{maintenance.type}</td>
-      <td>{maintenance.truck.license_plate}</td>
+      <td>{maintenance.truck? `${maintenance.truck.license_plate}` : null}</td>
       <td>{maintenance.report? `${maintenance.report.id}` : null}</td>
       <td>{maintenance.description}</td>
       <td>{maintenance.Cost}</td>

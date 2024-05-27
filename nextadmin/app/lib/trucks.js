@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 const prisma = new PrismaClient();
 import path from 'path';
 import fs from 'fs';
+import { deleteMaintenanceForTruck } from "./maintenance";
 
 // Método para crear un camión
 export const createTruck = async (formData) => {
@@ -218,7 +219,7 @@ export const deleteTruck = async (id) => {
     await prisma.exhaustSystem.deleteMany({ where: { truckId: id, },});
     await prisma.electricalSystem.deleteMany({ where: { truckId: id, },});
     await prisma.tire.deleteMany({ where: { truckId: id, } });
-
+    await deleteMaintenanceForTruck(id);
     // Eliminar los registros de combustible asociados al camión
     if (truck.fuel && truck.fuel.length > 0) {
       for (const fuel of truck.fuel) {

@@ -17,10 +17,10 @@ const prisma = new PrismaClient();
 export const createMaintenance = async (formData) => {
   console.log(formData);
   try {
-    const { description, type, cost, licensePlate, brand, model, mileage, status, costF, efficienncy, amount, fluid_level, pads_condition, discs_condition, leak_detection, pipes_condition, mufflers_condition, direction_fluid_level, brake_fluid_level, coolant_fluid_level, wiper_fluid_level, chassis_condition, body_condition, seatbelt_functionality, battery_status, lights_functionality, fuse_status} = formData;
+    const { description, type, cost, license_plate, brand, model, mileage, status, costF, efficienncy, amount, fluid_level, pads_condition, discs_condition, leak_detection, pipes_condition, mufflers_condition, direction_fluid_level, brake_fluid_level, coolant_fluid_level, wiper_fluid_level, chassis_condition, body_condition, seatbelt_functionality, battery_status, lights_functionality, fuse_status} = formData;
     console.log(formData)
 
-    const truck = await getTruckByLicense(licensePlate);
+    const truck = await getTruckByLicense(license_plate);
 
     await updateTire({ brand, model, mileage, status}, truck[0].id);
     await updateFuel({ costF, efficienncy, amount }, truck[0].id);
@@ -59,7 +59,7 @@ export const createMaintenance = async (formData) => {
 export const getMaintenances = async (req, res) => {
   try {
     const maintenances = await prisma.maintenance.findMany({
-      include: {truck: true},
+      include: {truck: true, report: true},
     });
     console.log(maintenances);
     return maintenances;
@@ -72,7 +72,7 @@ export const getMaintenances = async (req, res) => {
 // Método para obtener un registro de mantenimiento por su ID
 export const getMaintenanceForReport = async (id) => {
   try {
-    const maintenance = await prisma.maintenance.findFirst({ where: { id: id }, });
+    const maintenance = await prisma.maintenance.findFirst({ where: { id: id }, include: {truck: true}, });
     if (!maintenance) { console.error("mantenimiento no encontrado"); }
     return maintenance;
     } catch (error) {
@@ -82,15 +82,13 @@ export const getMaintenanceForReport = async (id) => {
 };
 
 // Método para obtener los registros de mantenimiento de un camión
-export const getMaintenanceByTruck = async (req, res) => {
-  const { truckId } = req.params;
-
+export const getMaintenanceByTruck = async (license_plate) => {
   try {
-    const maintenance = await prisma.maintenance.findMany({
-      where: { truckId: truckId },
-    });
+    const truck = await prisma.truck.findMany({ where: { license_plate: {startsWith: license_plate,}, },});
+    console.log(truck);
+    const maintenance = await prisma.maintenance.findMany({where: { truckId: {startsWith: truck.id,}, }, include: {truck: true, report: true}, });
     if (!maintenance) {
-      return res.status(404).json({ message: "registro de mantenimiento no encontrado" });
+      console.error("registro de mantenimiento no encontrado" );
     }
 
     return maintenance;
@@ -120,15 +118,24 @@ export const updateMaintenance = async (req, res) => {
   }
 };
 
-// Método para eliminar un registro de mantenimiento por su ID
-export const deleteMaintenance = async (req, res) => {
-  const { id } = req.params;
+export const deleteMaintenanceForTruck = async (id) => {
+  try {
+    const maintenance = await prisma.maintenance.deleteMany({ where: { truckId: id }, });
+    await prisma.report.deleteMany({ where: { maintenanceId: maintenance.id },})
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+}
 
+// Método para eliminar un registro de mantenimiento por su ID
+export const deleteMaintenance = async (id) => {
   try {
     const maintenance = await prisma.maintenance.delete({
       where: { id: id },
     });
-    res.status(200).json({ maintenance });
+    await prisma.report.deleteMany({ where: { maintenanceId: maintenance.id },})
+    revalidatePath("/dashboard/maintenances");
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;

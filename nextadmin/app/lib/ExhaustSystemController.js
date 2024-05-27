@@ -34,7 +34,8 @@ export const getExhaustSystemById = async (req, res) => {
 // Método para actualizar un registro del sistema de escape por su ID
 export const updateExhaustSystem = async (req, id) => {
   const { leak_detection, pipes_condition, mufflers_condition } = req;
-
+  console.log(req);
+  
   try{
     const updateData = {};
       if (leak_detection == "true") {var leak_detectionB = true}

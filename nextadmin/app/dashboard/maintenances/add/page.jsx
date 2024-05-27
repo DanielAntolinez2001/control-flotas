@@ -62,19 +62,19 @@ const AddMaintenancePage = () => {
                 <option value="">Brake Fluid Level</option>
                 <option value="Full">Full</option>
                 <option value="Low">Low</option>
-                <option value="Empty">Empty</option>
+                <option value="Refill">Refill</option>
               </select>
               <select name="coolant_fluid_level" onChange={handleChange}>
                 <option value="">Coolant Fluid Level</option>
                 <option value="Full">Full</option>
                 <option value="Low">Low</option>
-                <option value="Empty">Empty</option>
+                <option value="Refill">Refill</option>
               </select>
               <select name="wiper_fluid_level" onChange={handleChange}>
                 <option value="">Wiper Fluid Level</option>
                 <option value="Full">Full</option>
                 <option value="Low">Low</option>
-                <option value="Empty">Empty</option>
+                <option value="Refill">Refill</option>
               </select>
             </div>
             <div className={styles.section}>
@@ -127,7 +127,7 @@ const AddMaintenancePage = () => {
                 <option value="">Brake Fluid Level</option>
                 <option value="Full">Full</option>
                 <option value="Low">Low</option>
-                <option value="Empty">Empty</option>
+                <option value="Refill">Refill</option>
               </select>
             </div>
             <div className={styles.section}>
@@ -214,7 +214,7 @@ const AddMaintenancePage = () => {
                 <option value="">Brake Fluid Level</option>
                 <option value="Full">Full</option>
                 <option value="Low">Low</option>
-                <option value="Empty">Empty</option>
+                <option value="Refill">Refill</option>
               </select>
             </div>
             <div className={styles.section}>
