@@ -4,6 +4,9 @@ import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 const prisma = new PrismaClient();
+import path from "path";
+import fs from "fs";
+import { deleteMaintenanceForTruck } from "./maintenance";
 
 // Método para crear un camión
 export const createTruck = async (formData) => {
@@ -14,8 +17,19 @@ export const createTruck = async (formData) => {
     const tireBrand = formEntries["Tire[brand]"];
     const tireModel = formEntries["Tire[model]"];
 
-    const avatar = formData.get("file") ? formData.get("file").name : null;
-    console.log(avatar);
+    let avatarPath;
+
+    // Asegurarse de que avatar es un archivo
+    const avatar = formData.get("avatar");
+    if (avatar && avatar instanceof File) {
+      const avatarFileName = `${license_plate}-${avatar.name}`;
+      avatarPath = path.posix.join("/uploads", avatarFileName);
+      const uploadPath = path.join(process.cwd(), "public", avatarPath);
+
+      // Convertir el archivo a un Buffer y guardar el archivo en la carpeta del proyecto
+      const buffer = Buffer.from(await avatar.arrayBuffer());
+      fs.writeFileSync(uploadPath, buffer);
+    }
 
     // Convertir `model` a un entero
     const modelInt = parseInt(model, 10);
@@ -30,7 +44,7 @@ export const createTruck = async (formData) => {
         model: modelInt,
         status,
         license_plate,
-        avatar,
+        avatar: avatarPath,
       },
     });
 
@@ -112,6 +126,26 @@ export const getTruckById = async (id) => {
   }
 };
 
+// Método para obtener un camión por su ID
+export const getTruckByLicense = async (license_plate) => {
+  console.log(license_plate);
+
+  try {
+    const truck = await prisma.truck.findMany({
+      where: { license_plate: license_plate },
+    });
+
+    if (!truck) {
+      console.error("Truck not found");
+    }
+
+    return truck;
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+};
+
 // Método para obtener camiones por su marca
 export const getTruckByBrand = async (req) => {
   console.log(req);
@@ -119,10 +153,10 @@ export const getTruckByBrand = async (req) => {
 
   try {
     const truck = await prisma.truck.findMany({
-      where: { brand: brand },
+      where: { brand: { startsWith: brand } },
     });
     if (!truck) {
-      console.error(`Camión no encontrado`);
+      console.error("Truck not found");
       return null;
     }
 
@@ -182,7 +216,7 @@ export const deleteTruck = async (id) => {
     await prisma.exhaustSystem.deleteMany({ where: { truckId: id } });
     await prisma.electricalSystem.deleteMany({ where: { truckId: id } });
     await prisma.tire.deleteMany({ where: { truckId: id } });
-
+    await deleteMaintenanceForTruck(id);
     // Eliminar los registros de combustible asociados al camión
     if (truck.fuel && truck.fuel.length > 0) {
       for (const fuel of truck.fuel) {

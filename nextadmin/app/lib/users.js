@@ -36,7 +36,7 @@ export const createUser = async (formData) => {
     // Asegurarse de que avatar es un archivo
     const avatar = formData.get("avatar");
     if (avatar && avatar instanceof File) {
-      const avatarFileName = `${Date.now()}-${avatar.name}`;
+      const avatarFileName = `${email}-${avatar.name}`;
       avatarPath = path.posix.join("/uploads", avatarFileName);
       const uploadPath = path.join(process.cwd(), "public", avatarPath);
 
@@ -222,14 +222,6 @@ export const updateUser = async (id, formData) => {
     avatar: avatarPath,
   };
 
-  const user = await getUSerById(id);
-  const idA = user.addressId;
-
-  const adress = addressController.updateAddress(
-    { street, city, state, zip_code, details, neighborhood },
-    idA
-  );
-
   // Filtrar para eliminar propiedades vacías
   const filteredUpdateData = Object.fromEntries(
     Object.entries(updateData).filter(
@@ -238,11 +230,34 @@ export const updateUser = async (id, formData) => {
   );
 
   try {
+    const user = await getUSerById(id);
+
+    if (!user) {
+      throw new Error(`User with id ${id} not found`);
+    }
+
+    const idA = user.addressId;
+
+    // Actualizar la dirección primero
+    const addressUpdate = await addressController.updateAddress(
+      {
+        street,
+        city,
+        state,
+        zip_code,
+        details,
+        neighborhood,
+      },
+      idA
+    );
+
+    // Luego, actualizar el usuario
     const updatedUser = await prisma.user.update({
       where: { id: id },
       data: filteredUpdateData,
     });
 
+    // Revalidar la caché y redirigir
     revalidatePath("/dashboard/users");
     redirect("/dashboard/users");
   } catch (error) {
