@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import path from "path";
 import fs from "fs";
+import { signIn } from "../auth.js";
 
 //Método para crear usuario
 export const createUser = async (formData) => {
@@ -84,34 +85,14 @@ export const createUser = async (formData) => {
   }
 };
 
-export const login = async (req, res) => {
+// Método para autenticar un usuario
+export const authenticate = async (formData) => {
+  const { email, password } = Object.fromEntries(formData);
   try {
-    const { email, password } = req.body;
-
-    const user = await prisma.user.findUnique({
-      where: { email: email },
-    });
-
-    console.log(user);
-
-    if (!user || password != user.password) {
-      return res
-        .status(401)
-        .json({ error: "Usuario o contraseña incorrectos" });
-    }
-
-    /*if (user[0].role != role){
-        return res.status(401).json({ error: 'Role incorrecto' });
-      }*/
-
-    // Generar un token de acceso
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-
-    res.status(200).json({ token });
+    await signIn("credential", { email, password });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 };
 
