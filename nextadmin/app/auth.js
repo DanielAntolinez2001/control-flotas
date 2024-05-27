@@ -1,46 +1,39 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { ZodError } from "zod";
-import { signInSchema } from "./lib/zod";
-import { authConfig } from "@/app/authconfig";
-import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
 const login = async (credentials) => {
   try {
-    const { email, password } = credentials;
-
-    const user = await prisma.user.findMany({
-      where: { email: email },
+    console.log(credentials);
+    const user = await prisma.user.findUnique({
+      where: { email: credentials.email },
     });
-
     if (!user) {
       throw new Error("User not found");
     }
 
-    console.log("hola", user);
+    const isPasswordCorrect = await bcrypt.compare(
+      credentials.password,
+      user.password
+    );
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    console.log(isPasswordValid);
-
-    if (!isPasswordValid) {
+    if (!isPasswordCorrect) {
       throw new Error("Invalid password");
     }
 
-    console.log(user);
-
     return user;
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw error;
+    console.log(error);
+    throw new Error("Error in the login");
   }
 };
 
-export const { signIn, singOut, auth } = NextAuth({
-  ...authConfig,
+export const { signIn, signOut, auth } = NextAuth({
+  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       async authorize(credentials) {
@@ -48,11 +41,26 @@ export const { signIn, singOut, auth } = NextAuth({
           const user = await login(credentials);
           return user;
         } catch (error) {
-          if (error instanceof ZodError) {
-            return null;
-          }
+          return null;
         }
       },
     }),
   ],
+  pages: {
+    signIn: "/login",
+  },
+  callbacks: {
+    authorized({ auth, request }) {
+      const isLoggedIn = auth?.user;
+      const isOnDashboard = request.nextUrl.pathname.startsWith("/dashboard");
+      if (isOnDashboard) {
+        if (isLoggedIn) {
+          return false;
+        }
+      } else if (isLoggedIn) {
+        return Response.redirect(new URL("/dashboard", request.nextUrl));
+      }
+      return true;
+    },
+  },
 });

@@ -1,5 +1,5 @@
 import styles from "@/app/ui/login/login.module.css";
-import { authenticate } from "../lib/users";
+import { authenticate } from "@/app/lib/users";
 
 const LoginPage = () => {
   return (

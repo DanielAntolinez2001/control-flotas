@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import path from "path";
 import fs from "fs";
-import { signIn } from "../auth.js";
+import { signIn } from "@/app/auth.js";
 
 //Método para crear usuario
 export const createUser = async (formData) => {
@@ -44,6 +44,10 @@ export const createUser = async (formData) => {
       // Convertir el archivo a un Buffer y guardar el archivo en la carpeta del proyecto
       const buffer = Buffer.from(await avatar.arrayBuffer());
       fs.writeFileSync(uploadPath, buffer);
+    }
+
+    if (formEntries.email == "") {
+      throw new Error("Email is required");
     }
 
     if (active == "true") {
@@ -89,7 +93,7 @@ export const createUser = async (formData) => {
 export const authenticate = async (formData) => {
   const { email, password } = Object.fromEntries(formData);
   try {
-    await signIn("credential", { email, password });
+    await signIn("credentials", { email, password });
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
