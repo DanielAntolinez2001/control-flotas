@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 const PrismaClient = require("@prisma/client").PrismaClient;
 const prisma = new PrismaClient();
@@ -22,7 +22,9 @@ export const getElectricalSystemById = async (req, res) => {
       where: { id: id },
     });
     if (!electricalSystem) {
-      return res.status(404).json({ message: "Registro de sistema eléctrico no encontrado" });
+      return res
+        .status(404)
+        .json({ message: "Registro de sistema eléctrico no encontrado" });
     }
     res.status(200).json(electricalSystem);
   } catch (error) {
@@ -34,25 +36,27 @@ export const getElectricalSystemById = async (req, res) => {
 export const updateElectricalSystem = async (req, id) => {
   const { battery_status, lights_functionality, fuse_status } = req;
 
-  try{
+  try {
     const updateData = {};
-      if (battery_status != "option") updateData.battery_status = battery_status;
-      if (lights_functionality != "option") updateData.lights_functionality = lights_functionality;
-      if (fuse_status != "option") updateData.fuse_status = fuse_status;
-    
-      const electricalSystem = await prisma.electricalSystem.findMany({ where: { truckId: id, } });
-      
-      await prisma.electricalSystem.update({
-        where: { id: electricalSystem[0].id },
-        data: updateData,
-      });
+    if (battery_status != "option") updateData.battery_status = battery_status;
+    if (lights_functionality != "option")
+      updateData.lights_functionality = lights_functionality;
+    if (fuse_status != "option") updateData.fuse_status = fuse_status;
 
-      if (!electricalSystem) {
-        console.log("Electrical System no found");
-      }
+    const electricalSystem = await prisma.electricalSystem.findMany({
+      where: { truckId: id },
+    });
+
+    await prisma.electricalSystem.update({
+      where: { id: electricalSystem[0].id },
+      data: updateData,
+    });
+
+    if (!electricalSystem) {
+      console.log("Electrical System no found");
+    }
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
   }
 };
-

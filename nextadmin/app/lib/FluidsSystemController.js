@@ -20,7 +20,9 @@ export const getFluidsSystemById = async (req, res) => {
       where: { id: id },
     });
     if (!fluidsSystem) {
-      return res.status(404).json({ message: "Registro de sistema de fluidos no encontrado" });
+      return res
+        .status(404)
+        .json({ message: "Registro de sistema de fluidos no encontrado" });
     }
     res.status(200).json(fluidsSystem);
   } catch (error) {
@@ -30,28 +32,38 @@ export const getFluidsSystemById = async (req, res) => {
 
 // Método para actualizar un registro del sistema de fluidos por su ID
 export const updateFluidsSystem = async (req, id) => {
-  const { direction_fluid_level, brake_fluid_level, coolant_fluid_level, wiper_fluid_level} = req;
+  const {
+    direction_fluid_level,
+    brake_fluid_level,
+    coolant_fluid_level,
+    wiper_fluid_level,
+  } = req;
 
-  try{
+  try {
     const updateData = {};
-      if (direction_fluid_level != "option" ) updateData.direction_fluid_level = direction_fluid_level;
-      if (brake_fluid_level != "option") updateData.brake_fluid_level = brake_fluid_level;
-      if (coolant_fluid_level != "option") updateData.coolant_fluid_level = coolant_fluid_level;
-      if (wiper_fluid_level != "option") updateData.wiper_fluid_level = wiper_fluid_level;
-    
-      const fluidsSystem = await prisma.fluidsSystem.findMany({ where: { truckId: id, } });
-      
-      await prisma.fluidsSystem.update({
-        where: { id: fluidsSystem[0].id },
-        data: updateData,
-      });
+    if (direction_fluid_level != "option")
+      updateData.direction_fluid_level = direction_fluid_level;
+    if (brake_fluid_level != "option")
+      updateData.brake_fluid_level = brake_fluid_level;
+    if (coolant_fluid_level != "option")
+      updateData.coolant_fluid_level = coolant_fluid_level;
+    if (wiper_fluid_level != "option")
+      updateData.wiper_fluid_level = wiper_fluid_level;
 
-      if (!fluidsSystem) {
-        console.log("Fluids System no found");
-      }
+    const fluidsSystem = await prisma.fluidsSystem.findMany({
+      where: { truckId: id },
+    });
+
+    await prisma.fluidsSystem.update({
+      where: { id: fluidsSystem[0].id },
+      data: updateData,
+    });
+
+    if (!fluidsSystem) {
+      console.log("Fluids System no found");
+    }
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
   }
 };
-

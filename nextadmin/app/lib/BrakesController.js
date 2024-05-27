@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 const PrismaClient = require("@prisma/client").PrismaClient;
 const prisma = new PrismaClient();
@@ -10,17 +10,18 @@ export const updateBrakes = async (req, id) => {
 
     const updateData = {};
     if (pads_condition != "option") updateData.pads_condition = pads_condition;
-    if (discs_condition != "option") updateData.discs_condition = discs_condition;
+    if (discs_condition != "option")
+      updateData.discs_condition = discs_condition;
     if (fluid_level != "option") updateData.fluid_level = fluid_level;
-  
-    const brakes = await prisma.brakes.findMany({ where: { truckId: id, } });
-    
+
+    const brakes = await prisma.brakes.findMany({ where: { truckId: id } });
+
     await prisma.brakes.update({
       where: { id: brakes[0].id },
       data: updateData,
     });
 
-    if (!brakes ) {
+    if (!brakes) {
       console.log("Brakes no found");
     }
   } catch (error) {
@@ -48,7 +49,9 @@ export const getBrakesById = async (req, res) => {
       where: { id: id },
     });
     if (!brakes) {
-      return res.status(404).json({ message: "Registro de frenos no encontrado" });
+      return res
+        .status(404)
+        .json({ message: "Registro de frenos no encontrado" });
     }
     res.status(200).json(brakes);
   } catch (error) {

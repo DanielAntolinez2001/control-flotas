@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 const PrismaClient = require("@prisma/client").PrismaClient;
 const prisma = new PrismaClient();
@@ -25,15 +25,15 @@ export const updateFuel = async (req, id) => {
     if (cost) updateData.cost = cost;
     if (efficiency) updateData.efficienncy = efficiency;
     if (amount != "option") updateData.amount = amount;
-  
-    const fuel = await prisma.fuel.findMany({ where: { truckId: id, } });
-    
+
+    const fuel = await prisma.fuel.findMany({ where: { truckId: id } });
+
     await prisma.fuel.update({
       where: { id: fuel[0].id },
       data: updateData,
     });
 
-    if (!fuel ) {
+    if (!fuel) {
       console.log("Fuel no found");
     }
   } catch (error) {
@@ -61,11 +61,12 @@ export const getFuelById = async (req, res) => {
       where: { id: id },
     });
     if (!fuel) {
-      return res.status(404).json({ message: "Registro de combustible no encontrado" });
+      return res
+        .status(404)
+        .json({ message: "Registro de combustible no encontrado" });
     }
     res.status(200).json(fuel);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
