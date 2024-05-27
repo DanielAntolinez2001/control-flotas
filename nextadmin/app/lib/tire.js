@@ -4,17 +4,16 @@ const prisma = new PrismaClient();
 // Método para crear un registro de neumáticos
 export const createTire = async (req, res) => {
   try {
-    const { brand, status, model, mileage, id} = req.body;
-  
-    const TireTruck = await prisma.tire.create(
-    { 
-        data: { 
-            truckId: id,   
-            brand: brand,
-            status: status,
-            model: model,
-            mileage: mileage,
-        },
+    const { brand, status, model, mileage, id } = req.body;
+
+    const TireTruck = await prisma.tire.create({
+      data: {
+        truckId: id,
+        brand: brand,
+        status: status,
+        model: model,
+        mileage: mileage,
+      },
     });
 
     res.status(201).json({ TireTruck });
@@ -42,7 +41,9 @@ export const getTireById = async (req, res) => {
       where: { id: id },
     });
     if (!tire) {
-      return res.status(404).json({ message: "Registro de sistema de escape no encontrado" });
+      return res
+        .status(404)
+        .json({ message: "Registro de sistema de escape no encontrado" });
     }
     res.status(200).json(tire);
   } catch (error) {
@@ -53,12 +54,12 @@ export const getTireById = async (req, res) => {
 // Método para actualizar un registro de neumáticos por su ID
 export const updateTire = async (req, res) => {
   const { id } = req.params;
-  const { brand, status, model, mileage} = req.body;
+  const { brand, status, model, mileage } = req.body;
 
   try {
     const tire = await prisma.tire.update({
       where: { id: id },
-      data: { 
+      data: {
         brand: brand,
         status: status,
         model: model,
@@ -91,19 +92,19 @@ export const isTimeToChangeTires = async (id) => {
     });
 
     if (!tire) {
-      alert('Tire not found');
+      alert("Tire not found");
     }
 
     const truck = await getTruckData(tire.truckId);
 
     // Genera un valor aleatorio entre 10,000 y 50,000
-    const recommendedChangeDistance = Math.floor(Math.random() * (50000 - 10000 + 1)) + 10000; 
+    const recommendedChangeDistance =
+      Math.floor(Math.random() * (50000 - 10000 + 1)) + 10000;
 
     return {
       shouldChangeTires: tire.mileage >= recommendedChangeDistance,
-      descripction: `Truck ${truck.id} has already traveled ${tire.mileage} mileage`
+      descripction: `Truck ${truck.id} has already traveled ${tire.mileage} mileage`,
     };
-
   } catch (error) {
     console.error("Error fetching truck data:", error);
     throw new Error("Failed to fetch truck data");
