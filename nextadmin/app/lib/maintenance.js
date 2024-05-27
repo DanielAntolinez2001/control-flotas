@@ -4,8 +4,8 @@ const prisma = new PrismaClient();
 // Método para crear un registro de mantenimiento
 export const createMaintenance = async (formData) => {
   try {
-    const { description, type, cost} = Object.fromEntries(formData);
-  
+    const { description, type, cost } = Object.fromEntries(formData);
+
     const maintenance = await prisma.maintenance.create({
       data: {
         description,
@@ -37,13 +37,17 @@ export const getMaintenanceForReport = async (req, res) => {
   const { id } = req;
 
   try {
-    const maintenance = await prisma.maintenance.findFirst({ where: { id: id }, });
-    if (!maintenance) { return  "mantenimiento no encontrado" ; }
-
-      return true;
-    } catch (error) {
-        throw new Error(error.message);
+    const maintenance = await prisma.maintenance.findFirst({
+      where: { id: id },
+    });
+    if (!maintenance) {
+      return "mantenimiento no encontrado";
     }
+
+    return true;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 // Método para obtener los registros de mantenimiento de un camión
@@ -55,7 +59,9 @@ export const getMaintenanceByTruck = async (req, res) => {
       where: { truckId: truckId },
     });
     if (!maintenance) {
-      return res.status(404).json({ message: "registro de mantenimiento no encontrado" });
+      return res
+        .status(404)
+        .json({ message: "registro de mantenimiento no encontrado" });
     }
 
     return maintenance;
@@ -69,14 +75,14 @@ export const getMaintenanceByTruck = async (req, res) => {
 export const updateMaintenance = async (req, res) => {
   const { id } = req.params;
   const { description, cost } = req.body;
-  
+
   try {
     const maintenance = await prisma.maintenance.update({
-        where: { id: id },
-        data: {
-          description: description,
-          cost: cost,
-        },
+      where: { id: id },
+      data: {
+        description: description,
+        cost: cost,
+      },
     });
 
     res.status(200).json({ maintenance });
@@ -99,4 +105,3 @@ export const deleteMaintenance = async (req, res) => {
     throw error;
   }
 };
-

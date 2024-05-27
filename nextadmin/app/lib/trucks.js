@@ -7,21 +7,21 @@ const prisma = new PrismaClient();
 
 // Método para crear un camión
 export const createTruck = async (formData) => {
-
   try {
     const formEntries = Object.fromEntries(formData);
-    const { brand, model, status, license_plate} = Object.fromEntries(formData);
-    const tireBrand = formEntries["Tire[brand]"]
-    const tireModel = formEntries["Tire[model]"]
+    const { brand, model, status, license_plate } =
+      Object.fromEntries(formData);
+    const tireBrand = formEntries["Tire[brand]"];
+    const tireModel = formEntries["Tire[model]"];
 
-    const avatar = formData.get('file') ? formData.get('file').name : null;
-    console.log(avatar)
+    const avatar = formData.get("file") ? formData.get("file").name : null;
+    console.log(avatar);
 
     // Convertir `model` a un entero
     const modelInt = parseInt(model, 10);
 
     if (isNaN(modelInt)) {
-      console.error("Model must be a valid number" );
+      console.error("Model must be a valid number");
     }
 
     const truck = await prisma.truck.create({
@@ -53,13 +53,12 @@ export const createTruck = async (formData) => {
 
     // Create tire related to the truck
 
-    console.log('Tire Data:', {tireBrand, tireModel});
+    console.log("Tire Data:", { tireBrand, tireModel });
 
     if (tireBrand && tireModel) {
-
       const modelTInt = parseInt(tireModel, 10);
       if (isNaN(modelInt)) {
-        console.error("Tire's model must be a valid number" );
+        console.error("Tire's model must be a valid number");
       }
 
       await prisma.tire.create({
@@ -69,14 +68,13 @@ export const createTruck = async (formData) => {
           model: modelTInt,
         },
       });
-    }else{
+    } else {
       console.error(`Error: Faltan datos de neumaticos`);
       throw error;
     }
 
     revalidatePath("/dashboard/trucks");
-    redirect('/dashboard/trucks');
-
+    redirect("/dashboard/trucks");
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
@@ -97,7 +95,7 @@ export const getTrucks = async () => {
 // Método para obtener un camión por su ID
 export const getTruckById = async (id) => {
   console.log(id);
-  
+
   try {
     const truck = await prisma.truck.findFirst({
       where: { id: id },
@@ -140,25 +138,24 @@ export const updateTruck = async (formData) => {
   const { id, status } = Object.fromEntries(formData);
 
   try {
-    
     const truck = await prisma.truck.update({
       where: { id: id },
-      data: { status, },
+      data: { status },
     });
 
     revalidatePath("/dashboard/trucks");
-    redirect('/dashboard/trucks');
-
+    redirect("/dashboard/trucks");
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
   }
 };
 
-export const redirectMain = async () => { redirect('/dashboard/trucks'); }
+export const redirectMain = async () => {
+  redirect("/dashboard/trucks");
+};
 
 export const deleteTruck = async (id) => {
-
   try {
     const truck = await prisma.truck.findUnique({
       where: { id: id },
@@ -178,13 +175,13 @@ export const deleteTruck = async (id) => {
     }
 
     // Eliminar las relaciones dependientes
-    await prisma.fluidsSystem.deleteMany({ where: { truckId: id, }, });
-    await prisma.brakes.deleteMany({ where: { truckId: id, } });
-    await prisma.fluidsSystem.deleteMany({where: { truckId: id,} ,});
-    await prisma.bodyChassis.deleteMany({ where: { truckId: id, } });
-    await prisma.exhaustSystem.deleteMany({ where: { truckId: id, },});
-    await prisma.electricalSystem.deleteMany({ where: { truckId: id, },});
-    await prisma.tire.deleteMany({ where: { truckId: id, } });
+    await prisma.fluidsSystem.deleteMany({ where: { truckId: id } });
+    await prisma.brakes.deleteMany({ where: { truckId: id } });
+    await prisma.fluidsSystem.deleteMany({ where: { truckId: id } });
+    await prisma.bodyChassis.deleteMany({ where: { truckId: id } });
+    await prisma.exhaustSystem.deleteMany({ where: { truckId: id } });
+    await prisma.electricalSystem.deleteMany({ where: { truckId: id } });
+    await prisma.tire.deleteMany({ where: { truckId: id } });
 
     // Eliminar los registros de combustible asociados al camión
     if (truck.fuel && truck.fuel.length > 0) {
@@ -194,13 +191,12 @@ export const deleteTruck = async (id) => {
     }
 
     // Finalmente, eliminar el camión
-    await prisma.truck.delete({ where: { id: id },});
-    
+    await prisma.truck.delete({ where: { id: id } });
+
     revalidatePath("/dashboard/trucks");
     console.log("Eliminado");
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
   }
-
 };
