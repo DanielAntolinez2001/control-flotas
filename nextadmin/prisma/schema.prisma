@@ -77,10 +77,11 @@ model Truck {
 model Fuel {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   truck       Truck      @relation(fields: [truckId], references: [id])
-  truckId     String     @unique @db.ObjectId
+  truckId     String     @db.ObjectId
   amount      FuelAmount @default(Empty)
-  cost        Float?
+  cost        Float?     @default(0)
   efficienncy Float?     @default(0)
+  createdAt   DateTime   @default(now())
 }
 
 model Brakes {
@@ -238,7 +239,8 @@ model Report {
   content       String
   maintenance   Maintenance? @relation(fields: [maintenanceId], references: [id])
   maintenanceId String?      @unique @db.ObjectId
-  cost          Float
+  consume_fuel  Boolean?     @default(false)
+  cost          Float?
 }
 
 model Maintenance {

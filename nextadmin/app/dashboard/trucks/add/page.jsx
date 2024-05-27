@@ -39,7 +39,7 @@ const AddTruckForm = () => {
           />
           <input type="text" placeholder="Brand" name="brand" required />
           <input type="text" placeholder="Model" name="model" required />
-          <select name="status" id="type" placeholder="status" onChange={(e) => setStatus(e.target.value)}>
+          <select name="status" id="type" placeholder="status">
             <option value="">Choose the truck's status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>

@@ -60,11 +60,6 @@ const menuItems = [
         title: "Tires",
         path: "/dashboard/tires",
         icon: <MdTireRepair />,
-      },
-      {
-        title: "Fuels",
-        path: "/dashboard/fuels",
-        icon: <MdOilBarrel />
       }
     ]
   },
