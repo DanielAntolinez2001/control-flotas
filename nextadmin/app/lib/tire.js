@@ -3,6 +3,26 @@
 const PrismaClient = require("@prisma/client").PrismaClient;
 const prisma = new PrismaClient();
 
+export const createTire = async (req, res) => {
+  try {
+    const { brand, status, model, mileage, id } = req.body;
+
+    const TireTruck = await prisma.tire.create({
+      data: {
+        truckId: id,
+        brand: brand,
+        status: status,
+        model: model,
+        mileage: mileage,
+      },
+    });
+
+    res.status(201).json({ TireTruck });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 // Método para obtener todos los registros de neumáticos
 export const getTire = async (req, res) => {
   try {

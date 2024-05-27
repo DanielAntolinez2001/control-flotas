@@ -134,12 +134,10 @@ export const createTotalReport = async (req, res) => {
       data: { content: reportContent },
     });
 
-    res
-      .status(201)
-      .json({
-        totalReport,
-        mantenimientos: { count: totalMaintenanceCount, content: maintenances },
-      });
+    res.status(201).json({
+      totalReport,
+      mantenimientos: { count: totalMaintenanceCount, content: maintenances },
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
