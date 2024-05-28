@@ -176,6 +176,8 @@ export const updateUser = async (id, formData) => {
   const formEntries = Object.fromEntries(formData.entries());
   const {
     name,
+    active, 
+    available,
     lastname,
     password,
     street,
@@ -200,8 +202,22 @@ export const updateUser = async (id, formData) => {
     fs.writeFileSync(uploadPath, buffer);
   }
 
+  if (active == "Yes") {
+    var activeB = true;
+  } else {
+    var activeB = false;
+  }
+
+  if (available == "Yes") {
+    var availableB = true;
+  } else {
+    var availableB = false;
+  }
+
   const updateData = {
     name,
+    activeB,
+    availableB,
     lastname,
     password,
     avatar: avatarPath,
@@ -263,3 +279,24 @@ export const deleteUser = async (id) => {
     throw error;
   }
 };
+
+export const getUserAvailable = async () => {
+  try {
+    const availableUsers = await prisma.user.findMany({
+      where: { available: true },
+    });
+    const usersStatus = [];
+
+    for (const user of availableUsers) {
+      usersStatus.push({
+        name: `${user.name} ${user.lastname}`,
+        id: user.id,
+      });
+    }
+
+    return usersStatus;
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+}
