@@ -1,7 +1,8 @@
 "use client";
-import React, { useState, useRef } from "react";
-import styles from "./map.module.css";
 
+import React, { useState, useRef, useEffect } from "react";
+import styles from "./map.module.css";
+import localforage from "localforage";
 import {
   LoadScript,
   GoogleMap,
@@ -10,6 +11,7 @@ import {
   Marker,
   Autocomplete,
 } from "@react-google-maps/api";
+import { createRoute } from "@/app/lib/route";
 
 const libraries = ["places"];
 const mapContainerStyle = {
@@ -24,8 +26,26 @@ const Mapa = () => {
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
   const [directions, setDirections] = useState(null);
+  const [distance, setDistance] = useState(null);
+  const [duration, setDuration] = useState(null);
   const originRef = useRef(null);
   const destinationRef = useRef(null);
+
+  useEffect(() => {
+    const loadCache = async () => {
+      const cachedOrigin = await localforage.getItem('origin');
+      const cachedDestination = await localforage.getItem('destination');
+      const cachedDistance = await localforage.getItem('distance');
+      const cachedDuration = await localforage.getItem('duration');
+
+      if (cachedOrigin) setOrigin(cachedOrigin);
+      if (cachedDestination) setDestination(cachedDestination);
+      if (cachedDistance) setDistance(cachedDistance);
+      if (cachedDuration) setDuration(cachedDuration);
+    };
+
+    loadCache();
+  }, []);
 
   const handleMapLoad = (map) => {
     setMap(map);
@@ -34,6 +54,15 @@ const Mapa = () => {
   const handleDirectionsChanged = (response) => {
     if (response !== null && response.status === "OK") {
       setDirections(response);
+      const route = response.routes[0].legs[0];
+      const calculatedDistance = route.distance.value / 1000; // distancia en kilómetros
+      const calculatedDuration = route.duration.value / 60; // tiempo en minutos
+      setDistance(calculatedDistance);
+      setDuration(calculatedDuration);
+
+      // Save to cache
+      localforage.setItem('distance', calculatedDistance);
+      localforage.setItem('duration', calculatedDuration);
     }
   };
 
@@ -41,7 +70,11 @@ const Mapa = () => {
     if (originRef.current !== null) {
       const place = originRef.current.getPlace();
       if (place.geometry) {
-        setOrigin(place.geometry.location);
+        const location = place.geometry.location;
+        setOrigin(location);
+
+        // Save to cache
+        localforage.setItem('origin', location);
       }
     }
   };
@@ -50,7 +83,34 @@ const Mapa = () => {
     if (destinationRef.current !== null) {
       const place = destinationRef.current.getPlace();
       if (place.geometry) {
-        setDestination(place.geometry.location);
+        const location = place.geometry.location;
+        setDestination(location);
+
+        // Save to cache
+        localforage.setItem('destination', location);
+      }
+    }
+  };
+
+  const handleSearch = async () => {
+    if (origin && destination && distance && duration) {
+      const routeData = {
+        origin: {
+          lat: origin.lat(),
+          lng: origin.lng(),
+        },
+        destination: {
+          lat: destination.lat(),
+          lng: destination.lng(),
+        },
+        distance: distance, // distancia en kilómetros
+        duration: duration, // duración en minutos
+      };
+
+      try {
+        await createRoute(routeData)
+      } catch (error) {
+        console.error("Error saving route:", error);
       }
     }
   };
@@ -86,7 +146,7 @@ const Mapa = () => {
               className={styles.input}
             />
           </Autocomplete>
-          <button onClick={() => {}} className={styles.button}>
+          <button onClick={handleSearch} className={styles.button}>
             Search
           </button>
         </div>
