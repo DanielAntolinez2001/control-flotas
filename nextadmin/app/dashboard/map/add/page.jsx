@@ -11,6 +11,7 @@ import {
   Marker,
   Autocomplete,
 } from "@react-google-maps/api";
+import { getLicensePlatesAvailable } from "@/app/lib/trucks";
 import { createRoute } from "@/app/lib/route";
 
 const libraries = ["places"];
@@ -28,23 +29,41 @@ const Mapa = () => {
   const [directions, setDirections] = useState(null);
   const [distance, setDistance] = useState(null);
   const [duration, setDuration] = useState(null);
+  const [selectedTruck, setSelectedTruck] = useState('');
+  const [trucks, setTrucks] = useState([]);
   const originRef = useRef(null);
   const destinationRef = useRef(null);
 
   useEffect(() => {
     const loadCache = async () => {
-      const cachedOrigin = await localforage.getItem('origin');
-      const cachedDestination = await localforage.getItem('destination');
-      const cachedDistance = await localforage.getItem('distance');
-      const cachedDuration = await localforage.getItem('duration');
+      try {
+        const cachedOrigin = await localforage.getItem('origin');
+        const cachedDestination = await localforage.getItem('destination');
+        const cachedDistance = await localforage.getItem('distance');
+        const cachedDuration = await localforage.getItem('duration');
+        const cachedTruck = await localforage.getItem('selectedTruck');
 
-      if (cachedOrigin) setOrigin(cachedOrigin);
-      if (cachedDestination) setDestination(cachedDestination);
-      if (cachedDistance) setDistance(cachedDistance);
-      if (cachedDuration) setDuration(cachedDuration);
+        if (cachedOrigin) setOrigin(new google.maps.LatLng(cachedOrigin.lat, cachedOrigin.lng));
+        if (cachedDestination) setDestination(new google.maps.LatLng(cachedDestination.lat, cachedDestination.lng));
+        if (cachedDistance) setDistance(cachedDistance);
+        if (cachedDuration) setDuration(cachedDuration);
+        if (cachedTruck) setSelectedTruck(cachedTruck);
+      } catch (error) {
+        console.error("Error loading cache:", error);
+      }
+    };
+
+    const fetchTrucks = async () => {
+      try {
+        const response = await getLicensePlatesAvailable();
+        setTrucks(response);
+      } catch (error) {
+        console.error("Error fetching license plates:", error);
+      }
     };
 
     loadCache();
+    fetchTrucks();
   }, []);
 
   const handleMapLoad = (map) => {
@@ -61,8 +80,8 @@ const Mapa = () => {
       setDuration(calculatedDuration);
 
       // Save to cache
-      localforage.setItem('distance', calculatedDistance);
-      localforage.setItem('duration', calculatedDuration);
+      localforage.setItem('distance', calculatedDistance).catch(err => console.error("Error saving distance to cache:", err));
+      localforage.setItem('duration', calculatedDuration).catch(err => console.error("Error saving duration to cache:", err));
     }
   };
 
@@ -71,10 +90,11 @@ const Mapa = () => {
       const place = originRef.current.getPlace();
       if (place.geometry) {
         const location = place.geometry.location;
+        const originData = { lat: location.lat(), lng: location.lng() };
         setOrigin(location);
 
         // Save to cache
-        localforage.setItem('origin', location);
+        localforage.setItem('origin', originData).catch(err => console.error("Error saving origin to cache:", err));
       }
     }
   };
@@ -84,16 +104,25 @@ const Mapa = () => {
       const place = destinationRef.current.getPlace();
       if (place.geometry) {
         const location = place.geometry.location;
+        const destinationData = { lat: location.lat(), lng: location.lng() };
         setDestination(location);
 
         // Save to cache
-        localforage.setItem('destination', location);
+        localforage.setItem('destination', destinationData).catch(err => console.error("Error saving destination to cache:", err));
       }
     }
   };
 
+  const handleTruckChange = (event) => {
+    const selectedTruckI = event.target.value;
+    setSelectedTruck(selectedTruckI);
+
+    // Save to cache
+    localforage.setItem('selectedTruck', selectedTruckI).catch(err => console.error("Error saving selected truck to cache:", err));
+  };
+
   const handleSearch = async () => {
-    if (origin && destination && distance && duration) {
+    if (origin && destination && distance && duration && selectedTruck) {
       const routeData = {
         origin: {
           lat: origin.lat(),
@@ -105,10 +134,11 @@ const Mapa = () => {
         },
         distance: distance, // distancia en kilómetros
         duration: duration, // duración en minutos
+        truckLicense: selectedTruck, // licencia del camión seleccionado
       };
 
       try {
-        await createRoute(routeData)
+        await createRoute(routeData);
       } catch (error) {
         console.error("Error saving route:", error);
       }
@@ -146,9 +176,12 @@ const Mapa = () => {
               className={styles.input}
             />
           </Autocomplete>
-          <button onClick={handleSearch} className={styles.button}>
-            Search
-          </button>
+          <select value={selectedTruck} onChange={handleTruckChange} className={styles.select} required>
+            <option value="">Choose a license plate</option>
+            {trucks.map((license, index) => (
+              <option key={index} value={license}>{license}</option>
+            ))}
+          </select>
         </div>
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
@@ -171,6 +204,11 @@ const Mapa = () => {
           {origin && <Marker position={origin} />}
           {destination && <Marker position={destination} />}
         </GoogleMap>
+        <div>
+          <button onClick={handleSearch} className={styles.button}>
+            Search
+          </button>
+        </div>
       </LoadScript>
     </div>
   );
