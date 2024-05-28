@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import styles from "@/app/dashboard/trucks/[id]/components/viewTruck.module.css";
 
 const TruckDetails = ({ details }) => {
@@ -160,8 +161,41 @@ const TruckDetails = ({ details }) => {
                 <input type="text" value={details.tire?.[0]?.rotation_pattern || ''} readOnly />
               </div>
             </div>
+
+            <h3>Fuel</h3>
+            <div className={styles.inputGroup}>
+              <div className={styles.inputWrapper}>
+                <label>Amount</label>
+                <input type="text" value={details.fuel?.amount || ''} readOnly />
+              </div>
+
+              <div className={styles.inputWrapper}>
+                <label>Cost</label>
+                <input type="text" value={details.fuel?.cost || ''} readOnly />
+              </div>
+
+              <div className={styles.inputWrapper}>
+                <label>Efficiency</label>
+                <input type="text" value={details.fuel?.efficienncy || ''} readOnly />
+              </div>
+
+              <div className={styles.inputWrapper}>
+                <label>Created</label>
+                <input type="text" value={details.fuel?.createdAt || 0} readOnly />
+              </div>
+            </div>
           </div>
         </form>
+        <Link href={`/dashboard/trucks/${details.truck.id}/fuels`}>
+          <button className={`${styles.buttom} ${styles.view}`}>
+              Fuels
+          </button>
+        </Link>
+        <Link href={`/dashboard/trucks/${details.truck.id}/exception`}>
+          <button className={`${styles.buttom} ${styles.view}`}>
+              Create Exception
+          </button>
+        </Link>
       </div>
     </div>
   );

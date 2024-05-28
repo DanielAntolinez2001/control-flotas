@@ -56,7 +56,7 @@ export const createMaintenance = async (formData) => {
 };
 
 // Método para obtener todos registros de mantenimientos
-export const getMaintenances = async (req, res) => {
+export const getMaintenances = async () => {
   try {
     const maintenances = await prisma.maintenance.findMany({
       include: {truck: true, report: true},
@@ -193,3 +193,72 @@ export const deleteMaintenance = async (id) => {
   }
 };
 
+// -----------------------------------  Exception --------------------------------- //
+export const createException = async (id, formData) => {
+  try {
+    const { description, statusE, brand, model, mileage, status, costF, efficienncy, amount, fluid_level, pads_condition, discs_condition, leak_detection, pipes_condition, mufflers_condition, direction_fluid_level, brake_fluid_level, coolant_fluid_level, wiper_fluid_level, chassis_condition, body_condition, seatbelt_functionality, battery_status, lights_functionality, fuse_status} = formData;
+    console.log(formData)
+
+    const truck = await getTruckById(id);
+    console.log(truck, id)
+
+    await updateTire({ brand, model, mileage, status}, truck.id);
+    await updateFuel({ costF, efficienncy, amount }, truck.id);
+    await updateBrakes({ pads_condition, discs_condition, fluid_level }, truck.id);
+    await updateExhaustSystem({ leak_detection, pipes_condition, mufflers_condition }, truck.id);
+    await updateFluidsSystem({ direction_fluid_level, brake_fluid_level, coolant_fluid_level, wiper_fluid_level }, truck.id);
+    await updateBodyChassis({ chassis_condition, body_condition, seatbelt_functionality }, truck.id);
+    await updateElectricalSystem({ battery_status, lights_functionality, fuse_status }, truck.id);
+
+    const exception = await prisma.exception.create({
+      data: {
+        description,
+        status: statusE,
+        truckId: truck.id,
+      },
+    });
+
+    revalidatePath(`/dashboard/trucks/${truck.id}/components`);
+    redirect(`/dashboard/trucks/${truck.id}/components`);
+    
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+};
+
+export const getPendingException = async () => {
+  try {
+    const pendingException = await prisma.exception.findMany({ where: { status: "Pending" }, include: { truck: true, } });
+    const exceptionsStatus = [];
+
+    for (const exception of pendingException) {
+      exceptionsStatus.push({
+        truckid: exception.truck.id,
+        truckLicense: exception.truck.license_plate,
+        id: exception.id,
+        description: exception.description,
+      });
+    }
+
+    console.log(exceptionsStatus);
+    return exceptionsStatus;
+  } catch (error) {
+    console.error(`Error al obtener las excepciones pendientes: ${error.message}`);
+    throw error;
+  }
+};
+
+export const checkException = async (id) => {
+  try{
+    console.log(id)
+    await prisma.exception.update({ where: {id: id}, data: {status: "Ckeck"}})
+    
+    revalidatePath(`/dashboard`);
+    redirect(`/dashboard`);
+
+  } catch (error) {
+    console.error(`Error al obtener las excepciones pendientes: ${error.message}`);
+    throw error;
+  }
+};

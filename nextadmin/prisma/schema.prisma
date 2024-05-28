@@ -66,6 +66,7 @@ model Truck {
   exhaust_system     ExhaustSystem? //Sistema de escape
   tire               Tire? //Neumáticos
   Maintenance        Maintenance[]
+  exception          Exception[]
   route              Route[]
   rotation_neumatics DateTime          @default(now())
   change_neumatics   DateTime          @default(now())
@@ -241,6 +242,16 @@ model Report {
   maintenanceId String?      @unique @db.ObjectId
   consume_fuel  Boolean?     @default(false)
   cost          Float?
+}
+
+model Exception {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  truck       Truck?   @relation(fields: [truckId], references: [id])
+  truckId     String?  @db.ObjectId
+  createdAt   DateTime @default(now())
+  status      String
+  updatedAt   DateTime @updatedAt
+  description String
 }
 
 model Maintenance {

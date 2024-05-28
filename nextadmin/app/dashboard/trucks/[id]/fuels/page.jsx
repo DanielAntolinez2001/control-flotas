@@ -75,7 +75,7 @@ const FuelsPage = ({ params }) => {
           ))}
         </tbody>
       </table>
-      <Link href={`/dashboard/trucks`}>
+      <Link href={`/dashboard/trucks/${truck.id}/components`}>
         <button type="submit" className={styles.buttonBack}>
           Back
         </button>

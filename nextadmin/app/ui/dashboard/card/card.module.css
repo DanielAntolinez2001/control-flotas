@@ -5,7 +5,8 @@
   display: flex;
   gap: 20px;
   cursor: pointer;
-  width: 100%;
+  width: 90%;
+  margin-right: 10px;
 }
 
 .container:hover {
@@ -19,12 +20,12 @@
 }
 
 .title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 500;
 }
 
 .number {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 500;
 }
 
@@ -39,4 +40,16 @@
 
 .negative {
   color: red;
+}
+
+.buttom {
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: var(--text);
+  border: none;
+  cursor: pointer;
+}
+
+.update {
+  background-color:rgb(12, 122, 181) ;
 }

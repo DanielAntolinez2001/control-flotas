@@ -165,15 +165,21 @@ export const getAvailableTrucks = async () => {
 
 export const getTruckAndComponents = async (id) => {
   try {
-    // Fetch the truck and all its related components
-    const truck = await prisma.truck.findFirst({ where: { id: id }});
-    const fluidsSystem = await prisma.fluidsSystem.findMany({ where: { truckId: id }});
-    const brakes = await prisma.brakes.findMany({ where: { truckId: id }});
-    const bodyChassis = await prisma.bodyChassis.findMany({ where: { truckId: id }});
-    const exhaustSystem = await prisma.exhaustSystem.findMany({ where: { truckId: id }});
-    const electricalSystem = await prisma.electricalSystem.findMany({ where: { truckId: id }});
-    const tire = await prisma.tire.findMany({ where: { truckId: id }});
-    const fuels = await prisma.fuel.findMany({ where: { truckId: id }});
+    const truck = await prisma.truck.findFirst({ where: { id: id } });
+    const fluidsSystem = await prisma.fluidsSystem.findMany({ where: { truckId: id } });
+    const brakes = await prisma.brakes.findMany({ where: { truckId: id } });
+    const bodyChassis = await prisma.bodyChassis.findMany({ where: { truckId: id } });
+    const exhaustSystem = await prisma.exhaustSystem.findMany({ where: { truckId: id } });
+    const electricalSystem = await prisma.electricalSystem.findMany({ where: { truckId: id } });
+    const tire = await prisma.tire.findMany({ where: { truckId: id } });
+
+
+    const recentFuel = await prisma.fuel.findFirst({
+      where: { truckId: id },
+      orderBy: {
+        createdAt: 'desc', 
+      },
+    });
 
     if (!truck) {
       console.error("Truck not found");
@@ -188,7 +194,7 @@ export const getTruckAndComponents = async (id) => {
       exhaustSystem,
       electricalSystem,
       tire,
-      fuels,
+      fuel: recentFuel,
     };
 
     // Log the result in a more readable format

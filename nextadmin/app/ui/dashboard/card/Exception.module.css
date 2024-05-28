@@ -1,0 +1,22 @@
+    /* pendingExceptionsList.module.css */
+.listContainer {
+display: flex;
+    scroll-snap-type: x mandatory;
+    max-width: 100%; /* Asegura que el contenedor no exceda el ancho de la pantalla */
+    box-sizing: border-box;
+    margin-bottom: 20px; /* Añade margen inferior para separar del contenido siguiente */
+}
+  
+  .listContainer::-webkit-scrollbar {
+    height: 12px;
+  }
+  
+  .listContainer::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 6px;
+  }
+  
+  .listContainer::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+  
