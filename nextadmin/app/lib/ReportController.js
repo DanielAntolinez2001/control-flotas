@@ -144,18 +144,22 @@ export const createTotalReport = async (req, res) => {
 };
 
 //Metodo para generar un informe que identifique el vehículo que consume más combustible
-export const createReportFuel = async (req, res) => {
+export const createReportFuel = async () => {
   try {
-    const trucks = await prisma.truck.findMany({
-      include: {
-        fuel: true,
-      },
+    // Encuentra los reportes existentes que consumen combustible
+    const reportS = await prisma.report.findMany({
+      where: { consume_fuel: true },
     });
+    // Encuentra todos los camiones con sus registros de combustible
+    const trucks = await prisma.truck.findMany({ include: { fuel: true } });
 
-    // Encuentra el camión con el mayor consumo de combustible
+    // Variables para los camiones con mayor consumo de combustible
     let maxFuelConsumptionTruck = null;
     let maxTotalFuelConsumption = 0;
+    let maxFuelConsumptionTruck2 = null;
+    let maxTotalFuelConsumption2 = 0;
 
+    // Calcula el consumo total de combustible para cada camión
     trucks.forEach((truck) => {
       let totalFuelConsumption = 0;
 
@@ -163,33 +167,68 @@ export const createReportFuel = async (req, res) => {
         totalFuelConsumption += fuelRecord.cost;
       });
 
+      // Encuentra los dos camiones con mayor consumo de combustible
       if (totalFuelConsumption > maxTotalFuelConsumption) {
-        maxTotalFuelConsumption = totalFuelConsumption;
+        maxFuelConsumptionTruck2 = maxFuelConsumptionTruck;
+        maxTotalFuelConsumption2 = maxTotalFuelConsumption;
         maxFuelConsumptionTruck = truck;
+        maxTotalFuelConsumption = totalFuelConsumption;
+      } else if (totalFuelConsumption >= maxTotalFuelConsumption2) {
+        maxFuelConsumptionTruck2 = truck;
+        maxTotalFuelConsumption2 = totalFuelConsumption;
       }
     });
 
-    // Genera el informe sobre el camión con el mayor consumo de combustible
+    // Genera el contenido del informe
     let reportContent = "";
     if (maxFuelConsumptionTruck) {
-      reportContent = `
-        <h1>Informe de Consumo de Combustible</h1>
-        <p>El camión con el mayor consumo de combustible es:</p>
-        <p>ID: ${maxFuelConsumptionTruck.id}</p>
-        <p>Marca: ${maxFuelConsumptionTruck.brand}</p>
-        <p>Modelo: ${maxFuelConsumptionTruck.model}</p>
-        <p>Estado: ${maxFuelConsumptionTruck.status}</p>
-        <p>Placa: ${maxFuelConsumptionTruck.license_plate}</p>
-        <p>Consumo Total de Combustible: ${maxTotalFuelConsumption} L</p>
-      `;
+      reportContent = "Informe de Consumo de Combustible\n\n";
+      reportContent += "El camión con el mayor consumo de combustible es:\n";
+      reportContent += `ID: ${maxFuelConsumptionTruck.id}\n`;
+      reportContent += `Marca: ${maxFuelConsumptionTruck.brand}\n`;
+      reportContent += `Modelo: ${maxFuelConsumptionTruck.model}\n`;
+      reportContent += `Estado: ${maxFuelConsumptionTruck.status}\n`;
+      reportContent += `Placa: ${maxFuelConsumptionTruck.license_plate}\n`;
+      reportContent += `Consumo Total de Combustible: ${maxTotalFuelConsumption}\n`;
+
+      if (maxFuelConsumptionTruck2) {
+        reportContent +=
+          "\nEl segundo camión con el mayor consumo de combustible es:\n";
+        reportContent += `ID: ${maxFuelConsumptionTruck2.id}\n`;
+        reportContent += `Marca: ${maxFuelConsumptionTruck2.brand}\n`;
+        reportContent += `Modelo: ${maxFuelConsumptionTruck2.model}\n`;
+        reportContent += `Estado: ${maxFuelConsumptionTruck2.status}\n`;
+        reportContent += `Placa: ${maxFuelConsumptionTruck2.license_plate}\n`;
+        reportContent += `Consumo Total de Combustible: ${maxTotalFuelConsumption2}\n`;
+      }
     } else {
       reportContent = "No se encontraron datos de consumo de combustible";
     }
 
-    // Envía el informe como respuesta
-    res.status(200).send(reportContent);
+    let report = null;
+    console.log(reportS);
+
+    // Actualiza el reporte si ya existe, de lo contrario crea uno nuevo
+    if (reportS.length > 0) {
+      report = await prisma.report.update({
+        where: { id: reportS[0].id },
+        data: { content: reportContent },
+      });
+    } else {
+      report = await prisma.report.create({
+        data: {
+          consume_fuel: true,
+          content: reportContent,
+          cost: 0,
+          maintenanceId: null, // Asegúrate de que maintenanceId sea null si no lo necesitas
+        },
+      });
+    }
+
+    return [report];
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 };
 

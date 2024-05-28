@@ -21,7 +21,7 @@ export const createTruck = async (formData) => {
 
     // Asegurarse de que avatar es un archivo
     const avatar = formData.get("avatar");
-    if (avatar && avatar instanceof File) {
+    if (avatar && avatar instanceof File && avatar.name != "undefined") {
       const avatarFileName = `${license_plate}-${avatar.name}`;
       avatarPath = path.posix.join("/uploads", avatarFileName);
       const uploadPath = path.join(process.cwd(), "public", avatarPath);
@@ -31,7 +31,7 @@ export const createTruck = async (formData) => {
       fs.writeFileSync(uploadPath, buffer);
     }
 
-    // Convertir `model` a un entero
+    // Convertir model a un entero
     const modelInt = parseInt(model, 10);
 
     if (isNaN(modelInt)) {
@@ -83,12 +83,27 @@ export const createTruck = async (formData) => {
         },
       });
     } else {
-      console.error(`Error: Faltan datos de neumaticos`);
+      console.error("Error: Faltan datos de neumaticos");
       throw error;
     }
 
     revalidatePath("/dashboard/trucks");
     redirect("/dashboard/trucks");
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+};
+
+export const getLicensePlates = async () => {
+  try {
+    const trucks = await prisma.truck.findMany({
+      select: {
+        license_plate: true,
+      },
+    });
+    console.log(trucks.map((truck) => truck.license_plate));
+    return trucks.map((truck) => truck.license_plate);
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
@@ -120,6 +135,80 @@ export const getTruckById = async (id) => {
     }
 
     return truck;
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+};
+
+export const getAvailableTrucks = async () => {
+  try {
+    const availableTrucks = await prisma.truck.findMany({
+      where: { status: "available" },
+    });
+    const trucksStatus = [];
+
+    for (const truck of availableTrucks) {
+      trucksStatus.push({
+        truckLicense: truck.license_plate,
+        id: truck.id,
+        status: truck.status,
+      });
+    }
+
+    return trucksStatus;
+  } catch (error) {
+    console.error(
+      `Error al obtener los camiones disponibles: ${error.message}`
+    );
+    throw error;
+  }
+};
+
+export const getTruckAndComponents = async (id) => {
+  try {
+    const truck = await prisma.truck.findFirst({ where: { id: id } });
+    const fluidsSystem = await prisma.fluidsSystem.findMany({
+      where: { truckId: id },
+    });
+    const brakes = await prisma.brakes.findMany({ where: { truckId: id } });
+    const bodyChassis = await prisma.bodyChassis.findMany({
+      where: { truckId: id },
+    });
+    const exhaustSystem = await prisma.exhaustSystem.findMany({
+      where: { truckId: id },
+    });
+    const electricalSystem = await prisma.electricalSystem.findMany({
+      where: { truckId: id },
+    });
+    const tire = await prisma.tire.findMany({ where: { truckId: id } });
+
+    const recentFuel = await prisma.fuel.findFirst({
+      where: { truckId: id },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    if (!truck) {
+      console.error("Truck not found");
+      return null;
+    }
+
+    const result = {
+      truck,
+      fluidsSystem,
+      brakes,
+      bodyChassis,
+      exhaustSystem,
+      electricalSystem,
+      tire,
+      fuel: recentFuel,
+    };
+
+    // Log the result in a more readable format
+    console.log(JSON.stringify(result, null, 2));
+    return result;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;

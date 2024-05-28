@@ -1,54 +1,62 @@
 "use server";
 
-const PrismaClient = require("@prisma/client").PrismaClient;
+import { PrismaClient } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 const prisma = new PrismaClient();
 
-export const createTire = async (req, res) => {
-  try {
-    const { brand, status, model, mileage, id } = req.body;
-
-    const TireTruck = await prisma.tire.create({
-      data: {
-        truckId: id,
-        brand: brand,
-        status: status,
-        model: model,
-        mileage: mileage,
-      },
-    });
-
-    res.status(201).json({ TireTruck });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
 // Método para obtener todos los registros de neumáticos
-export const getTire = async (req, res) => {
+export const getTires = async () => {
   try {
-    const tire = await prisma.tire.findMany();
-    res.status(200).json(tire);
+    const tires = await prisma.tire.findMany({ include: { truck: true } });
+    return tires;
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 };
 
 // Método para obtener un registro de neumáticos por su ID
-export const getTireById = async (req, res) => {
-  const { id } = req.params;
+export const getTireByTruck = async (license_plate) => {
+  try {
+    const truck = await prisma.truck.findMany({
+      where: { license_plate: { startsWith: license_plate } },
+    });
 
+    if (truck[0] != undefined) {
+      const idT = truck[0].id.toString(); // Convertir a cadena
+      const tire = await prisma.tire.findMany({
+        where: { truckId: truckId },
+        include: { truck: true },
+      });
+
+      if (!tire) {
+        console.error("Tire no found");
+      }
+
+      return tire;
+    } else return [];
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+};
+
+// Método para obtener un registro de neumáticos por su ID
+export const getTireById = async (id) => {
+  console.log(id);
   try {
     const tire = await prisma.tire.findFirst({
       where: { id: id },
+      include: { truck: true },
     });
     if (!tire) {
-      return res
-        .status(404)
-        .json({ message: "Registro de sistema de escape no encontrado" });
+      console.error("Tire no found");
     }
-    res.status(200).json(tire);
+    return tire;
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 };
 
@@ -56,14 +64,14 @@ export const getTireById = async (req, res) => {
 export const updateTire = async (req, id) => {
   const { brand, model, mileage, status } = req;
 
-  // Convertir `model` a un entero
+  // Convertir model a un entero
   const modelInt = parseInt(model, 10);
 
   if (isNaN(modelInt)) {
     console.error("Model must be a valid number");
   }
 
-  // Convertir `model` a un entero
+  // Convertir model a un entero
   const mileageInt = parseInt(mileage, 10);
 
   if (isNaN(mileageInt)) {
@@ -94,39 +102,121 @@ export const updateTire = async (req, id) => {
 
 export const getTruckData = async (truckId) => {
   try {
-    const truckData = await prisma.truck.findUnique({
-      where: { id: truckId }, // Suponiendo que tienes el ID del camión disponible
-    });
+    const truckData = await prisma.truck.findUnique({ where: { id: truckId } });
     return truckData;
   } catch (error) {
-    console.error("Error fetching truck data:", error);
-    throw new Error("Failed to fetch truck data");
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+};
+
+//Metodo para actualizar las rotaciones de los neumaticos
+export const changeRotation = async (id, req) => {
+  try {
+    console.log(id, req);
+    const { rotation_pattern } = Object.fromEntries(req.entries());
+    const updateData = { rotation_pattern };
+
+    // Filtrar para eliminar propiedades vacías
+    const filteredUpdateData = Object.fromEntries(
+      Object.entries(updateData).filter(
+        ([key, value]) => value !== "" && value !== undefined
+      )
+    );
+
+    const tire = await prisma.tire.findFirst({ where: { id: id } });
+    if (filteredUpdateData != {}) {
+      await prisma.truck.update({
+        where: { id: tire.truckId },
+        data: { rotation_neumatics: new Date() },
+      });
+    }
+
+    await prisma.tire.update({
+      where: { id: id },
+      data: filteredUpdateData,
+    });
+
+    revalidatePath("/dashboard/tires");
+    redirect("/dashboard/tires");
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+};
+
+//Metodo para cambiar los neumáticos
+export const changeTire = async (id, req) => {
+  try {
+    console.log(id, req);
+    const { brand, model } = Object.fromEntries(req.entries());
+
+    // Convertir model a un entero
+    const modelInt = parseInt(model, 10);
+
+    if (isNaN(modelInt)) {
+      console.error("Model must be a valid number");
+    }
+
+    const updateData = {
+      brand,
+      model: modelInt,
+    };
+
+    // Filtrar para eliminar propiedades vacías
+    const filteredUpdateData = Object.fromEntries(
+      Object.entries(updateData).filter(
+        ([key, value]) => value !== "" && value !== undefined
+      )
+    );
+
+    const tire = await prisma.tire.findFirst({ where: { id: id } });
+    if (filteredUpdateData != {}) {
+      await prisma.truck.update({
+        where: { id: tire.truckId },
+        data: { change_neumatics: new Date() },
+      });
+    }
+
+    await prisma.tire.update({
+      where: { id: id },
+      data: filteredUpdateData,
+    });
+
+    revalidatePath("/dashboard/tires");
+    redirect("/dashboard/tires");
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 };
 
 // Función para determinar si es hora de cambiar los neumáticos
-export const isTimeToChangeTires = async (id) => {
+export const isTimeToChangeTires = async () => {
   try {
-    const tire = await prisma.tire.findFirst({
-      where: { id: id },
-    });
+    const tires = await prisma.tire.findMany();
+    const tireStatus = [];
 
-    if (!tire) {
-      alert("Tire not found");
+    for (const tire of tires) {
+      const truck = await getTruckData(tire.truckId);
+      const recommendedChangeDistance =
+        Math.floor(Math.random() * (50000 - 30000 + 1)) + 10000; // Genera un valor aleatorio entre 30,000 y 50,000
+      const shouldChangeTires = tire.mileage + 100 >= recommendedChangeDistance;
+
+      if (shouldChangeTires) {
+        tireStatus.push({
+          truckLicense: truck.license_plate,
+          tireId: tire.id,
+          mileage: tire.mileage,
+          shouldChangeTires,
+          description: `Truck ${truck.id} has already traveled ${tire.mileage} mileage`,
+        });
+      }
     }
 
-    const truck = await getTruckData(tire.truckId);
-
-    // Genera un valor aleatorio entre 10,000 y 50,000
-    const recommendedChangeDistance =
-      Math.floor(Math.random() * (50000 - 10000 + 1)) + 10000;
-
-    return {
-      shouldChangeTires: tire.mileage >= recommendedChangeDistance,
-      descripction: `Truck ${truck.id} has already traveled ${tire.mileage} mileage`,
-    };
+    return tireStatus;
   } catch (error) {
-    console.error("Error fetching truck data:", error);
-    throw new Error("Failed to fetch truck data");
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 };
