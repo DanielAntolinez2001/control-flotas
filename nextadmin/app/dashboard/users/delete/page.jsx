@@ -8,7 +8,9 @@ import { deleteUser } from "@/app/lib/users";
 
 const UserRow = ({ user, onDelete }) => {
   const handleDelete = async () => {
-    const isConfirmed = window.confirm("Are you sure you want to delete this user?");
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this user?"
+    );
     if (isConfirmed) {
       await deleteUser(user.id);
       onDelete(user.id);
@@ -17,39 +19,43 @@ const UserRow = ({ user, onDelete }) => {
 
   return (
     <tr key={user.id}>
-        <td>
+      <td>
         <div className={styles.user}>
-            <Image
+          <Image
             src={user.avatar || "/noavatar.png"}
             alt=""
             width={40}
             height={40}
             className={styles.userImage}
-            />
-            {user.name}
+          />
+          {user.name}
         </div>
-        </td>
-        <td>{user.lastname}</td>
-        <td>{user.email}</td>
-        <td>{user.role}</td>
-        <td>{user.available ? 'Available' : (user.active ? 'Active' : 'Inactive')}</td>
-        <td>
-        {user.address? `${user.address.street}, ${user.address.state} - ${user.address.city} ${user.address.zip_code}`
-        : null}
-        </td>
-        <td>{user.createdAt.toString().slice(4, 16)}</td>
-        <td>
+      </td>
+      <td>{user.lastname}</td>
+      <td>{user.email}</td>
+      <td>{user.role}</td>
+      <td>
+        {user.available ? "Available" : user.active ? "Active" : "Inactive"}
+      </td>
+      <td>
+        {user.address
+          ? `${user.address.street}, ${user.address.state} - ${user.address.city} ${user.address.zip_code}`
+          : null}
+      </td>
+      <td>{user.createdAt.toString().slice(4, 16)}</td>
+      <td>
         <div className={styles.buttoms}>
-            <Link href={`/dashboard/users/${user.id}`}>
-            <button className={`${styles.buttom} ${styles.view}`}>
-                View
-            </button>
-            </Link>
-            <button className={`${styles.buttom} ${styles.delete}`} onClick={() => handleDelete(user.id)}>
-                Delete
-            </button>
+          <Link href={`/dashboard/users/${user.id}`}>
+            <button className={`${styles.buttom} ${styles.view}`}>View</button>
+          </Link>
+          <button
+            className={`${styles.buttom} ${styles.delete}`}
+            onClick={() => handleDelete(user.id)}
+          >
+            Delete
+          </button>
         </div>
-        </td>
+      </td>
     </tr>
   );
 };

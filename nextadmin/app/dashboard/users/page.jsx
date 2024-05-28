@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import styles from "@/app/ui/dashboard/users/users.module.css";
@@ -26,7 +26,7 @@ const Users = ({ searchParams }) => {
   }, [q]);
 
   const handleDelete = (id) => {
-    setUsers(users.filter(user => user.id !== id));
+    setUsers(users.filter((user) => user.id !== id));
   };
 
   return (

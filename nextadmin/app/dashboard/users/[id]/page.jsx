@@ -8,7 +8,7 @@ import UpdateUserForm from "@/app/dashboard/users/[id]/page2";
 
 const SingleUserPage = async ({ params }) => {
   const { id } = params;
-  const user = await  getUSerById(id);
+  const user = await getUSerById(id);
 
   return (
     <div className={styles.container}>
