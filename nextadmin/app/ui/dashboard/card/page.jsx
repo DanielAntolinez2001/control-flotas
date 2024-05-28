@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Card from "./Card";
+import Card from "@/app/ui/dashboard/card/card";
 import styles from "./Exception.module.css";
 import { getPendingException } from "@/app/lib/maintenance";
 

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { createUser, redirectMain } from "@/app/lib/users";
@@ -26,15 +26,19 @@ const AddUserPage = () => {
 
   useEffect(() => {
     const fetchDepartments = async () => {
-      let departmentsData = localStorage.getItem('departments');
+      let departmentsData = localStorage.getItem("departments");
       if (departmentsData) {
         setDepartments(JSON.parse(departmentsData));
       } else {
-        const response = await fetch("https://www.datos.gov.co/resource/xdk5-pm3f.json");
+        const response = await fetch(
+          "https://www.datos.gov.co/resource/xdk5-pm3f.json"
+        );
         const data = await response.json();
-        const uniqueDepartments = [...new Set(data.map(item => item.departamento))].sort();
+        const uniqueDepartments = [
+          ...new Set(data.map((item) => item.departamento)),
+        ].sort();
         setDepartments(uniqueDepartments);
-        localStorage.setItem('departments', JSON.stringify(uniqueDepartments));
+        localStorage.setItem("departments", JSON.stringify(uniqueDepartments));
       }
     };
 
@@ -44,15 +48,24 @@ const AddUserPage = () => {
   useEffect(() => {
     const fetchMunicipalities = async () => {
       if (selectedDepartment) {
-        let municipalitiesData = localStorage.getItem(`municipalities_${selectedDepartment}`);
+        let municipalitiesData = localStorage.getItem(
+          `municipalities_${selectedDepartment}`
+        );
         if (municipalitiesData) {
           setMunicipalities(JSON.parse(municipalitiesData));
         } else {
-          const response = await fetch(`https://www.datos.gov.co/resource/xdk5-pm3f.json?departamento=${selectedDepartment}`);
+          const response = await fetch(
+            `https://www.datos.gov.co/resource/xdk5-pm3f.json?departamento=${selectedDepartment}`
+          );
           const data = await response.json();
-          const departmentMunicipalities = data.map(item => item.municipio).sort();
+          const departmentMunicipalities = data
+            .map((item) => item.municipio)
+            .sort();
           setMunicipalities(departmentMunicipalities);
-          localStorage.setItem(`municipalities_${selectedDepartment}`, JSON.stringify(departmentMunicipalities));
+          localStorage.setItem(
+            `municipalities_${selectedDepartment}`,
+            JSON.stringify(departmentMunicipalities)
+          );
         }
       } else {
         setMunicipalities([]);
@@ -84,7 +97,9 @@ const AddUserPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const isConfirmed = window.confirm("Are you sure you want to create this user?");
+    const isConfirmed = window.confirm(
+      "Are you sure you want to create this user?"
+    );
     if (isConfirmed) {
       const form = new FormData();
       for (const key in formData) {
@@ -93,36 +108,97 @@ const AddUserPage = () => {
       if (selectedFile) {
         form.append("avatar", selectedFile);
       }
-      
+
       const result = await createUser(form);
       if (result && result.error) {
         window.confirm(result.error);
       }
-    } 
+    }
   };
 
   return (
     <div className={styles.container}>
       <form onSubmit={handleSubmit} className={styles.form}>
-        <input type="text" name="name" id="name" placeholder="Name" value={formData.name} onChange={handleChange} required/>
-        <input type="text" name="lastname" id="lastname" placeholder="Lastname" value={formData.lastname} onChange={handleChange} required/>
-        <input type="email" name="email" id="email" placeholder="Email" value={formData.email} onChange={handleChange} required/>
-        <input type="password" name="password" id="password" placeholder="Password" value={formData.password} onChange={handleChange} required/>
-        <select name="role" id="role" value={formData.role} onChange={handleChange} required>
+        <input
+          type="text"
+          name="name"
+          id="name"
+          placeholder="Name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="lastname"
+          id="lastname"
+          placeholder="Lastname"
+          value={formData.lastname}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="email"
+          name="email"
+          id="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          id="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+        <select
+          name="role"
+          id="role"
+          value={formData.role}
+          onChange={handleChange}
+          required
+        >
           <option value="">Role</option>
           <option value="admin">Administrator</option>
           <option value="driver">Driver</option>
         </select>
-        <select name="active" id="active" value={formData.active} onChange={handleChange} required>
+        <select
+          name="active"
+          id="active"
+          value={formData.active}
+          onChange={handleChange}
+          required
+        >
           <option value="">Is Active?</option>
           <option value="true">Yes</option>
           <option value="false">No</option>
         </select>
         <div className={styles.address}>
           <h3>Address</h3>
-          <input type="text" name="street" placeholder="Address" value={formData.street} onChange={handleChange} />
-          <input type="text" name="neighborhood" placeholder="Neighborhood" value={formData.neighborhood} onChange={handleChange} />
-          <select name="state" id="state" value={formData.state} onChange={handleDepartmentChange}>
+          <input
+            type="text"
+            name="street"
+            placeholder="Address"
+            value={formData.street}
+            onChange={handleChange}
+          />
+          <input
+            type="text"
+            name="neighborhood"
+            placeholder="Neighborhood"
+            value={formData.neighborhood}
+            onChange={handleChange}
+          />
+          <select
+            name="state"
+            id="state"
+            value={formData.state}
+            onChange={handleDepartmentChange}
+          >
             <option value="">Select State</option>
             {departments.map((department) => (
               <option key={department} value={department}>
@@ -130,7 +206,13 @@ const AddUserPage = () => {
               </option>
             ))}
           </select>
-          <select name="city" id="city" value={formData.city} onChange={handleChange} disabled={!selectedDepartment}>
+          <select
+            name="city"
+            id="city"
+            value={formData.city}
+            onChange={handleChange}
+            disabled={!selectedDepartment}
+          >
             <option value="">Select City</option>
             {municipalities.map((municipality) => (
               <option key={municipality} value={municipality}>
@@ -138,12 +220,29 @@ const AddUserPage = () => {
               </option>
             ))}
           </select>
-          <input type="text" name="zip_code" placeholder="Zip Code" value={formData.zip_code} onChange={handleChange} />
-          <input type="text" name="details" placeholder="Details" value={formData.details} onChange={handleChange} />
+          <input
+            type="text"
+            name="zip_code"
+            placeholder="Zip Code"
+            value={formData.zip_code}
+            onChange={handleChange}
+          />
+          <input
+            type="text"
+            name="details"
+            placeholder="Details"
+            value={formData.details}
+            onChange={handleChange}
+          />
         </div>
         <div className={styles.section}>
           <h3 className={styles.title}>Upload Image</h3>
-          <input type="file" name="avatar" accept="image/*" onChange={handleFileChange} />
+          <input
+            type="file"
+            name="avatar"
+            accept="image/*"
+            onChange={handleFileChange}
+          />
         </div>
         <button type="submit" className={styles.button}>
           Submit
