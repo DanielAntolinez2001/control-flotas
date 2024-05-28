@@ -90,13 +90,12 @@ export const createUser = async (formData) => {
 };
 
 // Método para autenticar un usuario
-export const authenticate = async (formData) => {
+export const authenticate = async (prevState, formData) => {
   const { email, password } = Object.fromEntries(formData);
   try {
     await signIn("credentials", { email, password });
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw error;
+    return "Wrong credentials";
   }
 };
 
@@ -177,7 +176,7 @@ export const updateUser = async (id, formData) => {
   const formEntries = Object.fromEntries(formData.entries());
   const {
     name,
-    active, 
+    active,
     available,
     lastname,
     password,
@@ -300,4 +299,4 @@ export const getUserAvailable = async () => {
     console.error(`Error: ${error.message}`);
     throw error;
   }
-}
+};
