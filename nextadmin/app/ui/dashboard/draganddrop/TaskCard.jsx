@@ -1,25 +1,26 @@
 import React from "react";
-
-import styles from "./TaskCard.module.css";
 import Tag from "./Tag";
-import { MdDelete } from "react-icons/md";
+import styles from "./TaskCard.module.css";
 
-const TaskCard = ({ title, tags, handleDelete, index }) => {
+const TaskCard = ({ task, status, handleDelete }) => {
+  if (!task) {
+    return null; // O algún componente de fallback
+  }
+
+  const { task: taskName, tags = [] } = task;
+
   return (
-    <article className={styles.task_card}>
-      <p className="task_text">{title}</p>
-
+    <div className={styles.task_card}>
+      <h3>{taskName}</h3>
       <div className={styles.task_card_bottom_line}>
         <div className={styles.task_card_tags}>
           {tags.map((tag, index) => (
             <Tag key={index} tagName={tag} selected />
           ))}
         </div>
-        <div className={styles.task_delete} onClick={() => handleDelete(index)}>
-          <MdDelete />
-        </div>
+        <button onClick={handleDelete}>Delete</button>
       </div>
-    </article>
+    </div>
   );
 };
 

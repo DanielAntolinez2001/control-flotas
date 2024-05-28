@@ -1,18 +1,17 @@
 import React from "react";
-
 import styles from "./Tag.module.css";
 
 const Tag = ({ tagName, selectTag, selected }) => {
   const tagStyle = {
-    TireMaintenance: { backgroundColor: "#fda821" },
-    FuelMaintenance: { backgroundColor: "#15d4c8" },
-    GeneralMaintenance: { backgroundColor: "#ffd12c" },
-    Send: { backgroundColor: "#4cdafc" },
-    default: { backgroundColor: "#f9f9f9" },
+    default: { backgroundColor: "gray" },
+    "Tire Maintenance": { backgroundColor: "#fda821" },
+    "Fuel Maintenance": { backgroundColor: "#15d4c8" },
+    "General Maintenance": { backgroundColor: "#ffd12c" },
+    "Send": { backgroundColor: "#4cdafc" },
   };
+
   return (
     <button
-      type="button"
       className={styles.tag}
       style={selected ? tagStyle[tagName] : tagStyle.default}
       onClick={() => selectTag(tagName)}

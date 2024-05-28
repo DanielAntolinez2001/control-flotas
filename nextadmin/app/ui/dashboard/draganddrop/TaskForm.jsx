@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-
 import styles from "./TaskForm.module.css";
 import Tag from "./Tag";
 
@@ -39,7 +38,6 @@ const TaskForm = ({ setTasks }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(taskData);
     setTasks((prev) => {
       return [...prev, taskData];
     });
@@ -49,6 +47,7 @@ const TaskForm = ({ setTasks }) => {
       tags: [],
     });
   };
+
   return (
     <header className={styles.app_header}>
       <form onSubmit={handleSubmit}>
@@ -66,17 +65,17 @@ const TaskForm = ({ setTasks }) => {
             <Tag
               tagName="Tire Maintenance"
               selectTag={selectTag}
-              selected={checkTag("TireMaintenance")}
+              selected={checkTag("Tire Maintenance")}
             />
             <Tag
               tagName="Fuel Maintenance"
               selectTag={selectTag}
-              selected={checkTag("FuelMaintenance")}
+              selected={checkTag("Fuel Maintenance")}
             />
             <Tag
               tagName="General Maintenance"
               selectTag={selectTag}
-              selected={checkTag("GeneralMaintenance")}
+              selected={checkTag("General Maintenance")}
             />
             <Tag
               tagName="Send"

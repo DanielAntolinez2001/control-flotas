@@ -267,13 +267,14 @@ model Maintenance {
 }
 
 model Route {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  truck    Truck?  @relation(fields: [truckId], references: [id])
-  truckId  String? @db.ObjectId
-  user     User?   @relation(fields: [userId], references: [id])
-  userId   String? @db.ObjectId
-  distance Float
-  time     Float
-  from     String
-  to       String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  truck     Truck?   @relation(fields: [truckId], references: [id])
+  truckId   String?  @db.ObjectId
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?  @db.ObjectId
+  distance  Float
+  time      Float
+  from      String
+  to        String
+  createdAt DateTime @default(now())
 }

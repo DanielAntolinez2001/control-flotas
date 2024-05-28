@@ -162,6 +162,22 @@ export const getAvailableTrucks = async () => {
   }
 };
 
+export const getLicensePlatesAvailable = async () => {
+  try {
+    const trucks = await prisma.truck.findMany({
+      where: { status: "available" },
+      select: {
+        license_plate: true,
+      },
+    });
+    console.log(trucks.map((truck) => truck.license_plate));
+    return trucks.map((truck) => truck.license_plate);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+};
+
 export const getTruckAndComponents = async (id) => {
   try {
     const truck = await prisma.truck.findFirst({ where: { id: id } });

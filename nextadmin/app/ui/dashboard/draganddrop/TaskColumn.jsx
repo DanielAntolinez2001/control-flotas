@@ -1,26 +1,19 @@
 import React from "react";
-
-import styles from "./TaskColumn.module.css";
 import TaskCard from "./TaskCard";
+import styles from "./TaskColumn.module.css";
 
 const TaskColumn = ({ title, icon, tasks, status, handleDelete }) => {
-  return (
-    <section className={styles.task_column}>
-      <h2 className={styles.task_column_heading}>{(icon, title)}</h2>
+  const filteredTasks = tasks.filter(task => task.status === status);
 
-      {tasks.map(
-        (task, index) =>
-          task.status === status && (
-            <TaskCard
-              key={index}
-              title={task.task}
-              tags={task.tags}
-              handleDelete={handleDelete}
-              index={index}
-            />
-          )
-      )}
-    </section>
+  return (
+    <div className={styles.task_column}>
+      <h2>
+        {icon} {title}
+      </h2>
+      {filteredTasks.map((task, index) => (
+        <TaskCard key={index} task={task} status={status} handleDelete={() => handleDelete(index)} />
+      ))}
+    </div>
   );
 };
 
