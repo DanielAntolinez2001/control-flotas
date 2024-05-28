@@ -1,0 +1,89 @@
+/* viewTruck.module.css */
+.container {
+  padding: 20px;
+}
+
+.form input,
+.form select {
+  padding: 30px;
+  background-color: var(--bg);
+  color: var(--textSoft);
+  border: 2px solid #2e374a;
+  border-radius: 5px;
+  margin-right: 30px;
+  margin-bottom: 30px;
+}
+  
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+  
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.imgContainer {
+  width: 30%;
+  height: 300px;
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.inputGroup {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+}
+  
+  .inputWrapper {
+    flex: 1 1 calc(50% - 20px);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .inputWrapper label {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .inputWrapper input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .subtitle {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  
+  .h3 {
+    margin-top: 30px;
+  }
+
+  .buttom {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+
+  .view {
+    background-color: teal;
+  }
+  
+  .update {
+    background-color:rgb(12, 122, 181) ;
+  }
+  
+  

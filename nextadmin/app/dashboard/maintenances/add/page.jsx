@@ -1,8 +1,9 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import styles from "@/app/ui/dashboard/trucks/addTruck/addTruck.module.css";
 import { createMaintenance } from "@/app/lib/maintenance";
+import { getLicensePlates } from "@/app/lib/trucks";
 
 const AddMaintenancePage = () => {
   const [maintenanceType, setMaintenanceType] = useState("");
@@ -10,10 +11,24 @@ const AddMaintenancePage = () => {
     const savedData = localStorage.getItem("maintenanceFormData");
     return savedData ? JSON.parse(savedData) : {};
   });
+  const [licenses, setLicenses] = useState([]);
 
   useEffect(() => {
     localStorage.setItem("maintenanceFormData", JSON.stringify(formData));
   }, [formData]);
+
+  useEffect(() => {
+    const fetchLicenses = async () => {
+      try {
+        const data = await getLicensePlates();
+        setLicenses(data);
+      } catch (error) {
+        console.error('Error fetching licenses:', error);
+      }
+    };
+
+    fetchLicenses();
+  }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -50,7 +65,12 @@ const AddMaintenancePage = () => {
             <option value="before_route">Before Route</option>
             <option value="monthly">Monthly</option>
           </select>
-          <input type="text" placeholder="License Plate" name="license_plate" id="license_plate" onChange={handleChange} required/>
+          <select name="license_plate" id="license_plate" onChange={handleChange} required>
+            <option value="">Choose a license plate</option>
+            {licenses.map((license, index) => (
+              <option key={index} >{license}</option>
+            ))}
+          </select>
         </div>
 
         {/* Mantenimiento Semanal */}
@@ -227,7 +247,7 @@ const AddMaintenancePage = () => {
             </div>
             <div className={styles.section}>
               <h3 className={styles.title}>Electrical System</h3>
-              <select name="lights_functionality"onChange={handleChange}>
+              <select name="lights_functionality" onChange={handleChange}>
                 <option value="">Lights Functionality</option>
                 <option value="Functional">Functional</option>
                 <option value="NonFunctional">Non-Functional</option>

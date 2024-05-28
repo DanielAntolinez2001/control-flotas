@@ -56,6 +56,19 @@
   background-color: teal;
 }
 
+.update {
+  background-color:rgb(12, 122, 181) ;
+}
+
 .delete {
   background-color: red;
+}
+
+.buttonBack {
+  padding: 10px;
+  background-color: teal;
+  color: var(--text);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }

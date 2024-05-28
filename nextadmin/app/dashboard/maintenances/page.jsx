@@ -26,7 +26,7 @@ const Maintenances = ({ searchParams }) => {
   }, [q]);
 
   const handleDelete = (id) => {
-    setTrucks(maintenances.filter(maintenance => maintenance.id !== id));
+    setMaintenances(maintenances.filter(maintenance => maintenance.id !== id));
   };
 
   return (
@@ -35,6 +35,9 @@ const Maintenances = ({ searchParams }) => {
         <Search placeholder="Search maintenance..." />
         <Link href="/dashboard/maintenances/add">
           <button className={styles.addButtom}>Add Maintenance</button>
+        </Link>
+        <Link href="/dashboard/maintenances/program">
+          <button className={styles.addButtom}>Schedule Maintenance</button>
         </Link>
       </div>
       <table className={styles.table}>

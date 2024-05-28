@@ -39,7 +39,12 @@ const AddTruckForm = () => {
           />
           <input type="text" placeholder="Brand" name="brand" required />
           <input type="text" placeholder="Model" name="model" required />
-          <input type="text" id="status" placeholder="Status" name="status" required />
+          <select name="status" id="type" placeholder="status">
+            <option value="">Choose the truck's status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="available">Available</option>
+          </select>
         </div>
         <div className={styles.section}>
           <h3 className={styles.title}>Tire Condition</h3>

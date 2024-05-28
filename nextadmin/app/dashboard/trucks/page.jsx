@@ -36,6 +36,9 @@ const Trucks = ({ searchParams }) => {
         <Link href="/dashboard/trucks/add">
           <button className={styles.addButtom}>Add Truck</button>
         </Link>
+        <Link href={`/dashboard/trucks/report`}>
+          <button className={styles.addButtom}>Report</button>
+        </Link>
       </div>
       <table className={styles.table}>
         <thead>

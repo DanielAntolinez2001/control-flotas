@@ -52,23 +52,25 @@ model Address {
 }
 
 model Truck {
-  id                String            @id @default(auto()) @map("_id") @db.ObjectId
-  brand             String
-  model             Int
-  status            String
-  avatar            String?
-  license_plate     String            @unique
-  fluids_system     FluidsSystem? //Sistema de fluidos
-  body_chassis      BodyChassis? //Carrocería y chasis del camión
-  electrical_system ElectricalSystem? //Sistema eléctrico
-  brakes            Brakes? //Sistemma de frenos 
-  fuel              Fuel[] //Historial de combustible
-  exhaust_system    ExhaustSystem? //Sistema de escape
-  tire              Tire? //Neumáticos
-  Maintenance       Maintenance[]
-  route             Route[]
-  change_neumatics  DateTime          @default(now())
-  createdAt         DateTime          @default(now())
+  id                 String            @id @default(auto()) @map("_id") @db.ObjectId
+  brand              String
+  model              Int
+  status             String
+  avatar             String?
+  license_plate      String            @unique
+  fluids_system      FluidsSystem? //Sistema de fluidos
+  body_chassis       BodyChassis? //Carrocería y chasis del camión
+  electrical_system  ElectricalSystem? //Sistema eléctrico
+  brakes             Brakes? //Sistemma de frenos 
+  fuel               Fuel[] //Historial de combustible
+  exhaust_system     ExhaustSystem? //Sistema de escape
+  tire               Tire? //Neumáticos
+  Maintenance        Maintenance[]
+  exception          Exception[]
+  route              Route[]
+  rotation_neumatics DateTime          @default(now())
+  change_neumatics   DateTime          @default(now())
+  createdAt          DateTime          @default(now())
 }
 
 //--------------------------------- Interior de los camiones ----------------------------------
@@ -76,10 +78,11 @@ model Truck {
 model Fuel {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   truck       Truck      @relation(fields: [truckId], references: [id])
-  truckId     String     @unique @db.ObjectId
+  truckId     String     @db.ObjectId
   amount      FuelAmount @default(Empty)
-  cost        Float?
+  cost        Float?     @default(0)
   efficienncy Float?     @default(0)
+  createdAt   DateTime   @default(now())
 }
 
 model Brakes {
@@ -129,16 +132,26 @@ model ElectricalSystem {
 }
 
 model Tire {
-  id      String     @id @default(auto()) @map("_id") @db.ObjectId
-  truck   Truck?     @relation(fields: [truckId], references: [id])
-  truckId String?    @unique @db.ObjectId
-  brand   String
-  status  StatusTire @default(New)
-  model   Int
-  mileage Int        @default(0)
+  id               String          @id @default(auto()) @map("_id") @db.ObjectId
+  truck            Truck?          @relation(fields: [truckId], references: [id])
+  truckId          String?         @unique @db.ObjectId
+  brand            String
+  status           StatusTire      @default(New)
+  model            Int
+  mileage          Int             @default(0)
+  rotation_pattern RotationPattern @default(Initial)
 }
 
 //---------------------------------------------------------------------------------------
+
+enum RotationPattern {
+  Initial
+  ForwardCross
+  BackwardCross
+  XRotation
+  ParallelRotation
+  FiveWheel
+}
 
 enum FuseStatus {
   Intact
@@ -227,17 +240,30 @@ model Report {
   content       String
   maintenance   Maintenance? @relation(fields: [maintenanceId], references: [id])
   maintenanceId String?      @unique @db.ObjectId
-  cost          Float
+  consume_fuel  Boolean?     @default(false)
+  cost          Float?
+}
+
+model Exception {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  truck       Truck?   @relation(fields: [truckId], references: [id])
+  truckId     String?  @db.ObjectId
+  createdAt   DateTime @default(now())
+  status      String
+  updatedAt   DateTime @updatedAt
+  description String
 }
 
 model Maintenance {
   id          String          @id @default(auto()) @map("_id") @db.ObjectId
-  description String
+  description String?
   truck       Truck?          @relation(fields: [truckId], references: [id])
   truckId     String?         @db.ObjectId
   report      Report?
+  status      String          @default("Check")
   type        typeMaintenance
-  Cost        Float
+  Cost        Float?
+  schedule_m  DateTime?
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 }

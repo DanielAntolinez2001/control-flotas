@@ -10,6 +10,17 @@
   position: relative;
 }
 
+.scrollContainer {
+  overflow-y: auto;
+  max-height: 300px; /* Ajusta la altura máxima según tus necesidades */
+}
+
+.innerContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Espacio entre los elementos internos */
+}
+
 .bgContainer {
   position: absolute;
   bottom: 0;
