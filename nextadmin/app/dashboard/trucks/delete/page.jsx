@@ -37,8 +37,8 @@ const TruckRow = ({ truck, onDelete }) => {
       <td>
         <div className={styles.buttoms}>
             <Link href={`/dashboard/trucks/${truck.id}`}>
-            <button className={`${styles.buttom} ${styles.view}`}>
-                View
+            <button className={`${styles.buttom} ${styles.update}`}>
+                Update
             </button>
             </Link>
             <button className={`${styles.buttom} ${styles.delete}`} onClick={() => handleDelete(truck.id)}>
@@ -47,6 +47,11 @@ const TruckRow = ({ truck, onDelete }) => {
             <Link href={`/dashboard/trucks/${truck.id}/fuels`}>
             <button className={`${styles.buttom} ${styles.view}`}>
                 Fuels
+            </button>
+            </Link>
+            <Link href={`/dashboard/trucks/${truck.id}/components`}>
+            <button className={`${styles.buttom} ${styles.view}`}>
+                View
             </button>
             </Link>
         </div>

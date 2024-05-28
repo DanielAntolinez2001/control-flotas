@@ -143,6 +143,63 @@ export const getTruckById = async (id) => {
   }
 };
 
+export const getAvailableTrucks = async () => {
+  try {
+    const availableTrucks = await prisma.truck.findMany({ where: { status: "available" } });
+    const trucksStatus = [];
+
+    for (const truck of availableTrucks) {
+      trucksStatus.push({
+        truckLicense: truck.license_plate,
+        id: truck.id,
+        status: truck.status,
+      });
+    }
+
+    return trucksStatus;
+  } catch (error) {
+    console.error(`Error al obtener los camiones disponibles: ${error.message}`);
+    throw error;
+  }
+};
+
+export const getTruckAndComponents = async (id) => {
+  try {
+    // Fetch the truck and all its related components
+    const truck = await prisma.truck.findFirst({ where: { id: id }});
+    const fluidsSystem = await prisma.fluidsSystem.findMany({ where: { truckId: id }});
+    const brakes = await prisma.brakes.findMany({ where: { truckId: id }});
+    const bodyChassis = await prisma.bodyChassis.findMany({ where: { truckId: id }});
+    const exhaustSystem = await prisma.exhaustSystem.findMany({ where: { truckId: id }});
+    const electricalSystem = await prisma.electricalSystem.findMany({ where: { truckId: id }});
+    const tire = await prisma.tire.findMany({ where: { truckId: id }});
+    const fuels = await prisma.fuel.findMany({ where: { truckId: id }});
+
+    if (!truck) {
+      console.error("Truck not found");
+      return null;
+    }
+
+    const result = {
+      truck,
+      fluidsSystem,
+      brakes,
+      bodyChassis,
+      exhaustSystem,
+      electricalSystem,
+      tire,
+      fuels,
+    };
+
+    // Log the result in a more readable format
+    console.log(JSON.stringify(result, null, 2));
+    return result;
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+};
+
 // Método para obtener un camión por su ID
 export const getTruckByLicense = async (license_plate) => {
   console.log(license_plate);

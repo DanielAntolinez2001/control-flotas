@@ -56,6 +56,10 @@
   background-color: teal;
 }
 
+.update {
+  background-color:rgb(12, 122, 181) ;
+}
+
 .delete {
   background-color: red;
 }
