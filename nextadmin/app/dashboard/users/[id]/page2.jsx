@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState, useEffect } from "react";
 import styles from "@/app/ui/dashboard/users/singleUser/singleUser.module.css";
 import { redirectMain, updateUser } from "@/app/lib/users";
@@ -17,6 +19,8 @@ const UpdateUserForm = ({ user }) => {
     state: user.address?.state || '',
     zip_code: user.address?.zip_code || '',
     details: user.address?.details || '',
+    active: user.active || '', // Estado inicial para "activo"
+    available: user.available || '' // Estado inicial para "available"
   });
 
   useEffect(() => {
@@ -103,9 +107,23 @@ const UpdateUserForm = ({ user }) => {
         <input type="text" name="lastname" onChange={handleChange} placeholder={user.lastname} />
         <label>Password</label>
         <input type="password" name="password" onChange={handleChange} placeholder="Password" />
+        <div className={styles.section}>
+          <label>Active</label>
+          <select name="active" onChange={handleChange}>
+          <option value="">Is Active?</option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+          </select>
+          <label>Available</label>
+          <select name="available" onChange={handleChange}>
+          <option value="">Is Available?</option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+          </select>
+        </div>
         <div className={styles.address}>
           <label>Street</label>
-          <input type="text" name="street"onChange={handleChange} placeholder={user.address ? user.address.street : "..."} />
+          <input type="text" name="street" onChange={handleChange} placeholder={user.address ? user.address.street : "..."} />
           <label>State</label>
           <select name="state" value={formData.state} onChange={handleDepartmentChange}>
             <option value="">Select State</option>

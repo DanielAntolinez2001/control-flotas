@@ -13,6 +13,7 @@ import {
 } from "@react-google-maps/api";
 import { getLicensePlatesAvailable } from "@/app/lib/trucks";
 import { createRoute } from "@/app/lib/route";
+import { getUserAvailable } from "@/app/lib/users";
 
 const libraries = ["places"];
 const mapContainerStyle = {
@@ -31,6 +32,8 @@ const Mapa = () => {
   const [duration, setDuration] = useState(null);
   const [selectedTruck, setSelectedTruck] = useState('');
   const [trucks, setTrucks] = useState([]);
+  const [users, setUsers] = useState([]); // Nuevo estado para usuarios disponibles
+  const [selectedUser, setSelectedUser] = useState(''); // Estado para el usuario seleccionado
   const originRef = useRef(null);
   const destinationRef = useRef(null);
 
@@ -42,28 +45,34 @@ const Mapa = () => {
         const cachedDistance = await localforage.getItem('distance');
         const cachedDuration = await localforage.getItem('duration');
         const cachedTruck = await localforage.getItem('selectedTruck');
+        const cachedUser = await localforage.getItem('selectedUser'); // Cache para el usuario seleccionado
 
         if (cachedOrigin) setOrigin(new google.maps.LatLng(cachedOrigin.lat, cachedOrigin.lng));
         if (cachedDestination) setDestination(new google.maps.LatLng(cachedDestination.lat, cachedDestination.lng));
         if (cachedDistance) setDistance(cachedDistance);
         if (cachedDuration) setDuration(cachedDuration);
         if (cachedTruck) setSelectedTruck(cachedTruck);
+        if (cachedUser) setSelectedUser(cachedUser); // Setear el usuario desde el cache
       } catch (error) {
         console.error("Error loading cache:", error);
       }
     };
 
-    const fetchTrucks = async () => {
+    const fetchTrucksAndUsers = async () => {
       try {
-        const response = await getLicensePlatesAvailable();
-        setTrucks(response);
+        const [trucksResponse, usersResponse] = await Promise.all([
+          getLicensePlatesAvailable(),
+          getUserAvailable(),
+        ]);
+        setTrucks(trucksResponse);
+        setUsers(usersResponse); // Setear usuarios disponibles
       } catch (error) {
-        console.error("Error fetching license plates:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
     loadCache();
-    fetchTrucks();
+    fetchTrucksAndUsers();
   }, []);
 
   const handleMapLoad = (map) => {
@@ -121,8 +130,16 @@ const Mapa = () => {
     localforage.setItem('selectedTruck', selectedTruckI).catch(err => console.error("Error saving selected truck to cache:", err));
   };
 
+  const handleUserChange = (event) => {
+    const selectedUserI = event.target.value;
+    setSelectedUser(selectedUserI);
+
+    // Save to cache
+    localforage.setItem('selectedUser', selectedUserI).catch(err => console.error("Error saving selected user to cache:", err));
+  };
+
   const handleSearch = async () => {
-    if (origin && destination && distance && duration && selectedTruck) {
+    if (origin && destination && distance && duration && selectedTruck && selectedUser) {
       const routeData = {
         origin: {
           lat: origin.lat(),
@@ -135,6 +152,7 @@ const Mapa = () => {
         distance: distance, // distancia en kilómetros
         duration: duration, // duración en minutos
         truckLicense: selectedTruck, // licencia del camión seleccionado
+        userId: selectedUser, // ID del usuario seleccionado
       };
 
       try {
@@ -180,6 +198,12 @@ const Mapa = () => {
             <option value="">Choose a license plate</option>
             {trucks.map((license, index) => (
               <option key={index} value={license}>{license}</option>
+            ))}
+          </select>
+          <select value={selectedUser} onChange={handleUserChange} className={styles.select} required>
+            <option value="">Choose a user</option>
+            {users.map((user) => (
+              <option key={user.id} value={user.id}>{user.name}</option>
             ))}
           </select>
         </div>

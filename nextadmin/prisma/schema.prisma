@@ -22,6 +22,7 @@ model User {
   role      typeRole @default(driver)
   avatar    String?
   active    Boolean  @default(true)
+  available Boolean? @default(true)
   route     Route[]
   tasks     Task[]
   address   Address? @relation(fields: [addressId], references: [id])
