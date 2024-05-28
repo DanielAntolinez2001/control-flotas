@@ -180,6 +180,7 @@ const Mapa = () => {
               type="text"
               placeholder="Enter origin address"
               className={styles.input}
+              required
             />
           </Autocomplete>
           <Autocomplete
@@ -192,6 +193,7 @@ const Mapa = () => {
               type="text"
               placeholder="Enter destination address"
               className={styles.input}
+              required
             />
           </Autocomplete>
           <select value={selectedTruck} onChange={handleTruckChange} className={styles.select} required>

@@ -20,6 +20,7 @@ export const createRoute = async (req) => {
             time: req.duration, 
             distance: req.distance,
             truckId: truck[0].id,
+            userId: req.userId,
         },
     })
 

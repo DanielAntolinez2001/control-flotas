@@ -94,7 +94,7 @@ const RightBar = () => {
                   <p className={styles.description}>
                     {`Truck ${maintenance.truckLicense} has a maintenance pending. Date: ${maintenance.schedule_m} `}
                   </p>
-                  <Link href={`/dashboard/maintenances/${maintenance.id}`}>
+                  <Link href={`/dashboard/maintenances/${maintenance.id}/update`}>
                     <button className={styles.button}>
                       <MdPlayCircleFilled />
                       Watch Maintenance

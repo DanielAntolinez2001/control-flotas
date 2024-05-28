@@ -148,7 +148,7 @@ export const changeRotation = async (id, req) => {
 //Metodo para cambiar los neumáticos
 export const changeTire = async (id, req) => {
   try {
-    console.log(id, req);
+    const currentYear = new Date().getFullYear();
     const { brand, model } = Object.fromEntries(req.entries());
 
     // Convertir model a un entero
@@ -156,6 +156,12 @@ export const changeTire = async (id, req) => {
 
     if (isNaN(modelInt)) {
       console.error("Model must be a valid number");
+      return { error: "Model must be a valid number" };
+    }
+
+    if (modelInt < 1970 || modelInt > currentYear + 1) {
+      console.error("Model year must be between 1970 and next year");
+      return { error: "Model year must be between 1970 and next year" };
     }
 
     const updateData = {

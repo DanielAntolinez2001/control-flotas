@@ -92,10 +92,11 @@ const UpdateUserForm = ({ user }) => {
       if (selectedFile) {
         form.append("avatar", selectedFile);
       }
-      await updateUser(user.id, form);
-    } else {
-      redirectMain();
-    }
+      const result = await updateUser(user.id, form);
+      if (result && result.error) {
+        window.confirm(result.error);
+      }
+    } 
   };
 
   return (

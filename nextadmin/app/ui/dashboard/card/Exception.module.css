@@ -1,6 +1,7 @@
 /* pendingExceptionsList.module.css */
 .listContainer {
   display: flex;
+  overflow-x: auto;
   scroll-snap-type: x mandatory;
   max-width: 100%; /* Asegura que el contenedor no exceda el ancho de la pantalla */
   box-sizing: border-box;

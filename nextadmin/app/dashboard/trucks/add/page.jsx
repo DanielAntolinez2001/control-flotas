@@ -40,7 +40,7 @@ const AddTruckForm = () => {
           />
           <input type="text" placeholder="Brand" name="brand" required />
           <input type="text" placeholder="Model" name="model" required />
-          <select name="status" id="type" placeholder="status">
+          <select name="status" id="type" placeholder="status" required>
             <option value="">Choose the truck's status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -49,8 +49,8 @@ const AddTruckForm = () => {
         </div>
         <div className={styles.section}>
           <h3 className={styles.title}>Tire Condition</h3>
-          <input type="text" id="Tire[brand]" name="Tire[brand]" placeholder="Brand" />
-          <input type="text" id="Tire[model]" name="Tire[model]" placeholder="Model" />
+          <input type="text" id="Tire[brand]" name="Tire[brand]" placeholder="Brand" required/>
+          <input type="text" id="Tire[model]" name="Tire[model]" placeholder="Model" required/>
         </div>
         <div className={styles.section}>
           <h3 className={styles.title}>Upload Image</h3>

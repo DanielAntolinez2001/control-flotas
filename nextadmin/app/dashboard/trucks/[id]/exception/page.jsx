@@ -43,13 +43,13 @@ const AddExceptionPage = ({ params }) => {
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.section}>
           <h3 className={styles.title}>Exception</h3>
-          <input type="text" name="description" placeholder="Description" onChange={handleChange}/>
-          <select name="statusE" id="type" onChange={handleChange}>
+          <input type="text" name="description" placeholder="Description" onChange={handleChange} required/>
+          <select name="statusE" id="type" onChange={handleChange} required>
             <option value="">Choose the status of exception</option>
             <option value="Check">Check</option>
             <option value="Pending">Pending</option>
           </select>
-          <select name="component" id="component" onChange={handleComponentChange}>
+          <select name="component" id="component" onChange={handleComponentChange} required>
             <option value="">Choose the type of preventive maintenance</option>
             <option value="fluids_system">Fluids system</option>
             <option value="body_chassis">Body and Chassis</option>
