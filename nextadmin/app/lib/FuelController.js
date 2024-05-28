@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -9,32 +9,29 @@ const prisma = new PrismaClient();
 export const createFuel = async (id, formData) => {
   try {
     console.log(id, formData);
-    const { amount, cost, efficiency} = Object.fromEntries(formData);
-    
-    // Convertir `model` a un entero
+    const { amount, cost, efficiency } = Object.fromEntries(formData);
+
+    // Convertir model a un entero
     const costFloat = parseFloat(cost);
     const efficiencyFloat = parseFloat(efficiency);
 
     console.log(costFloat, efficiencyFloat, "hola");
-    if(isNaN(costFloat) || isNaN(efficiencyFloat))
-    { 
-      console.error("Fields must be a valid number" );
+    if (isNaN(costFloat) || isNaN(efficiencyFloat)) {
+      console.error("Fields must be a valid number");
       return { error: "Fields must be a valid number" };
-    }else{
-      await prisma.fuel.create(
-      { 
+    } else {
+      await prisma.fuel.create({
         data: {
-            amount, 
-            truckId: id, 
-            cost: costFloat,
-            efficienncy: efficiencyFloat,
-        }, 
+          amount,
+          truckId: id,
+          cost: costFloat,
+          efficienncy: efficiencyFloat,
+        },
       });
     }
 
     revalidatePath(`/dashboard/trucks/${id}/fuels`);
     redirect(`/dashboard/trucks/${id}/fuels`);
-
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
@@ -63,15 +60,15 @@ export const updateFuel = async (req, id) => {
     if (cost) updateData.cost = cost;
     if (efficiency) updateData.efficienncy = efficiency;
     if (amount != "option") updateData.amount = amount;
-  
-    const fuel = await prisma.fuel.findMany({ where: { truckId: id, } });
-    
+
+    const fuel = await prisma.fuel.findMany({ where: { truckId: id } });
+
     await prisma.fuel.update({
       where: { id: fuel[0].id },
       data: updateData,
     });
 
-    if (!fuel ) {
+    if (!fuel) {
       console.log("Fuel no found");
     }
   } catch (error) {
@@ -99,7 +96,9 @@ export const getFuelById = async (req, res) => {
       where: { id: id },
     });
     if (!fuel) {
-      return res.status(404).json({ message: "Registro de combustible no encontrado" });
+      return res
+        .status(404)
+        .json({ message: "Registro de combustible no encontrado" });
     }
     res.status(200).json(fuel);
   } catch (error) {
@@ -111,9 +110,9 @@ export const getFuelById = async (req, res) => {
 export const getFuelByTruck = async (id) => {
   console.log(id);
   try {
-    const truck = await prisma.truck.findFirst({ where: {id: id}, });
-    const fuels = await prisma.fuel.findMany({ where: { truckId: truck.id }, });
-    
+    const truck = await prisma.truck.findFirst({ where: { id: id } });
+    const fuels = await prisma.fuel.findMany({ where: { truckId: truck.id } });
+
     if (!fuels) {
       console.error("Fuel no found");
     }
@@ -128,11 +127,10 @@ export const getFuelByTruck = async (id) => {
 export const deleteFuel = async (id) => {
   console.log(id);
   try {
-    const fuel = await prisma.fuel.delete({ where: { id: id }, });
+    const fuel = await prisma.fuel.delete({ where: { id: id } });
     revalidatePath(`/dashboard/trucks/${fuel.truckId}/fuels`);
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
   }
-}
-
+};

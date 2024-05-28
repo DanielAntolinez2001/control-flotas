@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 // Método para obtener todos los registros de neumáticos
 export const getTires = async () => {
   try {
-    const tires = await prisma.tire.findMany({ include: {truck: true}});
+    const tires = await prisma.tire.findMany({ include: { truck: true } });
     return tires;
   } catch (error) {
     console.error(`Error: ${error.message}`);
@@ -19,19 +19,23 @@ export const getTires = async () => {
 // Método para obtener un registro de neumáticos por su ID
 export const getTireByTruck = async (license_plate) => {
   try {
-    const truck = await prisma.truck.findMany({ where: { license_plate: {startsWith: license_plate,}, },});
+    const truck = await prisma.truck.findMany({
+      where: { license_plate: { startsWith: license_plate } },
+    });
 
-    if (truck[0] != undefined){
+    if (truck[0] != undefined) {
       const idT = truck[0].id.toString(); // Convertir a cadena
-      const tire = await prisma.tire.findMany({ where: { truckId: truckId }, include: { truck: true}, });
+      const tire = await prisma.tire.findMany({
+        where: { truckId: truckId },
+        include: { truck: true },
+      });
 
       if (!tire) {
         console.error("Tire no found");
       }
 
       return tire;
-    }else
-      return [];
+    } else return [];
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
@@ -44,7 +48,7 @@ export const getTireById = async (id) => {
   try {
     const tire = await prisma.tire.findFirst({
       where: { id: id },
-      include: { truck: true},
+      include: { truck: true },
     });
     if (!tire) {
       console.error("Tire no found");
@@ -60,14 +64,14 @@ export const getTireById = async (id) => {
 export const updateTire = async (req, id) => {
   const { brand, model, mileage, status } = req;
 
-  // Convertir `model` a un entero
+  // Convertir model a un entero
   const modelInt = parseInt(model, 10);
 
   if (isNaN(modelInt)) {
     console.error("Model must be a valid number");
   }
 
-  // Convertir `model` a un entero
+  // Convertir model a un entero
   const mileageInt = parseInt(mileage, 10);
 
   if (isNaN(mileageInt)) {
@@ -111,28 +115,30 @@ export const changeRotation = async (id, req) => {
   try {
     console.log(id, req);
     const { rotation_pattern } = Object.fromEntries(req.entries());
-    const updateData = {rotation_pattern};
+    const updateData = { rotation_pattern };
 
     // Filtrar para eliminar propiedades vacías
     const filteredUpdateData = Object.fromEntries(
-      Object.entries(updateData).filter(([key, value]) => value !== '' && value !== undefined)
+      Object.entries(updateData).filter(
+        ([key, value]) => value !== "" && value !== undefined
+      )
     );
 
-    const tire = await prisma.tire.findFirst({where: {id: id}, });
-    if (filteredUpdateData != {}){
-      await prisma.truck.update({ 
-        where: {id: tire.truckId }, 
-        data: {rotation_neumatics: new Date()},
-      })
+    const tire = await prisma.tire.findFirst({ where: { id: id } });
+    if (filteredUpdateData != {}) {
+      await prisma.truck.update({
+        where: { id: tire.truckId },
+        data: { rotation_neumatics: new Date() },
+      });
     }
 
     await prisma.tire.update({
-      where: { id: id},
-      data: filteredUpdateData
+      where: { id: id },
+      data: filteredUpdateData,
     });
 
     revalidatePath("/dashboard/tires");
-    redirect('/dashboard/tires');
+    redirect("/dashboard/tires");
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
@@ -142,42 +148,43 @@ export const changeRotation = async (id, req) => {
 //Metodo para cambiar los neumáticos
 export const changeTire = async (id, req) => {
   try {
-    console.log(id, req); 
-    const { brand, model} = Object.fromEntries(req.entries());
+    console.log(id, req);
+    const { brand, model } = Object.fromEntries(req.entries());
 
-     // Convertir `model` a un entero
-     const modelInt = parseInt(model, 10);
+    // Convertir model a un entero
+    const modelInt = parseInt(model, 10);
 
-     if (isNaN(modelInt)) {
-       console.error("Model must be a valid number" );
-     }
+    if (isNaN(modelInt)) {
+      console.error("Model must be a valid number");
+    }
 
-    const updateData = { 
-      brand, 
+    const updateData = {
+      brand,
       model: modelInt,
-    }; 
+    };
 
     // Filtrar para eliminar propiedades vacías
     const filteredUpdateData = Object.fromEntries(
-      Object.entries(updateData).filter(([key, value]) => value !== '' && value !== undefined)
+      Object.entries(updateData).filter(
+        ([key, value]) => value !== "" && value !== undefined
+      )
     );
 
-    const tire = await prisma.tire.findFirst({where: {id: id}, });
-    if (filteredUpdateData != {}){
-      await prisma.truck.update({ 
-        where: {id: tire.truckId }, 
-        data: {change_neumatics: new Date()},
-      })
-
+    const tire = await prisma.tire.findFirst({ where: { id: id } });
+    if (filteredUpdateData != {}) {
+      await prisma.truck.update({
+        where: { id: tire.truckId },
+        data: { change_neumatics: new Date() },
+      });
     }
 
     await prisma.tire.update({
-      where: { id: id }, 
+      where: { id: id },
       data: filteredUpdateData,
     });
 
     revalidatePath("/dashboard/tires");
-    redirect('/dashboard/tires');
+    redirect("/dashboard/tires");
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
