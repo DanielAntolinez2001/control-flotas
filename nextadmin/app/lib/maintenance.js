@@ -52,49 +52,56 @@ export const createMaintenance = async (formData) => {
 
     // Convertir cost a un entero
     const costInt = parseInt(cost, 10);
+    // Convertir cost a un entero
+    const costMileage = parseInt(mileage, 10);
 
     if (isNaN(costInt)) {
       console.error("Maintenance's cost must be a valid number");
       return { error: "Cost must be a valid number" };
-    }else
-    {
-      await updateTire({ brand, model, mileage, status }, truck[0].id);
-      await updateFuel({ costF, efficienncy, amount }, truck[0].id);
-      await updateBrakes(
-        { pads_condition, discs_condition, fluid_level },
-        truck[0].id
-      );
-      await updateExhaustSystem(
-        { leak_detection, pipes_condition, mufflers_condition },
-        truck[0].id
-      );
-      await updateFluidsSystem(
-        {
-          direction_fluid_level,
-          brake_fluid_level,
-          coolant_fluid_level,
-          wiper_fluid_level,
-        },
-        truck[0].id
-      );
-      await updateBodyChassis(
-        { chassis_condition, body_condition, seatbelt_functionality },
-        truck[0].id
-      );
-      await updateElectricalSystem(
-        { battery_status, lights_functionality, fuse_status },
-        truck[0].id
-      );
-
-      await prisma.maintenance.create({
-        data: {
-          description,
-          type,
-          Cost: costInt,
-          truckId: truck[0].id,
-        },
-      });
     }
+
+    if (isNaN(costMileage) && mileage !== "") {
+      console.error("Mileage cost must be a valid number");
+      return { error: "mileage must be a valid number" };
+    }
+
+    await updateTire({ brand, model, mileage, status }, truck[0].id);
+    await updateFuel({ costF, efficienncy, amount }, truck[0].id);
+    await updateBrakes(
+      { pads_condition, discs_condition, fluid_level },
+      truck[0].id
+    );
+    await updateExhaustSystem(
+      { leak_detection, pipes_condition, mufflers_condition },
+      truck[0].id
+    );
+    await updateFluidsSystem(
+      {
+        direction_fluid_level,
+        brake_fluid_level,
+        coolant_fluid_level,
+        wiper_fluid_level,
+      },
+      truck[0].id
+    );
+    await updateBodyChassis(
+      { chassis_condition, body_condition, seatbelt_functionality },
+      truck[0].id
+    );
+    await updateElectricalSystem(
+      { battery_status, lights_functionality, fuse_status },
+      truck[0].id
+    );
+
+    await prisma.maintenance.create({
+      data: {
+        description,
+        type,
+        Cost: costInt,
+        truckId: truck[0].id,
+      },
+    });
+    
 
     revalidatePath("/dashboard/maintenances");
     redirect("/dashboard/maintenances");
@@ -189,7 +196,7 @@ export const scheduleMaintenance = async (type, scheduleDate, licensePlate) => {
     // Verificar si la conversión fue exitosa
     if (isNaN(scheduleDateObject.getTime())) {
       console.error("Error: La fecha de programación no es válida.");
-      return; // o lógica adicional según tu caso
+      return; 
     }
 
     // Obtener la fecha y hora en formato ISO-8601
@@ -258,11 +265,15 @@ export const getPendingMaintenances = async () => {
 // Método para eliminar un registro de mantenimiento por su ID
 export const deleteMaintenance = async (id) => {
   try {
-    const maintenance = await prisma.maintenance.delete({
+    console.log(id);
+    const maintenance = await prisma.maintenance.findFirst({
       where: { id: id },
     });
     await prisma.report.deleteMany({
       where: { maintenanceId: maintenance.id },
+    });
+    await prisma.maintenance.delete({
+      where: { id: id },
     });
     revalidatePath("/dashboard/maintenances");
   } catch (error) {

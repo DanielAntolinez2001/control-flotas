@@ -13,8 +13,7 @@ const UpdateTruckForm = ({ truck }) => {
     if (isConfirmed) {
       const formData = new FormData(event.target);
       await updateTruck(formData);
-    }else
-        await redirectMain();
+    }
   };
 
   return (
@@ -22,7 +21,7 @@ const UpdateTruckForm = ({ truck }) => {
       <form onSubmit={handleUpdate} className={styles.form}>
         <input type="hidden" name="id" value={truck.id} />
         <label>Status</label>
-        <select name="status" id="type" placeholder={truck.status} onChange={(e) => setStatus(e.target.value)}>
+        <select name="status" id="type" placeholder={truck.status} onChange={(e) => setStatus(e.target.value)} required>
           <option value="">Choose the truck's status</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>

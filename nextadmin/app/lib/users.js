@@ -46,8 +46,9 @@ export const createUser = async (formData) => {
       fs.writeFileSync(uploadPath, buffer);
     }
 
-    if (formEntries.email == "") {
-      throw new Error("Email is required");
+    if (zip_code.length !== 6) {
+      console.error("Zip code must be exactly 6 characters");
+      return { error: "Zip code must be exactly 6 characters" };
     }
 
     if (active == "true") {
@@ -202,13 +203,13 @@ export const updateUser = async (id, formData) => {
     fs.writeFileSync(uploadPath, buffer);
   }
 
-  if (active == "Yes") {
+  if (active == "true") {
     var activeB = true;
   } else {
     var activeB = false;
   }
 
-  if (available == "Yes") {
+  if (available == "true") {
     var availableB = true;
   } else {
     var availableB = false;
@@ -216,11 +217,20 @@ export const updateUser = async (id, formData) => {
 
   const updateData = {
     name,
-    activeB,
-    availableB,
+    active: activeB,
+    available: availableB,
     lastname,
     password,
     avatar: avatarPath,
+  };
+
+  const updateDataAddress = {
+    street,
+    city,
+    state,
+    zip_code,
+    details,
+    neighborhood,
   };
 
   // Filtrar para eliminar propiedades vacías
@@ -230,30 +240,26 @@ export const updateUser = async (id, formData) => {
     )
   );
 
+  // Filtrar para eliminar propiedades vacías
+  const filteredUpdateDataAddress = Object.fromEntries(
+    Object.entries(updateDataAddress).filter(
+      ([key, value]) => value !== "" && value !== undefined
+    )
+  );
+
+  if (filteredUpdateDataAddress.zip_code.length !== 6) {
+    console.error("Zip code must be exactly 6 characters");
+    return { error: "Zip code must be exactly 6 characters" };
+  }
+
   try {
     const user = await getUSerById(id);
-
-    if (!user) {
-      throw new Error(`User with id ${id} not found`);
-    }
-
     const idA = user.addressId;
 
-    // Actualizar la dirección primero
-    const addressUpdate = await addressController.updateAddress(
-      {
-        street,
-        city,
-        state,
-        zip_code,
-        details,
-        neighborhood,
-      },
-      idA
-    );
+    await addressController.updateAddress( filteredUpdateDataAddress, idA );
 
     // Luego, actualizar el usuario
-    const updatedUser = await prisma.user.update({
+    await prisma.user.update({
       where: { id: id },
       data: filteredUpdateData,
     });
@@ -283,7 +289,7 @@ export const deleteUser = async (id) => {
 export const getUserAvailable = async () => {
   try {
     const availableUsers = await prisma.user.findMany({
-      where: { available: true },
+      where: { available: true, role: "driver"},
     });
     const usersStatus = [];
 

@@ -32,7 +32,7 @@ const UserRow = ({ user, onDelete }) => {
         <td>{user.lastname}</td>
         <td>{user.email}</td>
         <td>{user.role}</td>
-        <td>{<td>{user.active ? 'Active' : 'Inactive'}</td>}</td>
+        <td>{user.available ? 'Available' : (user.active ? 'Active' : 'Inactive')}</td>
         <td>
         {user.address? `${user.address.street}, ${user.address.state} - ${user.address.city} ${user.address.zip_code}`
         : null}

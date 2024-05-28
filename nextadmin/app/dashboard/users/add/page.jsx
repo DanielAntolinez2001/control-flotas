@@ -93,25 +93,27 @@ const AddUserPage = () => {
       if (selectedFile) {
         form.append("avatar", selectedFile);
       }
-      await createUser(form);
-    } else {
-      redirectMain();
-    }
+      
+      const result = await createUser(form);
+      if (result && result.error) {
+        window.confirm(result.error);
+      }
+    } 
   };
 
   return (
     <div className={styles.container}>
       <form onSubmit={handleSubmit} className={styles.form}>
-        <input type="text" name="name" id="name" placeholder="Name" value={formData.name} onChange={handleChange} />
-        <input type="text" name="lastname" id="lastname" placeholder="Lastname" value={formData.lastname} onChange={handleChange} />
-        <input type="email" name="email" id="email" placeholder="Email" value={formData.email} onChange={handleChange} />
-        <input type="password" name="password" id="password" placeholder="Password" value={formData.password} onChange={handleChange} />
-        <select name="role" id="role" value={formData.role} onChange={handleChange}>
+        <input type="text" name="name" id="name" placeholder="Name" value={formData.name} onChange={handleChange} required/>
+        <input type="text" name="lastname" id="lastname" placeholder="Lastname" value={formData.lastname} onChange={handleChange} required/>
+        <input type="email" name="email" id="email" placeholder="Email" value={formData.email} onChange={handleChange} required/>
+        <input type="password" name="password" id="password" placeholder="Password" value={formData.password} onChange={handleChange} required/>
+        <select name="role" id="role" value={formData.role} onChange={handleChange} required>
           <option value="">Role</option>
           <option value="admin">Administrator</option>
           <option value="driver">Driver</option>
         </select>
-        <select name="active" id="active" value={formData.active} onChange={handleChange}>
+        <select name="active" id="active" value={formData.active} onChange={handleChange} required>
           <option value="">Is Active?</option>
           <option value="true">Yes</option>
           <option value="false">No</option>

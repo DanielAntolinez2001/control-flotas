@@ -12,8 +12,7 @@ import { deleteMaintenanceForTruck } from "./maintenance";
 export const createTruck = async (formData) => {
   try {
     const formEntries = Object.fromEntries(formData);
-    const { brand, model, status, license_plate } =
-      Object.fromEntries(formData);
+    const { brand, model, status, license_plate } = formEntries;
     const tireBrand = formEntries["Tire[brand]"];
     const tireModel = formEntries["Tire[model]"];
 
@@ -21,7 +20,7 @@ export const createTruck = async (formData) => {
 
     // Asegurarse de que avatar es un archivo
     const avatar = formData.get("avatar");
-    if (avatar && avatar instanceof File && avatar.name != "undefined") {
+    if (avatar && avatar instanceof File && avatar.name !== "undefined") {
       const avatarFileName = `${license_plate}-${avatar.name}`;
       avatarPath = path.posix.join("/uploads", avatarFileName);
       const uploadPath = path.join(process.cwd(), "public", avatarPath);
@@ -33,59 +32,62 @@ export const createTruck = async (formData) => {
 
     // Convertir model a un entero
     const modelInt = parseInt(model, 10);
-    const modelTIntT = parseInt(tireModel, 10);
+    const modelTireInt = parseInt(tireModel, 10);
+    const currentYear = new Date().getFullYear();
 
-    if (isNaN(modelInt) || isNaN(modelTIntT)) {
+    if (isNaN(modelInt) || isNaN(modelTireInt)) {
       console.error("Model must be a valid number");
       return { error: "Model must be a valid number" };
-    }else{
+    }
 
-      const truck = await prisma.truck.create({
+    if (modelInt < 1970 || modelInt > currentYear + 1) {
+      console.error("Model year must be between 1970 and next year");
+      return { error: "Model year must be between 1970 and next year" };
+    }
+    if (modelTireInt < 1970 || modelTireInt > currentYear + 1) {
+      console.error("Tire's model year must be between 1970 and next year");
+      return { error: "Tire's model year must be between 1970 and next year" };
+    }
+
+    if (license_plate.length !== 6) {
+      console.error("License plate must be exactly 6 characters");
+      return { error: "License plate must be exactly 6 characters" };
+    }
+
+    const truck = await prisma.truck.create({
+      data: {
+        brand,
+        model: modelInt,
+        status,
+        license_plate,
+        avatar: avatarPath,
+      },
+    });
+
+    console.log("Tire Data:", { tireBrand, tireModel });
+
+    if (tireBrand && tireModel) {
+      await prisma.tire.create({
         data: {
-          brand,
-          model: modelInt,
-          status,
-          license_plate,
-          avatar: avatarPath,
+          truckId: truck.id,
+          brand: tireBrand,
+          model: modelTireInt,
         },
       });
-  
-      console.log("Tire Data:", { tireBrand, tireModel });
-  
-      if (tireBrand && tireModel) {
-  
-        await prisma.tire.create({
-          data: {
-            truckId: truck.id,
-            brand: tireBrand,
-            model: modelTIntT,
-          },
-        });
-      } else {
-        console.error("Error: Faltan datos de neumaticos");
-        throw error;
-      }
-  
-      const fuelTruck = await prisma.fuel.create({ data: { truckId: truck.id } });
-      const brakesTruck = await prisma.brakes.create({
-        data: { truckId: truck.id },
-      });
-      const FluidsSystem_Truck = await prisma.fluidsSystem.create({
-        data: { truckId: truck.id },
-      });
-      const BodyChassis = await prisma.bodyChassis.create({
-        data: { truckId: truck.id },
-      });
-      const ExhaustSystem = await prisma.exhaustSystem.create({
-        data: { truckId: truck.id },
-      });
-      const ElectricalSystem = await prisma.electricalSystem.create({
-        data: { truckId: truck.id },
-      });
-  
-      revalidatePath("/dashboard/trucks");
-      redirect("/dashboard/trucks");
+    } else {
+      console.error("Error: Faltan datos de neumáticos");
+      throw new Error("Faltan datos de neumáticos");
     }
+
+    await prisma.fuel.create({ data: { truckId: truck.id } });
+    await prisma.brakes.create({ data: { truckId: truck.id } });
+    await prisma.fluidsSystem.create({ data: { truckId: truck.id } });
+    await prisma.bodyChassis.create({ data: { truckId: truck.id } });
+    await prisma.exhaustSystem.create({ data: { truckId: truck.id } });
+    await prisma.electricalSystem.create({ data: { truckId: truck.id } });
+
+    revalidatePath("/dashboard/trucks");
+    redirect("/dashboard/trucks");
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
@@ -325,6 +327,7 @@ export const deleteTruck = async (id) => {
         await prisma.fuel.delete({ where: { id: fuel.id } });
       }
     }
+    await prisma.exception.delete({ where: {truckId: id}});
 
     // Finalmente, eliminar el camión
     await prisma.truck.delete({ where: { id: id } });

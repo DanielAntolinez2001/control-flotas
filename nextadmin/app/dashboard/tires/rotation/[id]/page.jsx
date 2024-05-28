@@ -32,7 +32,7 @@ const RotationTireForm = ({ params }) => {
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.section}>
           <h3 className={styles.title}>Tire Rotation</h3>
-          <select name="rotation_pattern" id="role" onChange={handleChange}>
+          <select name="rotation_pattern" id="role" onChange={handleChange} required>
             <option value="">Choose rotation pattern</option>
             <option value="Initial">Initial</option>
             <option value="ForwardCross">Forward Cross</option>

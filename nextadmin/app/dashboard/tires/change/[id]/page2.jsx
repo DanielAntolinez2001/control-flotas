@@ -15,7 +15,10 @@ const ChangeTireForm = ({ tire }) => {
     const isConfirmed = window.confirm("Are you sure you want to change the tires?");
     if (isConfirmed) {
       const formData = new FormData(event.target);
-      await changeTire(tire.id, formData);
+      const result = await changeTire(tire.id, formData);
+      if (result && result.error) {
+        window.confirm(result.error);
+      }
     }
   };
 
@@ -31,8 +34,8 @@ const ChangeTireForm = ({ tire }) => {
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.section}>
           <h3 className={styles.title}>Change Tire</h3>
-          <input type="text" name="brand" id="brand" placeholder="brand" onChange={handleChange} />
-          <input type="text" name="model" id="model" placeholder="model" onChange={handleChange} />
+          <input type="text" name="brand" id="brand" placeholder="brand" onChange={handleChange} required/>
+          <input type="text" name="model" id="model" placeholder="model" onChange={handleChange} required/>
         </div>
         <button type="submit" className={styles.button}>
           Submit

@@ -26,7 +26,7 @@ const AddFuelForm = ({ params }) => {
           <h3 className={styles.title}>Fuel</h3>
           <input type="text" placeholder="Cost" name="cost" required />
           <input type="text" placeholder="Efficiency" name="efficiency" required />
-          <select name="amount" id="type" placeholder="amount">
+          <select name="amount" id="type" placeholder="amount" required>
             <option value="">Choose the amount of fuel</option>
             <option value="Full">full</option>
             <option value="Half">half</option>

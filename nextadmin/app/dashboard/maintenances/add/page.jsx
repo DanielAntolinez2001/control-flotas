@@ -60,8 +60,8 @@ const AddMaintenancePage = () => {
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.section}>
           <h3 className={styles.title}>Maintenance</h3>
-          <input type="text" name="description" placeholder="Description" onChange={handleChange}/>
-          <input type="text" name="cost" placeholder="Cost" onChange={handleChange}/>
+          <input type="text" name="description" placeholder="Description" onChange={handleChange} required/>
+          <input type="text" name="cost" placeholder="Cost" onChange={handleChange} required/>
           <select name="type" id="type" onChange={handleTypeChange} required>
             <option value="">Choose the type of preventive maintenance</option>
             <option value="weekly">Weekly</option>
