@@ -90,16 +90,17 @@ export const createUser = async (formData) => {
 };
 
 // Método para autenticar un usuario
-//export const authenticate = async (formData) => {
-//  const { email, password } = Object.fromEntries(formData);
-//  try {
-//    await signIn("credentials", { email, password });
-//  } catch (error) {
-//    console.error(`Error: ${error.message}`);
-//    throw error;
-//  }
-//};
+export const authenticate = async (formData) => {
+  const { email, password } = Object.fromEntries(formData);
+  try {
+    await signIn("credentials", { email, password });
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+};
 
+// Método para cerrar sesión
 export const logout = async (req, res) => {
   try {
     req.headers.authorization = null;

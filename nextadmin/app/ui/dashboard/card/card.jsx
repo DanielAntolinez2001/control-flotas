@@ -9,15 +9,14 @@ const Card = ({ truckLicense, id, description, truckid }) => {
       <MdWarning size={24} />
       <div className={styles.text}>
         <span className={styles.title}>
-          <span className={styles.positive}>Exception</span> of Truck: {truckLicense}
+          <span className={styles.positive}>Exception</span> of Truck:{" "}
+          {truckLicense}
         </span>
         <span className={styles.number}>ID: {id}</span>
         <span className={styles.details}>{description}</span>
       </div>
       <Link href={`/dashboard/trucks/${truckid}/exception/${id}`}>
-        <button className={`${styles.buttom} ${styles.view}`}>
-          Update
-        </button>
+        <button className={`${styles.buttom} ${styles.view}`}>Update</button>
       </Link>
     </div>
   );

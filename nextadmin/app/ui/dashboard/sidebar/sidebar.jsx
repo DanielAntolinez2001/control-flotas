@@ -16,6 +16,7 @@ import {
 } from "react-icons/md";
 import MenuLink from "./menuLink/menuLink";
 import Image from "next/image";
+import { signOut } from "@/app/auth";
 
 const menuItems = [
   {
@@ -60,8 +61,8 @@ const menuItems = [
         title: "Tires",
         path: "/dashboard/tires",
         icon: <MdTireRepair />,
-      }
-    ]
+      },
+    ],
   },
   {
     title: "User",
@@ -80,7 +81,9 @@ const menuItems = [
   },
 ];
 
-const Sidebar = () => {
+const Sidebar = async () => {
+  const session = await auth();
+  console.log(session);
   return (
     <div className={styles.container}>
       <div className={styles.user}>
@@ -106,10 +109,17 @@ const Sidebar = () => {
           </li>
         ))}
       </ul>
-      <button className={styles.logout}>
-        <MdLogout />
-        Logout
-      </button>
+      <form
+        action={async () => {
+          "use server";
+          await signOut();
+        }}
+      >
+        <button className={styles.logout}>
+          <MdLogout />
+          Logout
+        </button>
+      </form>
     </div>
   );
 };
