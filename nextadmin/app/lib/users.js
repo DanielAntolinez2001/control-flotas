@@ -288,16 +288,42 @@ export const deleteUser = async (id) => {
 
 export const getUserAvailable = async () => {
   try {
+
     const availableUsers = await prisma.user.findMany({
-      where: { available: true, role: "driver"},
+      where: { available: true, role: "driver" },
     });
+
+    // Obtener la fecha de hoy
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const usersStatus = [];
 
     for (const user of availableUsers) {
-      usersStatus.push({
-        name: `${user.name} ${user.lastname}`,
-        id: user.id,
+      const routes = await prisma.route.findMany({
+        where: {
+          userId: user.id,
+          createdAt: {
+            gte: today,
+          },
+        },
       });
+
+      // Sumar el tiempo de cada ruta
+      const totalMinutes = routes.reduce((sum, route) => sum + route.time, 0);
+
+      // Solo agregar al usuario si el tiempo total de conducción es menor a 780 minutos
+      if (totalMinutes < 780) {
+        usersStatus.push({
+          name: `${user.name} ${user.lastname}`,
+          id: user.id,
+        });
+      }else{
+        await prisma.user.update({
+          where: {id: user.id}, 
+          data: {available: false},
+        })
+      }
     }
 
     return usersStatus;

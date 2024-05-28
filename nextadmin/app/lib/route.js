@@ -24,9 +24,6 @@ export const createRoute = async (req) => {
         },
     })
 
-    const idT = truck[0].id;
-    await prisma.truck.update({ where: {id: idT}, data: { status: "active"}});
-
     revalidatePath("/dashboard/map");
     redirect('/dashboard/map');
 
@@ -90,4 +87,17 @@ export const deleteRoute = async (id) => {
         console.error(`Error: ${error.message}`);
         throw error;
     }
+}
+
+export const getRoutesByUser = async (email) => {
+  try {
+    const user = await prisma.user.findMany({
+      where: { email: email },
+    });
+    console.log(user, "hola");
+    
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
 }

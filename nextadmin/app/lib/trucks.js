@@ -169,11 +169,39 @@ export const getLicensePlatesAvailable = async () => {
     const trucks = await prisma.truck.findMany({
       where: { status: "available" },
       select: {
+        id: true,
         license_plate: true,
       },
     });
-    console.log(trucks.map((truck) => truck.license_plate));
-    return trucks.map((truck) => truck.license_plate);
+
+    // Obtener la fecha de hoy
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const availableLicensePlates = [];
+
+    for (const truck of trucks) {
+      // Obtener todas las rutas del camión creadas hoy
+      const routes = await prisma.route.findMany({
+        where: {
+          truckId: truck.id,
+          createdAt: {
+            gte: today,
+          },
+        },
+      });
+
+      const totalMinutes = routes.reduce((sum, route) => sum + route.duration, 0);
+
+      if (totalMinutes < 780) {
+        availableLicensePlates.push(truck.license_plate);
+      }else{
+        await prisma.truck.update({ where: {id: truck.id}, data: { status: "active"}});
+      }
+    }
+
+    console.log(availableLicensePlates);
+    return availableLicensePlates;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;
