@@ -50,49 +50,51 @@ export const createMaintenance = async (formData) => {
 
     const truck = await getTruckByLicense(license_plate);
 
-    await updateTire({ brand, model, mileage, status }, truck[0].id);
-    await updateFuel({ costF, efficienncy, amount }, truck[0].id);
-    await updateBrakes(
-      { pads_condition, discs_condition, fluid_level },
-      truck[0].id
-    );
-    await updateExhaustSystem(
-      { leak_detection, pipes_condition, mufflers_condition },
-      truck[0].id
-    );
-    await updateFluidsSystem(
-      {
-        direction_fluid_level,
-        brake_fluid_level,
-        coolant_fluid_level,
-        wiper_fluid_level,
-      },
-      truck[0].id
-    );
-    await updateBodyChassis(
-      { chassis_condition, body_condition, seatbelt_functionality },
-      truck[0].id
-    );
-    await updateElectricalSystem(
-      { battery_status, lights_functionality, fuse_status },
-      truck[0].id
-    );
-
     // Convertir cost a un entero
     const costInt = parseInt(cost, 10);
 
     if (isNaN(costInt)) {
       console.error("Maintenance's cost must be a valid number");
-    }
+      return { error: "Cost must be a valid number" };
+    }else
+    {
+      await updateTire({ brand, model, mileage, status }, truck[0].id);
+      await updateFuel({ costF, efficienncy, amount }, truck[0].id);
+      await updateBrakes(
+        { pads_condition, discs_condition, fluid_level },
+        truck[0].id
+      );
+      await updateExhaustSystem(
+        { leak_detection, pipes_condition, mufflers_condition },
+        truck[0].id
+      );
+      await updateFluidsSystem(
+        {
+          direction_fluid_level,
+          brake_fluid_level,
+          coolant_fluid_level,
+          wiper_fluid_level,
+        },
+        truck[0].id
+      );
+      await updateBodyChassis(
+        { chassis_condition, body_condition, seatbelt_functionality },
+        truck[0].id
+      );
+      await updateElectricalSystem(
+        { battery_status, lights_functionality, fuse_status },
+        truck[0].id
+      );
 
-    const maintenance = await prisma.maintenance.create({
-      data: {
-        description,
-        type,
-        Cost: costInt,
-        truckId: truck[0].id,
-      },
-    });
+      await prisma.maintenance.create({
+        data: {
+          description,
+          type,
+          Cost: costInt,
+          truckId: truck[0].id,
+        },
+      });
+    }
 
     revalidatePath("/dashboard/maintenances");
     redirect("/dashboard/maintenances");
@@ -340,8 +342,8 @@ export const createException = async (id, formData) => {
       },
     });
 
-    revalidatePath("/dashboard/trucks/${truck.id}/components");
-    redirect("/dashboard/trucks/${truck.id}/components");
+    revalidatePath(`/dashboard/`);
+    redirect(`/dashboard/`);
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;

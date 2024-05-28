@@ -42,7 +42,10 @@ const AddMaintenancePage = () => {
     event.preventDefault();
     const isConfirmed = window.confirm("Are you sure you want to create this maintenance?");
     if (isConfirmed) {
-      await createMaintenance(formData);
+      const result = await createMaintenance(formData);
+      if (result && result.error) {
+        window.confirm(result.error);
+      }
       localStorage.removeItem("maintenanceFormData"); // Clear cache after submit
     }
   };
@@ -59,7 +62,7 @@ const AddMaintenancePage = () => {
           <h3 className={styles.title}>Maintenance</h3>
           <input type="text" name="description" placeholder="Description" onChange={handleChange}/>
           <input type="text" name="cost" placeholder="Cost" onChange={handleChange}/>
-          <select name="type" id="type" onChange={handleTypeChange}>
+          <select name="type" id="type" onChange={handleTypeChange} required>
             <option value="">Choose the type of preventive maintenance</option>
             <option value="weekly">Weekly</option>
             <option value="before_route">Before Route</option>
@@ -242,7 +245,7 @@ const AddMaintenancePage = () => {
               <select name="status" onChange={handleChange}>
                 <option value="">Tire Visual Condition</option>
                 <option value="WornOut">Worn out</option>
-                <option value="change">Change</option>
+                <option value="Change">Change</option>
               </select>
             </div>
             <div className={styles.section}>

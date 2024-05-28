@@ -56,7 +56,7 @@ const Maintenances = () => {
       <form onSubmit={handleScheduleMaintenance} className={styles.form}>
         <h3 className={styles.title}>Schedule Maintenance</h3>
         <div className={styles.section}>
-          <input type="date" className={styles.dateInput} onChange={(e) => setScheduleDate(e.target.value)} min={getCurrentDate()}/>
+          <input type="date" className={styles.dateInput} onChange={(e) => setScheduleDate(e.target.value)} min={getCurrentDate()} required/>
           <select name="type" id="type" onChange={(e) => setType(e.target.value)} required>
             <option value="">Choose the type of preventive maintenance</option>
             <option value="weekly">Weekly</option>

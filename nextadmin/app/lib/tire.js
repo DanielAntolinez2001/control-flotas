@@ -203,7 +203,7 @@ export const isTimeToChangeTires = async () => {
         Math.floor(Math.random() * (50000 - 30000 + 1)) + 10000; // Genera un valor aleatorio entre 30,000 y 50,000
       const shouldChangeTires = tire.mileage + 100 >= recommendedChangeDistance;
 
-      if (shouldChangeTires) {
+      if (shouldChangeTires || tire.status == "Change") {
         tireStatus.push({
           truckLicense: truck.license_plate,
           tireId: tire.id,

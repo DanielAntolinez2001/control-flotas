@@ -1,4 +1,3 @@
-// components/AddTruckForm.js
 "use client";
 
 import React, { useState } from "react";
@@ -20,9 +19,11 @@ const AddTruckForm = () => {
       if (selectedFile) {
         formData.append("avatar", selectedFile);
       }
-      await createTruck(formData);
-    }else
-      await redirectMain()
+      const result = await createTruck(formData);
+      if (result && result.error) {
+        window.confirm(result.error);
+      }
+    }
   };
 
   return (
