@@ -39,7 +39,6 @@ const Maintenance = () => {
             <td>2024, 13 May</td>
             <td>2004</td>
             <td>Chevrolet</td>
-            <td>$240.000</td>
           </tr>
           <tr>
             <td>
