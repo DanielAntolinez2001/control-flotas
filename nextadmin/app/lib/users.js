@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import path from "path";
 import fs from "fs";
+import { signIn } from "@/app/auth.js";
 
 //Método para crear usuario
 export const createUser = async (formData) => {
@@ -43,6 +44,10 @@ export const createUser = async (formData) => {
       // Convertir el archivo a un Buffer y guardar el archivo en la carpeta del proyecto
       const buffer = Buffer.from(await avatar.arrayBuffer());
       fs.writeFileSync(uploadPath, buffer);
+    }
+
+    if (formEntries.email == "") {
+      throw new Error("Email is required");
     }
 
     if (active == "true") {
@@ -84,36 +89,16 @@ export const createUser = async (formData) => {
   }
 };
 
-export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    const user = await prisma.user.findUnique({
-      where: { email: email },
-    });
-
-    console.log(user);
-
-    if (!user || password != user.password) {
-      return res
-        .status(401)
-        .json({ error: "Usuario o contraseña incorrectos" });
-    }
-
-    /*if (user[0].role != role){
-        return res.status(401).json({ error: 'Role incorrecto' });
-      }*/
-
-    // Generar un token de acceso
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-
-    res.status(200).json({ token });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
+// Método para autenticar un usuario
+//export const authenticate = async (formData) => {
+//  const { email, password } = Object.fromEntries(formData);
+//  try {
+//    await signIn("credentials", { email, password });
+//  } catch (error) {
+//    console.error(`Error: ${error.message}`);
+//    throw error;
+//  }
+//};
 
 export const logout = async (req, res) => {
   try {
