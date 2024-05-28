@@ -4,19 +4,17 @@ import {
   MdDashboard,
   MdOutlineSupervisedUserCircle,
   MdFireTruck,
-  MdReport,
   MdHelpCenter,
   MdSettings,
   MdLogout,
   MdMap,
-  MdOilBarrel,
   MdTask,
   MdTireRepair,
   MdDomainVerification,
 } from "react-icons/md";
 import MenuLink from "./menuLink/menuLink";
 import Image from "next/image";
-import { signOut } from "@/app/auth";
+import { signOut, auth } from "@/app/auth";
 
 const menuItems = [
   {
