@@ -62,21 +62,6 @@ const menuItems = [
       },
     ],
   },
-  {
-    title: "User",
-    list: [
-      {
-        title: "Settings",
-        path: "/dashboard/settings",
-        icon: <MdSettings />,
-      },
-      {
-        title: "Help",
-        path: "/dashboard/help",
-        icon: <MdHelpCenter />,
-      },
-    ],
-  },
 ];
 
 const Sidebar = async () => {
