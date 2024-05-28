@@ -245,12 +245,14 @@ model Report {
 
 model Maintenance {
   id          String          @id @default(auto()) @map("_id") @db.ObjectId
-  description String
+  description String?
   truck       Truck?          @relation(fields: [truckId], references: [id])
   truckId     String?         @db.ObjectId
   report      Report?
+  status      String          @default("Check")
   type        typeMaintenance
-  Cost        Float
+  Cost        Float?
+  schedule_m  DateTime?
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 }

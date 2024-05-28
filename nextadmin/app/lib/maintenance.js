@@ -123,6 +123,32 @@ export const updateMaintenance = async (req, res) => {
   }
 };
 
+export const scheduleMaintenance = async (type, scheduleDate, licensePlate) => {
+  try {
+    console.log(type, scheduleDate, licensePlate)
+    const scheduleDateObject = new Date(scheduleDate);
+
+    // Verificar si la conversión fue exitosa
+    if (isNaN(scheduleDateObject.getTime())) {
+      console.error("Error: La fecha de programación no es válida.");
+      return; // o lógica adicional según tu caso
+    }
+
+    // Obtener la fecha y hora en formato ISO-8601
+    const scheduleDateISO = scheduleDateObject.toISOString();
+
+    const truck = await prisma.truck.findMany({ where: {license_plate: licensePlate}, });
+    const idT = truck[0].id; 
+    await prisma.maintenance.create({ data: {status: "Pending", type: type, schedule_m: scheduleDateISO, truckId:idT } });
+
+    revalidatePath("/dashboard/maintenances");
+    redirect('/dashboard/maintenances');
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+}
+
 export const deleteMaintenanceForTruck = async (id) => {
   try {
     const maintenance = await prisma.maintenance.deleteMany({ where: { truckId: id }, });
@@ -132,6 +158,26 @@ export const deleteMaintenanceForTruck = async (id) => {
     throw error;
   }
 }
+
+export const getPendingMaintenances = async () => {
+  try {
+    const pendingMaintenances = await prisma.maintenance.findMany({ where: { status: "Pending" }, include: { truck: true, } });
+    const maintenancesStatus = [];
+
+    for (const maintenance of pendingMaintenances) {
+      maintenancesStatus.push({
+        truckLicense: maintenance.truck.license_plate,
+        id: maintenance.id,
+        schedule_m: maintenance.schedule_m,
+      });
+    }
+
+    return maintenancesStatus;
+  } catch (error) {
+    console.error(`Error al obtener los mantenimientos pendientes: ${error.message}`);
+    throw error;
+  }
+};
 
 // Método para eliminar un registro de mantenimiento por su ID
 export const deleteMaintenance = async (id) => {
