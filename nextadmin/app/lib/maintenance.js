@@ -142,6 +142,20 @@ export const getMaintenanceForReport = async (id) => {
   }
 };
 
+export const getMaintenanceById = async (id) => {
+  try {
+    const maintenance = await prisma.maintenance.findFirst({
+      where: {id: id},
+      include: { truck: true},
+    });
+    console.log(maintenance);
+    return maintenance;
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    throw error;
+  }
+}
+
 // Método para obtener los registros de mantenimiento de un camión
 export const getMaintenanceByTruck = async (license_plate) => {
   try {
@@ -169,22 +183,98 @@ export const getMaintenanceByTruck = async (license_plate) => {
 };
 
 // Método para actualizar un registro de mantenimiento por su ID
-export const updateMaintenance = async (req, res) => {
-  const { id } = req.params;
-  const { description, cost } = req.body;
-
+export const updateMaintenance = async (id, formData) => {
+  console.log(formData);
   try {
-    const maintenance = await prisma.maintenance.update({
-      where: { id: id },
+    const {
+      description,
+      cost,
+      brand,
+      model,
+      mileage,
+      status,
+      costF,
+      efficienncy,
+      amount,
+      fluid_level,
+      pads_condition,
+      discs_condition,
+      leak_detection,
+      pipes_condition,
+      mufflers_condition,
+      direction_fluid_level,
+      brake_fluid_level,
+      coolant_fluid_level,
+      wiper_fluid_level,
+      chassis_condition,
+      body_condition,
+      seatbelt_functionality,
+      battery_status,
+      lights_functionality,
+      fuse_status,
+    } = formData;
+    console.log(formData);
+  
+    const maintenance = getMaintenanceById(id);
+    const truck = await getTruckByLicense(maintenance.id);
+
+    // Convertir cost a un entero
+    const costInt = parseInt(cost, 10);
+    // Convertir cost a un entero
+    const costMileage = parseInt(mileage, 10);
+
+    if (isNaN(costInt)) {
+      console.error("Maintenance's cost must be a valid number");
+      return { error: "Cost must be a valid number" };
+    }
+
+    if (isNaN(costMileage) && mileage !== "") {
+      console.error("Mileage cost must be a valid number");
+      return { error: "Mileage must be a valid number" };
+    }
+
+    await updateTire({ brand, model, mileage, status }, truck[0].id);
+    await updateFuel({ costF, efficienncy, amount }, truck[0].id);
+    await updateBrakes(
+      { pads_condition, discs_condition, fluid_level },
+      truck[0].id
+    );
+    await updateExhaustSystem(
+      { leak_detection, pipes_condition, mufflers_condition },
+      truck[0].id
+    );
+    await updateFluidsSystem(
+      {
+        direction_fluid_level,
+        brake_fluid_level,
+        coolant_fluid_level,
+        wiper_fluid_level,
+      },
+      truck[0].id
+    );
+    await updateBodyChassis(
+      { chassis_condition, body_condition, seatbelt_functionality },
+      truck[0].id
+    );
+    await updateElectricalSystem(
+      { battery_status, lights_functionality, fuse_status },
+      truck[0].id
+    );
+
+    await prisma.maintenance.update({
+      where: {id, id},
       data: {
-        description: description,
-        cost: cost,
+        description,
+        Cost: costInt,
+        status: "Check",
       },
     });
 
-    res.status(200).json({ maintenance });
+    revalidatePath("/dashboard/maintenances");
+    redirect("/dashboard/maintenances");
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error(`Error: ${error.message}`);
+    throw error;
   }
 };
 
