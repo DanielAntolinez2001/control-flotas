@@ -16,6 +16,26 @@ const Task = () => {
     return [];
   });
 
+  const handleDrop = (taskId, newStatus) => {
+    // 1. Actualiza el estado localmente
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId ? { ...task, status: newStatus } : task
+      )
+    );
+
+    // 2. Envía la actualización al backend (usa tu API)
+    fetch(`/api/tasks/${taskId}`, {
+      method: "PUT",
+      body: JSON.stringify({ status: newStatus }),
+    }).then((response) => {
+      if (!response.ok) {
+        // Manejar error en caso de que la actualización falle
+        console.error("Error al actualizar la tarea en el backend");
+      }
+    });
+  };
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -29,13 +49,6 @@ const Task = () => {
   const handleDragStart = (e, taskId) => {
     setDraggingTaskIndex(tasks.findIndex((task) => task.id === taskId));
     setCurrentStatus(tasks[draggingTaskIndex].status);
-  };
-
-  const handleDrop = (e, status) => {
-    setTargetStatus(status);
-    const updatedTasks = [...tasks];
-    updatedTasks[draggingTaskIndex].status = targetStatus;
-    setTasks(updatedTasks);
   };
 
   const handleDelete = (taskIndex) => {
@@ -53,7 +66,7 @@ const Task = () => {
           tasks={tasks.filter((task) => task.status === "todo")}
           status="todo"
           handleDelete={handleDelete}
-          onDrop={handleDrop}
+          handleDrop={handleDrop}
         />
         <TaskColumn
           title="Doing"
@@ -61,7 +74,7 @@ const Task = () => {
           tasks={tasks.filter((task) => task.status === "doing")}
           status="doing"
           handleDelete={handleDelete}
-          onDrop={handleDrop}
+          handleDrop={handleDrop}
         />
         <TaskColumn
           title="Done"
@@ -69,7 +82,7 @@ const Task = () => {
           tasks={tasks.filter((task) => task.status === "done")}
           status="done"
           handleDelete={handleDelete}
-          onDrop={handleDrop}
+          handleDrop={handleDrop}
         />
       </main>
     </div>

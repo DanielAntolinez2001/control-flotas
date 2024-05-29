@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./TaskForm.module.css";
 import Tag from "./Tag";
+import { getUsers } from "@/app/lib/users";
+import { getTrucks } from "@/app/lib/trucks";
 
 const TaskForm = ({ setTasks }) => {
   const [taskData, setTaskData] = useState({
@@ -48,6 +50,21 @@ const TaskForm = ({ setTasks }) => {
     });
   };
 
+  const [users, setUsers] = useState([]);
+  const [trucks, setTrucks] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const usersData = await getUsers(); // Reemplaza con tu función real
+      setUsers(usersData);
+
+      const trucksData = await getTrucks(); // Reemplaza con tu función real
+      setTrucks(trucksData);
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <header className={styles.app_header}>
       <form onSubmit={handleSubmit}>
@@ -83,7 +100,33 @@ const TaskForm = ({ setTasks }) => {
               selected={checkTag("Send")}
             />
           </div>
+          <div>
+            <select
+              name="userId"
+              value={taskData.userId || ""}
+              onChange={handleChange}
+            >
+              <option value="">Seleccionar usuario</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
 
+            <select
+              name="truckId"
+              value={taskData.truckId || ""}
+              onChange={handleChange}
+            >
+              <option value="">Seleccionar camión</option>
+              {trucks.map((truck) => (
+                <option key={truck.id} value={truck.id}>
+                  {truck.license_plate}
+                </option> // Muestra la placa del camión
+              ))}
+            </select>
+          </div>
           <div>
             <select
               name="status"
