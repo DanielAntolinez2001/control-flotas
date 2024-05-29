@@ -11,18 +11,18 @@ const PendingExceptionsList = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchExceptions = async () => {
-      try {
-        const response = await getPendingException();
-        setExceptions(response);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      getPendingException()
+        .then((exceptionData) => setExceptions(exceptionData))
+        .catch((error) => {
+          console.error("Error fetching maintenance data:", error);
+        });
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
 
-    fetchExceptions();
   }, []);
 
   if (loading) {

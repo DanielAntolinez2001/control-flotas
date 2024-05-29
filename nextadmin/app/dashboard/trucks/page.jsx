@@ -13,16 +13,15 @@ const Trucks = ({ searchParams }) => {
   const q = searchParams?.q || null;
 
   useEffect(() => {
-    const fetchTrucks = async () => {
-      let result = null;
-      if (q) {
-        result = await getTruckByBrand(q);
-      } else {
-        result = await getTrucks();
-      }
-      setTrucks(result);
-    };
-    fetchTrucks();
+    if (q) {
+      getTruckByBrand(q).then((data) => setTrucks(data)).catch((error) => {
+        console.error("Error fetching maintenance data:", error);
+      });
+    } else {
+      getTrucks().then((data) => setTrucks(data)).catch((error) => {
+        console.error("Error fetching maintenance data:", error);
+      });
+    }
   }, [q]);
 
   const handleDelete = (id) => {
