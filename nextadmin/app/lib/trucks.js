@@ -324,7 +324,7 @@ export const updateTruck = async (formData) => {
   }
 };
 
-export default async function handler(req, res) {
+export const handler = async (req, res) => {
   try {
     const truckData = await prisma.truck.groupBy({
       by: [prisma.truck.createdAt.month],
@@ -355,7 +355,7 @@ export default async function handler(req, res) {
     console.error("Error fetching chart data:", error);
     res.status(500).json({ error: "Error fetching chart data" });
   }
-}
+};
 
 export const redirectMain = async () => {
   redirect("/dashboard/trucks");

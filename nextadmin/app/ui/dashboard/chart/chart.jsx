@@ -12,7 +12,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import handler from "@/app/lib/trucks";
+import { handler } from "@/app/lib/trucks";
 
 const Chart = () => {
   const [chartData, setChartData] = useState([]);
@@ -20,16 +20,32 @@ const Chart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/path-to-your-api-endpoint"); // Correct API path
-        const data = await response.json();
-        setChartData(data);
+        // Llamamos directamente a la función handler
+        const req = null; // Simulamos los objetos req y res
+        const res = {
+          status: () => ({
+            json: (data) => data, // Extraemos los datos del mock res.json
+          }),
+        };
+
+        const data = await handler(req, res);
+
+        const formattedData = data.map((item) => ({
+          month: new Date(0, item.month - 1).toLocaleString("default", {
+            month: "short",
+          }), // Formato del mes
+          trucks: item.trucks,
+          users: item.users,
+        }));
+
+        setChartData(formattedData);
       } catch (error) {
         console.error("Error fetching chart data:", error);
       }
     };
 
     fetchData();
-  }, []); // Empty dependency array ensures the effect runs only once after initial render
+  }, []);
 
   return (
     <div className={styles.container}>

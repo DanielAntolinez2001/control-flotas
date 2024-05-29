@@ -257,7 +257,7 @@ export const updateUser = async (id, formData) => {
     const user = await getUSerById(id);
     const idA = user.addressId;
 
-    await addressController.updateAddress( filteredUpdateDataAddress, idA );
+    await addressController.updateAddress(filteredUpdateDataAddress, idA);
 
     // Luego, actualizar el usuario
     await prisma.user.update({

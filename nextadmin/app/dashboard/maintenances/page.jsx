@@ -34,12 +34,14 @@ const Maintenances = ({ searchParams }) => {
     <div className={styles.container}>
       <div className={styles.top}>
         <Search placeholder="Search maintenance..." />
-        <Link href="/dashboard/maintenances/add">
-          <button className={styles.addButtom}>Add Maintenance</button>
-        </Link>
-        <Link href="/dashboard/maintenances/program">
-          <button className={styles.addButtom}>Schedule Maintenance</button>
-        </Link>
+        <div>
+          <Link href="/dashboard/maintenances/add">
+            <button className={styles.addButtom}>Add Maintenance</button>
+          </Link>
+          <Link href="/dashboard/maintenances/program">
+            <button className={styles.addButtom}>Schedule Maintenance</button>
+          </Link>
+        </div>
       </div>
       <table className={styles.table}>
         <thead>
