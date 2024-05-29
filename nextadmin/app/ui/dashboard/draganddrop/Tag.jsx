@@ -7,7 +7,7 @@ const Tag = ({ tagName, selectTag, selected }) => {
     "Tire Maintenance": { backgroundColor: "#fda821" },
     "Fuel Maintenance": { backgroundColor: "#15d4c8" },
     "General Maintenance": { backgroundColor: "#ffd12c" },
-    "Send": { backgroundColor: "#4cdafc" },
+    Send: { backgroundColor: "#4cdafc" },
   };
 
   return (

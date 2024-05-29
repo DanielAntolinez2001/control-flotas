@@ -1,7 +1,7 @@
 "use client";
 
 import TaskForm from "@/app/ui/dashboard/draganddrop/TaskForm";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import TaskColumn from "@/app/ui/dashboard/draganddrop/TaskColumn";
 import { MdChecklist } from "react-icons/md";
 import { IoMdConstruct, IoMdDoneAll } from "react-icons/io";
@@ -22,6 +22,22 @@ const Task = () => {
     }
   }, [tasks]);
 
+  const [draggingTaskIndex, setDraggingTaskIndex] = useState(null);
+  const [currentStatus, setCurrentStatus] = useState(null);
+  const [targetStatus, setTargetStatus] = useState(null);
+
+  const handleDragStart = (e, taskId) => {
+    setDraggingTaskIndex(tasks.findIndex((task) => task.id === taskId));
+    setCurrentStatus(tasks[draggingTaskIndex].status);
+  };
+
+  const handleDrop = (e, status) => {
+    setTargetStatus(status);
+    const updatedTasks = [...tasks];
+    updatedTasks[draggingTaskIndex].status = targetStatus;
+    setTasks(updatedTasks);
+  };
+
   const handleDelete = (taskIndex) => {
     const newTasks = tasks.filter((task, index) => index !== taskIndex);
     setTasks(newTasks);
@@ -34,23 +50,26 @@ const Task = () => {
         <TaskColumn
           title="To do"
           icon={<MdChecklist />}
-          tasks={tasks.filter(task => task.status === "todo")}
+          tasks={tasks.filter((task) => task.status === "todo")}
           status="todo"
           handleDelete={handleDelete}
+          onDrop={handleDrop}
         />
         <TaskColumn
           title="Doing"
           icon={<IoMdConstruct />}
-          tasks={tasks.filter(task => task.status === "doing")}
+          tasks={tasks.filter((task) => task.status === "doing")}
           status="doing"
           handleDelete={handleDelete}
+          onDrop={handleDrop}
         />
         <TaskColumn
           title="Done"
           icon={<IoMdDoneAll />}
-          tasks={tasks.filter(task => task.status === "done")}
+          tasks={tasks.filter((task) => task.status === "done")}
           status="done"
           handleDelete={handleDelete}
+          onDrop={handleDrop}
         />
       </main>
     </div>

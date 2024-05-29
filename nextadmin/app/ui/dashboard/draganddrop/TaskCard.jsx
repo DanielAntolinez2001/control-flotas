@@ -1,6 +1,7 @@
 import React from "react";
 import Tag from "./Tag";
 import styles from "./TaskCard.module.css";
+import { MdDelete } from "react-icons/md";
 
 const TaskCard = ({ task, status, handleDelete }) => {
   if (!task) {
@@ -18,7 +19,9 @@ const TaskCard = ({ task, status, handleDelete }) => {
             <Tag key={index} tagName={tag} selected />
           ))}
         </div>
-        <button onClick={handleDelete}>Delete</button>
+        <button onClick={handleDelete} className={styles.task_delete}>
+          <MdDelete className={styles.delete_icon} />
+        </button>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ const prisma = new PrismaClient();
 import path from "path";
 import fs from "fs";
 import { deleteMaintenanceForTruck } from "./maintenance";
+import { log } from "console";
 
 // Método para crear un camión
 export const createTruck = async (formData) => {
@@ -191,12 +192,18 @@ export const getLicensePlatesAvailable = async () => {
         },
       });
 
-      const totalMinutes = routes.reduce((sum, route) => sum + route.duration, 0);
+      const totalMinutes = routes.reduce(
+        (sum, route) => sum + route.duration,
+        0
+      );
 
       if (totalMinutes < 780) {
         availableLicensePlates.push(truck.license_plate);
-      }else{
-        await prisma.truck.update({ where: {id: truck.id}, data: { status: "active"}});
+      } else {
+        await prisma.truck.update({
+          where: { id: truck.id },
+          data: { status: "active" },
+        });
       }
     }
 
@@ -317,6 +324,39 @@ export const updateTruck = async (formData) => {
   }
 };
 
+export default async function handler(req, res) {
+  try {
+    const truckData = await prisma.truck.groupBy({
+      by: [prisma.truck.createdAt.month],
+      _count: {
+        id: true,
+      },
+    });
+    const userData = await prisma.user.groupBy({
+      by: [prisma.user.createdAt.month],
+      _count: {
+        id: true,
+      },
+    });
+
+    const chartData = Array.from({ length: 12 }, (_, month) => ({
+      month: month + 1,
+      trucks:
+        truckData.find((item) => item.createdAt.month === month + 1)?._count
+          .id || 0,
+      users:
+        userData.find((item) => item.createdAt.month === month + 1)?._count
+          .id || 0,
+    }));
+    console.log(chartData);
+
+    res.status(200).json(chartData);
+  } catch (error) {
+    console.error("Error fetching chart data:", error);
+    res.status(500).json({ error: "Error fetching chart data" });
+  }
+}
+
 export const redirectMain = async () => {
   redirect("/dashboard/trucks");
 };
@@ -355,7 +395,7 @@ export const deleteTruck = async (id) => {
         await prisma.fuel.delete({ where: { id: fuel.id } });
       }
     }
-    await prisma.exception.delete({ where: {truckId: id}});
+    await prisma.exception.delete({ where: { truckId: id } });
 
     // Finalmente, eliminar el camión
     await prisma.truck.delete({ where: { id: id } });

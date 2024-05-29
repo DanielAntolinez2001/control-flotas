@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import styles from "@/app/ui/dashboard/users/users.module.css";
@@ -26,7 +26,9 @@ const Maintenances = ({ searchParams }) => {
   }, [q]);
 
   const handleDelete = (id) => {
-    setMaintenances(maintenances.filter(maintenance => maintenance.id !== id));
+    setMaintenances(
+      maintenances.filter((maintenance) => maintenance.id !== id)
+    );
   };
 
   return (
@@ -53,7 +55,11 @@ const Maintenances = ({ searchParams }) => {
         </thead>
         <tbody>
           {maintenances.map((maintenance) => (
-            <MaintenanceRow key={maintenance.id} maintenance={maintenance} onDelete={handleDelete} />
+            <MaintenanceRow
+              key={maintenance.id}
+              maintenance={maintenance}
+              onDelete={handleDelete}
+            />
           ))}
         </tbody>
       </table>
