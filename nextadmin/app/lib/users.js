@@ -256,7 +256,7 @@ export const updateUser = async (id, formData) => {
     const user = await getUSerById(id);
     const idA = user.addressId;
 
-    await addressController.updateAddress( filteredUpdateDataAddress, idA );
+    await addressController.updateAddress(filteredUpdateDataAddress, idA);
 
     // Luego, actualizar el usuario
     await prisma.user.update({
@@ -288,7 +288,6 @@ export const deleteUser = async (id) => {
 
 export const getUserAvailable = async () => {
   try {
-
     const availableUsers = await prisma.user.findMany({
       where: { available: true, role: "driver" },
     });
@@ -318,11 +317,11 @@ export const getUserAvailable = async () => {
           name: `${user.name} ${user.lastname}`,
           id: user.id,
         });
-      }else{
+      } else {
         await prisma.user.update({
-          where: {id: user.id}, 
-          data: {available: false},
-        })
+          where: { id: user.id },
+          data: { available: false },
+        });
       }
     }
 
