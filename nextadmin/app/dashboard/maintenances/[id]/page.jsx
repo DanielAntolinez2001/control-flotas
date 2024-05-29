@@ -1,13 +1,27 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styles from "@/app/ui/dashboard/users/singleUser/singleUser.module.css";
 import ReportPage from "@/app/dashboard/maintenances/[id]/page2";
 import { getMaintenanceForReport } from "@/app/lib/maintenance";
 
-const SingleMaintennacePage = async ({ params }) => {
+const SingleMaintennacePage = ({ params }) => {
   const { id } = params;
-  const maintenance = await getMaintenanceForReport(id);
+  const [maintenance, setmaintenance] = useState(null); 
+
+  useEffect(() => {
+    if (id) {
+      getMaintenanceForReport(id)
+        .then((maintenanceData) => setmaintenance(maintenanceData))
+        .catch((error) => {
+          console.error("Error fetching maintenance data:", error);
+        });
+    }
+  }, [id]);
+
+  if (!maintenance) {
+    return <div>Loading...</div>; 
+  }
 
   return (
     <div className={styles.container}>

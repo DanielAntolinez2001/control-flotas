@@ -465,6 +465,7 @@ export const getPendingException = async () => {
       where: { status: "Pending" },
       include: { truck: true },
     });
+    
     const exceptionsStatus = [];
 
     for (const exception of pendingException) {

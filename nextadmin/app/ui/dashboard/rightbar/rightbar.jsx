@@ -15,20 +15,19 @@ const RightBar = () => {
   const [truckData, setTruckData] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await isTimeToChangeTires();
-        const data2 = await getPendingMaintenances();
-        const data3 = await getAvailableTrucks();
-        setTireData(data);
-        setMaintenanceData(data2);
-        setTruckData(data3);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
+    try{
+      isTimeToChangeTires().then((data) => setTireData(data)).catch((error) => {
+        console.error("Error fetching maintenance data:", error);
+      });
+      getPendingMaintenances().then((data2) => setMaintenanceData(data2)).catch((error) => {
+        console.error("Error fetching maintenance data:", error);
+      });
+      getAvailableTrucks().then((data3) => setTruckData(data3)).catch((error) => {
+        console.error("Error fetching maintenance data:", error);
+      });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   }, []);
 
   const memoizedTireData = useMemo(() => tireData, [tireData]);

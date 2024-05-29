@@ -123,7 +123,7 @@ export const getTrucks = async () => {
 
 // Método para obtener un camión por su ID
 export const getTruckById = async (id) => {
-  console.log(id);
+  console.log(id, "hola");
 
   try {
     const truck = await prisma.truck.findFirst({

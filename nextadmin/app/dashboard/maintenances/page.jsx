@@ -13,16 +13,15 @@ const Maintenances = ({ searchParams }) => {
   const q = searchParams?.q || null;
 
   useEffect(() => {
-    const fetchMaintenances = async () => {
-      let result = null;
-      if (q) {
-        result = await getMaintenanceByTruck(q);
-      } else {
-        result = await getMaintenances();
-      }
-      setMaintenances(result);
-    };
-    fetchMaintenances();
+    if (q) {
+      getMaintenanceByTruck(q).then((maintenanceData) => setMaintenances(maintenanceData)).catch((error) => {
+        console.error("Error fetching maintenance data:", error);
+      });
+    } else {
+      getMaintenances().then((maintenanceData) => setMaintenances(maintenanceData)).catch((error) => {
+        console.error("Error fetching maintenance data:", error);
+      });
+    }
   }, [q]);
 
   const handleDelete = (id) => {
