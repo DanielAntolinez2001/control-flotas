@@ -11,9 +11,7 @@ const SingleMaintennacePage = async ({ params }) => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.infoContainer}>
-        {maintenance.description}
-      </div>
+      <div className={styles.infoContainer}>{maintenance.description}</div>
       <ReportPage maintenance={maintenance} />
     </div>
   );
