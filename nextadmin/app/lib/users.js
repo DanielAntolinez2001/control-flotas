@@ -92,7 +92,7 @@ export const createUser = async (formData) => {
 
 // Método para autenticar un usuario
 export const authenticate = async (prevState, formData) => {
-  console.log(formData);
+  console.log(formData)
   const { email, password } = Object.fromEntries(formData);
   try {
     await signIn("credentials", { email, password });
