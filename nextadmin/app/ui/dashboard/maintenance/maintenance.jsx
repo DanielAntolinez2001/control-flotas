@@ -9,7 +9,7 @@ const Maintenance = async () => {
 
   const getStatusAbbreviation = (status) => {
     switch (status) {
-      case "avaliable":
+      case "available":
         return "AVL";
       case "inactive":
         return "MTN";
