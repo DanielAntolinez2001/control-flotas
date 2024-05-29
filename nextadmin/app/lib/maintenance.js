@@ -315,12 +315,20 @@ export const scheduleMaintenance = async (type, scheduleDate, licensePlate) => {
 
 export const deleteMaintenanceForTruck = async (id) => {
   try {
-    const maintenance = await prisma.maintenance.deleteMany({
-      where: { truckId: id },
+    const maintenances = await prisma.maintenance.findMany({
+      where: { truckId: id }
     });
-    await prisma.report.deleteMany({
-      where: { maintenanceId: maintenance.id },
+
+    for (const maintenance of maintenances) {
+      await prisma.report.deleteMany({
+        where: { maintenanceId: maintenance.id }
+      });
+    }
+
+    await prisma.maintenance.deleteMany({
+      where: { truckId: id }
     });
+
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw error;

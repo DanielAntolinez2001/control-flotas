@@ -395,7 +395,7 @@ export const deleteTruck = async (id) => {
         await prisma.fuel.delete({ where: { id: fuel.id } });
       }
     }
-    await prisma.exception.delete({ where: { truckId: id } });
+    await prisma.exception.deleteMany({ where: { truckId: id } });
 
     // Finalmente, eliminar el camión
     await prisma.truck.delete({ where: { id: id } });
