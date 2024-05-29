@@ -1,8 +1,25 @@
 import React from "react";
 import styles from "./maintenance.module.css";
 import Image from "next/image";
+import { getTrucks } from "@/app/lib/trucks";
 
-const Maintenance = () => {
+const Maintenance = async () => {
+  // Fetch truck data on the server
+  const trucksData = await getTrucks();
+
+  const getStatusAbbreviation = (status) => {
+    switch (status) {
+      case "avaliable":
+        return "AVL";
+      case "inactive":
+        return "MTN";
+      case "active":
+        return "OPR";
+      default:
+        return "UNK";
+    }
+  };
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Latest Operations</h2>
@@ -14,76 +31,38 @@ const Maintenance = () => {
             <td>Date</td>
             <td>Model</td>
             <td>Brand</td>
-            <td>Amount</td>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>
-              <div className={styles.user}>
-                <Image
-                  src="/noavatar.png"
-                  alt=""
-                  width={40}
-                  height={40}
-                  className={styles.userImage}
-                />
-                AAA 111
-              </div>
-            </td>
-            <td>
-              <span className={`${styles.status} ${styles.pending}`}>
-                Pending
-              </span>
-            </td>
-            <td>2024, 13 May</td>
-            <td>2004</td>
-            <td>Chevrolet</td>
-          </tr>
-          <tr>
-            <td>
-              <div className={styles.user}>
-                <Image
-                  src="/noavatar.png"
-                  alt=""
-                  width={40}
-                  height={40}
-                  className={styles.userImage}
-                />
-                AAA 111
-              </div>
-            </td>
-            <td>
-              <span className={`${styles.status} ${styles.done}`}>Done</span>
-            </td>
-            <td>2024, 13 May</td>
-            <td>2004</td>
-            <td>Chevrolet</td>
-            <td>$240.000</td>
-          </tr>
-          <tr>
-            <td>
-              <div className={styles.user}>
-                <Image
-                  src="/noavatar.png"
-                  alt=""
-                  width={40}
-                  height={40}
-                  className={styles.userImage}
-                />
-                AAA 111
-              </div>
-            </td>
-            <td>
-              <span className={`${styles.status} ${styles.cancelled}`}>
-                Cancelled
-              </span>
-            </td>
-            <td>2024, 13 May</td>
-            <td>2004</td>
-            <td>Chevrolet</td>
-            <td>$240.000</td>
-          </tr>
+          {/* Render the rows dynamically based on fetched data */}
+          {trucksData.map((truck) => (
+            <tr key={truck.id}>
+              <td>
+                <div className={styles.user}>
+                  <Image
+                    src={truck.avatar || "/noavatar.png"} // Use the truck's avatar or a default
+                    alt=""
+                    width={40}
+                    height={40}
+                    className={styles.userImage}
+                  />
+                  {truck.license_plate}
+                </div>
+              </td>
+              <td>
+                <span
+                  className={`${styles.status} ${
+                    styles[truck.status.toLowerCase()] // Dynamic styles based on status
+                  }`}
+                >
+                  {getStatusAbbreviation(truck.status)}
+                </span>
+              </td>
+              <td>{new Date(truck.createdAt).toLocaleDateString("en-US")}</td>
+              <td>{truck.model}</td>
+              <td>{truck.brand}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

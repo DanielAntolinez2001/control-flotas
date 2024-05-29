@@ -8,7 +8,9 @@ import { deleteTruck } from "@/app/lib/trucks";
 
 const TruckRow = ({ truck, onDelete }) => {
   const handleDelete = async () => {
-    const isConfirmed = window.confirm("Are you sure you want to delete this truck?");
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this truck?"
+    );
     if (isConfirmed) {
       await deleteTruck(truck.id);
       onDelete(truck.id);
@@ -36,19 +38,20 @@ const TruckRow = ({ truck, onDelete }) => {
       <td>{truck.createdAt.toString().slice(4, 16)}</td>
       <td>
         <div className={styles.buttoms}>
-            <Link href={`/dashboard/trucks/${truck.id}`}>
+          <Link href={`/dashboard/trucks/${truck.id}`}>
             <button className={`${styles.buttom} ${styles.update}`}>
-                Update
+              Update
             </button>
-            </Link>
-            <button className={`${styles.buttom} ${styles.delete}`} onClick={() => handleDelete(truck.id)}>
-                Delete
-            </button>
-            <Link href={`/dashboard/trucks/${truck.id}/components`}>
-            <button className={`${styles.buttom} ${styles.view}`}>
-                View
-            </button>
-            </Link>
+          </Link>
+          <button
+            className={`${styles.buttom} ${styles.delete}`}
+            onClick={() => handleDelete(truck.id)}
+          >
+            Delete
+          </button>
+          <Link href={`/dashboard/trucks/${truck.id}/components`}>
+            <button className={`${styles.buttom} ${styles.view}`}>View</button>
+          </Link>
         </div>
       </td>
     </tr>

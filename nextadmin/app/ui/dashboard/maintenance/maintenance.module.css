@@ -36,14 +36,14 @@
   color: white;
 }
 
-.pending {
-  background-color: #f7cb7375;
+.status.inactive {
+  background-color: red;
 }
 
-.done {
-  background-color: #afd6ee75;
+.status.active {
+  background-color: green;
 }
 
-.cancelled {
-  background-color: #f7737375;
+.status.avalaible {
+  background-color: yellow;
 }

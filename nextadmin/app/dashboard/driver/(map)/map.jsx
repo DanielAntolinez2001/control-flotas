@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import styles from "./map.module.css";
+
 import {
   LoadScript,
   GoogleMap,
   DirectionsService,
   DirectionsRenderer,
-  Marker
+  Marker,
 } from "@react-google-maps/api";
 
 const libraries = ["places"];
@@ -21,27 +21,34 @@ const manizalesCoordinates = { lat: 5.0689, lng: -75.5174 }; // Coordenadas de M
 const Mapa = ({ routes }) => {
   const [map, setMap] = useState(null);
   const [directions, setDirections] = useState([]);
-  
+
   useEffect(() => {
     const fetchDirections = async () => {
-      const directionsPromises = routes.map(route => 
-        new Promise((resolve, reject) => {
-          const service = new google.maps.DirectionsService();
-          service.route(
-            {
-              origin: { lat: parseFloat(route.from.lat), lng: parseFloat(route.from.lng) },
-              destination: { lat: parseFloat(route.to.lat), lng: parseFloat(route.to.lng) },
-              travelMode: "DRIVING"
-            },
-            (result, status) => {
-              if (status === "OK") {
-                resolve(result);
-              } else {
-                reject(`Error fetching directions: ${status}`);
+      const directionsPromises = routes.map(
+        (route) =>
+          new Promise((resolve, reject) => {
+            const service = new google.maps.DirectionsService();
+            service.route(
+              {
+                origin: {
+                  lat: parseFloat(route.from.lat),
+                  lng: parseFloat(route.from.lng),
+                },
+                destination: {
+                  lat: parseFloat(route.to.lat),
+                  lng: parseFloat(route.to.lng),
+                },
+                travelMode: "DRIVING",
+              },
+              (result, status) => {
+                if (status === "OK") {
+                  resolve(result);
+                } else {
+                  reject(`Error fetching directions: ${status}`);
+                }
               }
-            }
-          );
-        })
+            );
+          })
       );
 
       try {
@@ -78,9 +85,12 @@ const Mapa = ({ routes }) => {
             <DirectionsRenderer key={index} directions={direction} />
           ))}
           {routes.map((route, index) => (
-            <Marker 
+            <Marker
               key={index}
-              position={{ lat: parseFloat(route.from.lat), lng: parseFloat(route.from.lng) }}
+              position={{
+                lat: parseFloat(route.from.lat),
+                lng: parseFloat(route.from.lng),
+              }}
               label={`From: ${route.from}`}
             />
           ))}
